@@ -1,2 +1,3 @@
-# peoples-library
-People's Library - Your personal digital bookshelf &amp; catalog.
+# People's Library
+
+React App for a personal library that allows registered people to create book shelves and store books in them.
