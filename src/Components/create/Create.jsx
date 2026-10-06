@@ -1,97 +1,35 @@
-// export default function Create() {
-//     return (
-//         <section className="form-container">
-//             <form className="form-card">
-//                 <h2 className="form-title">Create Shelf</h2>
-
-//                 <div className="form-group">
-//                     <label htmlFor="title" className="form-label">Shelf Title</label>
-//                     <input
-//                         type="text"
-//                         id="title"
-//                         name="title"
-//                         className="form-input"
-//                         placeholder="e.g. Favorite Fantasy"
-//                         required
-//                     />
-//                 </div>
-
-//                 <div className="form-group">
-//                     <label htmlFor="category" className="form-label">Category</label>
-//                     <select id="category" name="category" className="form-input" defaultValue="">
-//                         <option value="" disabled>Select Category</option>
-//                         <option value="Fantasy">Fantasy & Sci-Fi</option>
-//                         <option value="Fiction">Fiction</option>
-//                         <option value="Non-Fiction">Non-Fiction</option>
-//                         <option value="Tech">Tech & Programming</option>
-//                         <option value="Biography">Biography</option>
-//                     </select>
-//                 </div>
-
-//                 <div className="form-group">
-//                     <label htmlFor="imageUrl" className="form-label">Cover Image URL</label>
-//                     <input
-//                         type="url"
-//                         id="imageUrl"
-//                         name="imageUrl"
-//                         className="form-input"
-//                         placeholder="https://..."
-//                         required
-//                     />
-//                 </div>
-
-//                 <div className="form-group">
-//                     <label htmlFor="description" className="form-label">Description</label>
-//                     <textarea
-//                         id="description"
-//                         name="description"
-//                         className="form-input"
-//                         placeholder="Notes about this shelf..."
-//                         rows="3"
-//                         required
-//                     ></textarea>
-//                 </div>
-
-//                 <button type="submit" className="form-btn">
-//                     Add to Library
-//                 </button>
-//             </form>
-//         </section>
-//     );
-// }
-
 import { useState } from 'react';
 
 const GENRE_PRESETS = {
     'Fantasy & Sci-Fi': [
-        'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1514539079130-25950c84af65?auto=format&fit=crop&w=600&q=80'
+        '/fantasy/fantasy-img1.jpg',
+        '/fantasy/fantasy-img2.jpg',
+        '/fantasy/fantasy-img3.jpg'
     ],
     'Mystery & Thriller': [
-        'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1509281373149-e957c6296406?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80'
+        'mystery/mystery-img1.jpg',
+        'mystery/mystery-img2.jpg',
+        'mystery/mystery-img3.jpg'
     ],
     'Classics & Literature': [
-        'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1463320726281-696a485928c7?auto=format&fit=crop&w=600&q=80'
+        'classics/classics-img1.jpg',
+        'classics/classics-img2.jpg',
+        'classics/classics-img3.jpg'
     ],
     'Tech & Programming': [
-        'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80'
+        'tech/tech-img1.jpg',
+        'tech/tech-img2.jpg',
+        'tech/tech-img3.jpg'
     ],
     'History & Biography': [
-        'https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1447069387593-a5de0862481e?auto=format&fit=crop&w=600&q=80'
+        'history/history-img1.jpg',
+        'history/history-img2.jpg',
+        'history/history-img3.jpg'
     ],
     'Self-Improvement & Psychology': [
-        'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&w=600&q=80'
+        'psychology/self-improvement-img1.jpg',
+        'psychology/self-improvement-img2.jpg',
+        'psychology/self-improvement-img3.jpg'
     ]
 };
 
@@ -119,6 +57,13 @@ export default function Create() {
         setCustomUrl(val);
         setSelectedImage(val);
     };
+
+    const handleToggleCustomUrl = () => {
+        setUseCustomUrl(!useCustomUrl);
+        if (useCustomUrl) {
+            setSelectedImage(GENRE_PRESETS[category][0]);
+        }
+    }
 
     return (
         <section className="form-container">
@@ -158,19 +103,13 @@ export default function Create() {
                         <button
                             type="button"
                             className="toggle-custom-btn"
-                            onClick={() => {
-                                setUseCustomUrl(!useCustomUrl);
-                                if (useCustomUrl) {
-                                    setSelectedImage(GENRE_PRESETS[category][0]);
-                                }
-                            }}
+                            onClick={handleToggleCustomUrl}
                         >
-                            {useCustomUrl ? '← Use Preset Covers' : 'Custom Image URL?'}
+                            {useCustomUrl ? 'Use Preset Covers' : 'Custom Image URL?'}
                         </button>
                     </div>
 
                     {!useCustomUrl ? (
-
                         <div className="preset-picker">
                             {GENRE_PRESETS[category]?.map((imgUrl, idx) => (
                                 <div
@@ -183,7 +122,6 @@ export default function Create() {
                             ))}
                         </div>
                     ) : (
-
                         <input
                             type="url"
                             className="form-input"
