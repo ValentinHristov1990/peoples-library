@@ -1,19 +1,25 @@
-import './App.css'
-import Footer from './Footer'
-import Hero from './Hero'
-import Nav from './Navigation'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Header from "./Components/header/Header";
+import Home from "./Components/home/Home";
+import Register from "./Components/register/Register";
+import Footer from "./Footer";
+import "./App.css";
 
-function App() {
-
+export default function App() {
   return (
-    <div className='app-layout'>
-      <Nav />
-      <main>
-        <Hero />
-      </main>
-      <Footer />
-    </div>
-  )
-}
+    <div className="app-layout">
+      <BrowserRouter>
+        <Header />
 
-export default App
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+          </Routes>
+        </main>
+
+        <Footer />
+      </BrowserRouter>
+    </div>
+  );
+}
