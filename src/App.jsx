@@ -21,6 +21,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/create" element={<Create />} />
             <Route path="/*" element={<NotFound />} />
+            <Route path="/NotFound" element={<NotFound />} />
           </Routes>
         </main>
 
