@@ -86,7 +86,12 @@ nav ul {
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(5px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  list-style: none;
   padding: 15px 0;
+  margin: 0;
 }
 
 nav a {
@@ -108,20 +113,7 @@ nav a:hover {
   background-color: var(--accent-color);
   transform: translateY(-2px);
 }
-/* ==========================================
-   Navigation Bar & Active Link Styling
-   ========================================== */
 
-nav ul {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-/* Стил за всички линкове в навигацията */
 nav a {
   display: block;
   padding: 10px 20px;
@@ -139,7 +131,6 @@ nav a:hover {
   transform: translateY(-2px);
 }
 
-/* Когато NavLink е активен (потребителят е на тази страница) */
 nav a.active {
   background: rgba(212, 163, 115, 0.35) !important;
   border-color: #d4a373 !important;
