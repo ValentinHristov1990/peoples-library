@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 export default function Header() {
     return (
@@ -10,12 +10,12 @@ export default function Header() {
 
             <nav>
                 <ul>
-                    <li><Link to="/">Home</Link></li>
-                    <li><Link to="/catalog">Books Catalog</Link></li>
-                    <li><Link to="/login">Login</Link></li>
-                    <li><Link to="/register">Register</Link></li>
-                    <li><Link to="/create">Create Shelf</Link></li>
-                    <li><Link to="/notFound">NotFoundTest</Link></li>
+                    <li><NavLink to="/" end>Home</NavLink></li>
+                    <li><NavLink to="/catalog">Books Catalog</NavLink></li>
+                    <li><NavLink to="/login">Login</NavLink></li>
+                    <li><NavLink to="/register">Register</NavLink></li>
+                    <li><NavLink to="/create">Create Shelf</NavLink></li>
+                    <li><NavLink to="/notFound">NotFoundTest</NavLink></li>
                 </ul>
             </nav>
         </header>

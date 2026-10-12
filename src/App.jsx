@@ -7,6 +7,7 @@ import "./App.css";
 import Login from "./Components/login/Login";
 import NotFound from "./Components/not-found/NotFound";
 import Create from "./Components/create/Create";
+import Catalog from "./Components/catalog/Catalog";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/create" element={<Create />} />
+            <Route path="/catalog" element={<Catalog />} />
             <Route path="/*" element={<NotFound />} />
             <Route path="/NotFound" element={<NotFound />} />
           </Routes>

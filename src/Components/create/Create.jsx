@@ -2,41 +2,36 @@ import { useState } from 'react';
 
 const GENRE_PRESETS = {
     'Fantasy & Sci-Fi': [
-        '/fantasy/fantasy-img1.jpg',
-        '/fantasy/fantasy-img2.jpg',
-        '/fantasy/fantasy-img3.jpg'
+        '/create-shelf-images/fantasy/fantasy-img1.jpg',
+        '/create-shelf-images/fantasy/fantasy-img2.jpg',
+        '/create-shelf-images/fantasy/fantasy-img3.jpg'
     ],
     'Mystery & Thriller': [
-        'mystery/mystery-img1.jpg',
-        'mystery/mystery-img2.jpg',
-        'mystery/mystery-img3.jpg'
+        '/create-shelf-images/mystery/mystery-img1.jpg',
+        '/create-shelf-images/mystery/mystery-img2.jpg',
+        '/create-shelf-images/mystery/mystery-img3.jpg'
     ],
     'Classics & Literature': [
-        'classics/classics-img1.jpg',
-        'classics/classics-img2.jpg',
-        'classics/classics-img3.jpg'
+        '/create-shelf-images/classics/classics-img1.jpg',
+        '/create-shelf-images/classics/classics-img2.jpg',
+        '/create-shelf-images/classics/classics-img3.jpg'
     ],
     'Tech & Programming': [
-        'tech/tech-img1.jpg',
-        'tech/tech-img2.jpg',
-        'tech/tech-img3.jpg'
+        '/create-shelf-images/tech/tech-img1.jpg',
+        '/create-shelf-images/tech/tech-img2.jpg',
+        '/create-shelf-images/tech/tech-img3.jpg'
     ],
     'History & Biography': [
-        'history/history-img1.jpg',
-        'history/history-img2.jpg',
-        'history/history-img3.jpg'
-    ],
-    'Self-Improvement & Psychology': [
-        'psychology/self-improvement-img1.jpg',
-        'psychology/self-improvement-img2.jpg',
-        'psychology/self-improvement-img3.jpg'
+        '/create-shelf-images/history/history-img1.jpg',
+        '/create-shelf-images/history/history-img2.jpg',
+        '/create-shelf-images/history/history-img3.jpg'
     ]
 };
 
 export default function Create() {
     const [category, setCategory] = useState('Fantasy & Sci-Fi');
     const [selectedImage, setSelectedImage] = useState(GENRE_PRESETS['Fantasy & Sci-Fi'][0]);
-    const [useCustomUrl, setUseCustomUrl] = useState(false);
+    const [useCustomUrl, setUseCustomUrl] = useState(true);
     const [customUrl, setCustomUrl] = useState('');
 
     const handleCategoryChange = (e) => {
