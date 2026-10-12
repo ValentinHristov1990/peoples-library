@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { GENRE_PRESETS } from '../../books-data/genrePresets';
+import ShelfCoverPicker from './ShelfCoverPicker';
 
 export default function Create() {
     const [category, setCategory] = useState('Fantasy & Sci-Fi');
@@ -27,11 +28,12 @@ export default function Create() {
     };
 
     const handleToggleCustomUrl = () => {
-        setUseCustomUrl(!useCustomUrl);
-        if (useCustomUrl) {
+        const nextState = !useCustomUrl;
+        setUseCustomUrl(nextState);
+        if (nextState) {
             setSelectedImage(GENRE_PRESETS[category][0]);
         }
-    }
+    };
 
     return (
         <section className="form-container">
@@ -65,41 +67,16 @@ export default function Create() {
                     </select>
                 </div>
 
-                <div className="form-group">
-                    <div className="cover-header">
-                        <label className="form-label">Shelf Cover</label>
-                        <button
-                            type="button"
-                            className="toggle-custom-btn"
-                            onClick={handleToggleCustomUrl}
-                        >
-                            {useCustomUrl ? 'Use Preset Covers' : 'Custom Image URL?'}
-                        </button>
-                    </div>
-
-                    {!useCustomUrl ? (
-                        <div className="preset-picker">
-                            {GENRE_PRESETS[category]?.map((imgUrl, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`preset-card ${selectedImage === imgUrl ? 'selected' : ''}`}
-                                    onClick={() => handlePresetSelect(imgUrl)}
-                                >
-                                    <img src={imgUrl} alt={`Option ${idx + 1}`} />
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <input
-                            type="url"
-                            className="form-input"
-                            placeholder="https://example.com/my-cover.jpg"
-                            value={customUrl}
-                            onChange={handleCustomUrlChange}
-                            required
-                        />
-                    )}
-                </div>
+                <ShelfCoverPicker
+                    category={category}
+                    genrePresets={GENRE_PRESETS}
+                    selectedImage={selectedImage}
+                    useCustomUrl={useCustomUrl}
+                    customUrl={customUrl}
+                    onToggleCustom={handleToggleCustomUrl}
+                    onPresetSelect={handlePresetSelect}
+                    onCustomUrlChange={handleCustomUrlChange}
+                />
 
                 <div className="form-group">
                     <label htmlFor="description" className="form-label">Description</label>
