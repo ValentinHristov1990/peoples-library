@@ -73,13 +73,6 @@ main {
 }
 
 /* Navigation */
-ul {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  gap: 20px;
-  list-style: none;
-}
 
 nav ul {
   width: 100%;
@@ -88,30 +81,10 @@ nav ul {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: center;
-  gap: 15px;
+  gap: 25px;
   list-style: none;
-  padding: 15px 0;
+  padding: 18px 0;
   margin: 0;
-}
-
-nav a {
-  display: block;
-  padding: 12px 24px;
-  text-decoration: none;
-  transition:
-    transform 0.2s,
-    background-color 0.2s;
-  border-radius: 5px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  background-color: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #f5f2eb;
-  backdrop-filter: blur(4px);
-}
-
-nav a:hover {
-  background-color: var(--accent-color);
-  transform: translateY(-2px);
 }
 
 nav a {
@@ -123,21 +96,22 @@ nav a {
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #f5f2eb;
   backdrop-filter: blur(4px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   transition: all 0.2s ease;
 }
 
 nav a:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--accent-color);
   transform: translateY(-2px);
 }
 
 nav a.active {
-  background: rgba(212, 163, 115, 0.35) !important;
-  border-color: #d4a373 !important;
+  background: rgba(212, 163, 115, 0.35);
+  border-color: #d4a373;
   box-shadow:
     0 0 15px rgba(212, 163, 115, 0.5),
-    inset 0 0 8px rgba(212, 163, 115, 0.3) !important;
-  color: #fff !important;
+    inset 0 0 8px rgba(212, 163, 115, 0.3);
+  color: #fff;
   transform: translateY(-1px);
 }
 
