@@ -25,6 +25,11 @@ const GENRE_PRESETS = {
         '/create-shelf-images/history/history-img1.jpg',
         '/create-shelf-images/history/history-img2.jpg',
         '/create-shelf-images/history/history-img3.jpg'
+    ],
+    'Personal Development': [
+        '/create-shelf-images/psychology/self-improvement-img1.jpg',
+        '/create-shelf-images/psychology/self-improvement-img2.jpg',
+        '/create-shelf-images/psychology/self-improvement-img3.jpg',
     ]
 };
 

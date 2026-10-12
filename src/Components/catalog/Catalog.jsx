@@ -1,18 +1,49 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { fantasyBooks } from '../../books-data/fantasy';
+import { personalDevelopmentBooks } from '../../books-data/personalDevelopmentBooks';
+import { mysteryBooks } from '../../books-data/mystery';
+import { classicsBooks } from '../../books-data/classics';
+import { techBooks } from '../../books-data/tech';
+import { historyBooks } from '../../books-data/history';
 
 const GENRES = [
-    { id: 'fantasy', name: 'Fantasy & Sci-Fi' }
+    { id: 'all', name: 'All Books' },
+    { id: 'fantasy', name: 'Fantasy & Sci-Fi' },
+    { id: 'personal-development', name: 'Personal Development' },
+    { id: 'mystery', name: 'Mystery & Thriller' },
+    { id: 'classics', name: 'Classics & Literature' },
+    { id: 'tech', name: 'Tech & Programming' },
+    { id: 'history', name: 'History & Biography' },
 ];
 
+const allBooks = [
+    ...fantasyBooks,
+    ...personalDevelopmentBooks,
+    ...mysteryBooks,
+    ...classicsBooks,
+    ...techBooks,
+    ...historyBooks,
+];
+
+const booksMap = {
+    'all': allBooks,
+    'fantasy': fantasyBooks,
+    'personal-development': personalDevelopmentBooks,
+    'mystery': mysteryBooks,
+    'classics': classicsBooks,
+    'tech': techBooks,
+    'history': historyBooks,
+};
+
 export default function Catalog() {
-    const [selectedGenre, setSelectedGenre] = useState('fantasy');
-    const [searchQuery, setSearchQuery] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const selectedGenre = searchParams.get('genre') || 'all';
+    const searchQuery = searchParams.get('search') || '';
+    const currentPage = parseInt(searchParams.get('page')) || 1;
     const booksPerPage = 5;
 
-    const books = selectedGenre === 'fantasy' ? fantasyBooks : [];
+    const books = booksMap[selectedGenre] || allBooks;
 
     const filteredBooks = books.filter((book) => {
         const title = book.title?.toLowerCase() || '';
@@ -29,6 +60,16 @@ export default function Catalog() {
         safeCurrentPage * booksPerPage
     );
 
+
+    const updateParams = (newParams) => {
+        setSearchParams({
+            genre: selectedGenre,
+            search: searchQuery,
+            page: currentPage,
+            ...newParams,
+        });
+    };
+
     return (
         <section className="form-container">
             <div className="form-card form-card-wide catalog-card-wide">
@@ -41,8 +82,7 @@ export default function Catalog() {
                             className="form-input"
                             value={selectedGenre}
                             onChange={(e) => {
-                                setSelectedGenre(e.target.value);
-                                setCurrentPage(1);
+                                updateParams({ genre: e.target.value, page: 1 });
                             }}
                         >
                             {GENRES.map((genre) => (
@@ -60,8 +100,7 @@ export default function Catalog() {
                             placeholder="Search by title or author..."
                             value={searchQuery}
                             onChange={(e) => {
-                                setSearchQuery(e.target.value);
-                                setCurrentPage(1);
+                                updateParams({ search: e.target.value, page: 1 });
                             }}
                             className="form-input"
                         />
@@ -97,7 +136,7 @@ export default function Catalog() {
                     <div className="catalog-pagination">
                         <button
                             className={`form-btn pagination-btn ${safeCurrentPage === 1 ? 'disabled' : ''}`}
-                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                            onClick={() => updateParams({ page: Math.max(safeCurrentPage - 1, 1) })}
                             disabled={safeCurrentPage === 1}
                         >
                             &larr; Prev
@@ -109,7 +148,7 @@ export default function Catalog() {
 
                         <button
                             className={`form-btn pagination-btn ${safeCurrentPage === totalPages ? 'disabled' : ''}`}
-                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                            onClick={() => updateParams({ page: Math.min(safeCurrentPage + 1, totalPages) })}
                             disabled={safeCurrentPage === totalPages}
                         >
                             Next &rarr;
