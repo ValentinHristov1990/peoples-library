@@ -56,17 +56,6 @@ export default function Register() {
                     </div>
                 </div>
 
-                <div className="form-group">
-                    <label htmlFor="imageUrl" className="form-label">Profile Picture (URL)</label>
-                    <input
-                        type="url"
-                        id="imageUrl"
-                        name="imageUrl"
-                        className="form-input"
-                        placeholder="https://..."
-                    />
-                </div>
-
                 <button type="submit" className="form-btn">Register</button>
 
                 <p className="form-footer">

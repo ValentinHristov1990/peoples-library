@@ -1,9 +1,32 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
+
+    const [values, setValues] = useState({
+        email: "",
+        password: "",
+    });
+
+    const navigate = useNavigate();
+
+    const changeHandler = (e) => {
+        setValues(state => ({
+            ...state,
+            [e.target.email]: e.target.value
+        }));
+    }
+
+    const loginSubmitHandler = (e) => {
+        e.preventDefault();
+
+        console.log("LOGGED IN!")
+
+        navigate("/catalog")
+    }
     return (
         <section className="form-container">
-            <form className="form-card">
+            <form className="form-card" onSubmit={loginSubmitHandler}>
                 <h2 className="form-title">Login</h2>
 
                 <div className="form-group">
