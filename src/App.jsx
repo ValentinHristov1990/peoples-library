@@ -15,7 +15,7 @@ export default function App() {
 
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem("user");
-    return savedUser ? JSON.stringify(savedUser) : null;
+    return savedUser ? JSON.parse(savedUser) : null;
   });
   // const navigate = useNavigate();
 

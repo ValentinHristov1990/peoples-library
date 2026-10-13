@@ -125,6 +125,23 @@ nav a.active {
   color: #fff;
   transform: translateY(-1px);
 }
+
+.welcome {
+  position: absolute;
+  right: 50px;
+}
+
+.nav-clock {
+  position: absolute;
+  left: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #d4c5b9;
+  font-size: 0.9rem;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
 /* Hero Section */
 .hero-container {
   display: flex;
