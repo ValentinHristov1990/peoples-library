@@ -22,6 +22,7 @@ export default function Header() {
                     <li><NavLink to="/" end>Home</NavLink></li>
                     <li><NavLink to="/catalog">Books Catalog</NavLink></li>
                     <li><NavLink to="/create">Create Shelf</NavLink></li>
+                    <li><NavLink to="/logout">Logout</NavLink></li>
 
                     {!isAuthenticated ? (
                         <>

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import Header from "./Components/header/Header";
 import Home from "./Components/home/Home";
 import Register from "./Components/register/Register";
@@ -9,23 +9,40 @@ import NotFound from "./Components/not-found/NotFound";
 import Create from "./Components/create/Create";
 import Catalog from "./Components/catalog/Catalog";
 import Details from "./Components/details/Details";
+import { useState } from "react";
+import Logout from "./Components/logout/Logout";
 
 export default function App() {
+
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  const UserHandler = (userData) => {
+    setUser(userData);
+
+    const logoutAction = (userData) => {
+      setUser(null);
+    }
+
+  }
   return (
     <div className="app-layout">
       <BrowserRouter>
         <Header />
 
         <main>
+          <Header isAuthenticated={!!user} />
+          {user && <p>Welcome, {user.email}</p>}
+
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/register" element={<Register onRegister={UserHandler} />} />
             <Route path="/login" element={<Login />} />
             <Route path="/create" element={<Create />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/details/:bookId" element={<Details />} />
+            <Route path="/logout" element={<Logout />} />
             <Route path="/*" element={<NotFound />} />
-            <Route path="/NotFound" element={<NotFound />} />
           </Routes>
         </main>
 
