@@ -8,6 +8,7 @@ import Login from "./Components/login/Login";
 import NotFound from "./Components/not-found/NotFound";
 import Create from "./Components/create/Create";
 import Catalog from "./Components/catalog/Catalog";
+import Details from "./Components/details/Details";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/create" element={<Create />} />
             <Route path="/catalog" element={<Catalog />} />
+            <Route path="/details/:bookId" element={<Details />} />
             <Route path="/*" element={<NotFound />} />
             <Route path="/NotFound" element={<NotFound />} />
           </Routes>

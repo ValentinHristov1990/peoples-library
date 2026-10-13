@@ -47,7 +47,7 @@ export default function Hero() {
                                     <p className="book-genre">{book.genre}</p>
                                 </div>
 
-                                <Link to={`/catalog/${book.id}`} className="form-btn book-details-btn">
+                                <Link to={`/details/${book.id}`} className="form-btn book-details-btn">
                                     Details
                                 </Link>
                             </div>

@@ -5,6 +5,7 @@ import { mysteryBooks } from '../../books-data/mystery';
 import { classicsBooks } from '../../books-data/classics';
 import { techBooks } from '../../books-data/tech';
 import { historyBooks } from '../../books-data/history';
+import { allBooks } from '../../books-data/allBooks';
 
 const GENRES = [
     { id: 'all', name: 'All Books' },
@@ -14,15 +15,6 @@ const GENRES = [
     { id: 'classics', name: 'Classics & Literature' },
     { id: 'tech', name: 'Tech & Programming' },
     { id: 'history', name: 'History & Biography' },
-];
-
-const allBooks = [
-    ...fantasyBooks,
-    ...personalDevelopmentBooks,
-    ...mysteryBooks,
-    ...classicsBooks,
-    ...techBooks,
-    ...historyBooks,
 ];
 
 const booksMap = {
@@ -120,7 +112,7 @@ export default function Catalog() {
                                     <p className="book-genre">{book.genre}</p>
                                 </div>
 
-                                <Link to={`/catalog/${book.id}`} className="form-btn book-details-btn">
+                                <Link to={`/details/${book.id}`} className="form-btn book-details-btn">
                                     Details
                                 </Link>
                             </div>

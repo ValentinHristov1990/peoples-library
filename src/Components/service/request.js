@@ -32,7 +32,6 @@ export default async function request(
     );
   }
 
-  // Ако е 204 No Content, връщаме празен обект или null
   if (response.status === 204) {
     return null;
   }
