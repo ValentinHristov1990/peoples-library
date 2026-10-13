@@ -1,9 +1,43 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import request from '../service/request';
 
-export default function Register() {
+export default function Register({
+    onRegister,
+}) {
+    const navigate = useNavigate();
+
+    const registerActionHandler = async (formData) => {
+        const username = formData.get("username");
+        const email = formData.get("email");
+        const password = formData.get("password");
+        const confirmPassword = formData.get("confirm-password");
+
+        if (!username || !email || !password || !confirmPassword) {
+            alert("All fields are required!");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+        }
+
+        try {
+            await request('/users', 'POST', {
+                username,
+                email,
+                password,
+            });
+            onRegister({ username, email });
+            navigate("/");
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
     return (
         <section className="form-container">
-            <form className="form-card form-card-wide">
+            <form className="form-card form-card-wide" action={registerActionHandler}>
                 <h2 className="form-title">Register</h2>
 
                 <div className="form-grid">

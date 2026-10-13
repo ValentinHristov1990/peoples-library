@@ -1,15 +1,9 @@
-import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-export default function Header() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-    const handleLogout = (e) => {
-        e.preventDefault();
-        setIsAuthenticated(false);
-        alert("Logged out successfully!");
-    };
-
+export default function Header({
+    isAuthenticated,
+    user,
+}) {
     return (
         <header className="header-container">
             <div className="site-title">
@@ -18,23 +12,21 @@ export default function Header() {
             </div>
 
             <nav>
-                <ul>
-                    <li><NavLink to="/" end>Home</NavLink></li>
-                    <li><NavLink to="/catalog">Books Catalog</NavLink></li>
-                    <li><NavLink to="/create">Create Shelf</NavLink></li>
-                    <li><NavLink to="/logout">Logout</NavLink></li>
+                <Link to="/">Home</Link>
+                <Link to="/catalog">Books Catalog</Link>
 
-                    {!isAuthenticated ? (
-                        <>
-                            <li><NavLink to="/login">Login</NavLink></li>
-                            <li><NavLink to="/register">Register</NavLink></li>
-                        </>
-                    ) : (
-                        <li>
-                            <a href="#logout" onClick={handleLogout}>Logout</a>
-                        </li>
-                    )}
-                </ul>
+                {isAuthenticated ? (
+                    <div className="user">
+                        <Link to="/create">Create Shelf</Link>
+                        <Link to="/logout">Logout</Link>
+                    </div>
+                ) : (
+                    <div className="guest">
+                        <Link to="/login">Login</Link>
+                        <Link to="/register">Register</Link>
+                    </div>
+                )}
+
             </nav>
         </header>
     );

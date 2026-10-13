@@ -5,7 +5,6 @@ import Register from "./Components/register/Register";
 import Footer from "./Footer";
 import "./App.css";
 import Login from "./Components/login/Login";
-import NotFound from "./Components/not-found/NotFound";
 import Create from "./Components/create/Create";
 import Catalog from "./Components/catalog/Catalog";
 import Details from "./Components/details/Details";
@@ -14,38 +13,37 @@ import Logout from "./Components/logout/Logout";
 
 export default function App() {
 
-  const [user, setUser] = useState(null);
-  const navigate = useNavigate();
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.stringify(savedUser) : null;
+  });
+  // const navigate = useNavigate();
 
   const UserHandler = (userData) => {
     setUser(userData);
-
-    const logoutAction = (userData) => {
-      setUser(null);
-    }
-
+    localStorage.setItem("user", JSON.stringify(userData));
   }
+
+  const logoutAction = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+  }
+
   return (
     <div className="app-layout">
       <BrowserRouter>
-        <Header />
-
+        <Header isAuthenticated={!!user} user={user} />
         <main>
-          <Header isAuthenticated={!!user} />
-          {user && <p>Welcome, {user.email}</p>}
-
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register onRegister={UserHandler} />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Login onLogin={UserHandler} />} />
             <Route path="/create" element={<Create />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/details/:bookId" element={<Details />} />
-            <Route path="/logout" element={<Logout />} />
-            <Route path="/*" element={<NotFound />} />
+            <Route path="/logout" element={<Logout onLogout={logoutAction} />} />
           </Routes>
         </main>
-
         <Footer />
       </BrowserRouter>
     </div>
