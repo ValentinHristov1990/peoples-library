@@ -1,65 +1,61 @@
 import { useState } from 'react';
 import { GENRE_PRESETS } from '../../books-data/genrePresets';
-import ShelfCoverPicker from './ShelfCoverPicker';
 
 export default function Create() {
-    const [category, setCategory] = useState('Fantasy & Sci-Fi');
-    const [selectedImage, setSelectedImage] = useState(GENRE_PRESETS['Fantasy & Sci-Fi'][0]);
-    const [useCustomUrl, setUseCustomUrl] = useState(true);
-    const [customUrl, setCustomUrl] = useState('');
+    const [formData, setFormData] = useState({
+        title: '',
+        author: '',
+        category: 'Fantasy & Sci-Fi',
+        imageUrl: '',
+        description: '',
+    });
 
-    const handleCategoryChange = (e) => {
-        const newCategory = e.target.value;
-        setCategory(newCategory);
-        if (!useCustomUrl && GENRE_PRESETS[newCategory]) {
-            setSelectedImage(GENRE_PRESETS[newCategory][0]);
-        }
-    };
-
-    const handlePresetSelect = (imgUrl) => {
-        setUseCustomUrl(false);
-        setSelectedImage(imgUrl);
-    };
-
-    const handleCustomUrlChange = (e) => {
-        const val = e.target.value;
-        setCustomUrl(val);
-        setSelectedImage(val);
-    };
-
-    const handleToggleCustomUrl = () => {
-        const nextState = !useCustomUrl;
-        setUseCustomUrl(nextState);
-        if (nextState) {
-            setSelectedImage(GENRE_PRESETS[category][0]);
-        }
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((current) => ({ ...current, [name]: value }));
     };
 
     return (
         <section className="form-container">
-            <form className="form-card form-card-wide">
-                <h2 className="form-title">Create Shelf</h2>
+            <form className="form-card form-card-wide" onSubmit={(e) => e.preventDefault()}>
+                <h2 className="form-title">Add a Book</h2>
 
                 <div className="form-group">
-                    <label htmlFor="title" className="form-label">Shelf Title</label>
+                    <label htmlFor="title" className="form-label">Book Title</label>
                     <input
                         type="text"
                         id="title"
                         name="title"
                         className="form-input"
-                        placeholder="e.g. Epic Dark Fantasy Collection"
+                        placeholder="e.g. The Hobbit"
+                        value={formData.title}
+                        onChange={handleChange}
                         required
                     />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="category" className="form-label">Category / Genre</label>
+                    <label htmlFor="author" className="form-label">Author</label>
+                    <input
+                        type="text"
+                        id="author"
+                        name="author"
+                        className="form-input"
+                        placeholder="e.g. J. R. R. Tolkien"
+                        value={formData.author}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="category" className="form-label">Genre</label>
                     <select
                         id="category"
                         name="category"
                         className="form-input"
-                        value={category}
-                        onChange={handleCategoryChange}
+                        value={formData.category}
+                        onChange={handleChange}
                     >
                         {Object.keys(GENRE_PRESETS).map((genre) => (
                             <option key={genre} value={genre}>{genre}</option>
@@ -67,16 +63,18 @@ export default function Create() {
                     </select>
                 </div>
 
-                <ShelfCoverPicker
-                    category={category}
-                    genrePresets={GENRE_PRESETS}
-                    selectedImage={selectedImage}
-                    useCustomUrl={useCustomUrl}
-                    customUrl={customUrl}
-                    onToggleCustom={handleToggleCustomUrl}
-                    onPresetSelect={handlePresetSelect}
-                    onCustomUrlChange={handleCustomUrlChange}
-                />
+                <div className="form-group">
+                    <label htmlFor="imageUrl" className="form-label">Book Cover URL</label>
+                    <input
+                        type="url"
+                        id="imageUrl"
+                        name="imageUrl"
+                        className="form-input"
+                        placeholder="https://example.com/book-cover.jpg"
+                        value={formData.imageUrl}
+                        onChange={handleChange}
+                    />
+                </div>
 
                 <div className="form-group">
                     <label htmlFor="description" className="form-label">Description</label>
@@ -84,16 +82,16 @@ export default function Create() {
                         id="description"
                         name="description"
                         className="form-input"
-                        placeholder="Short notes about what books belong in this shelf..."
+                        placeholder="Add a short description of the book..."
                         rows="3"
+                        value={formData.description}
+                        onChange={handleChange}
                         required
                     ></textarea>
                 </div>
 
-                <input type="hidden" name="imageUrl" value={selectedImage} />
-
                 <button type="submit" className="form-btn">
-                    Add Shelf to Library
+                    Add Book to Shalf
                 </button>
             </form>
         </section>

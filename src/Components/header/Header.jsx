@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 export default function Header({
     isAuthenticated,
@@ -28,13 +28,14 @@ export default function Header({
                     {time.toLocaleTimeString('en-BG', { hour12: false })}
                 </span>
 
-                <Link to="/">Home</Link>
-                <Link to="/catalog">Books Catalog</Link>
+                <NavLink to="/">Home</NavLink>
+                <NavLink to="/catalog">Books Catalog</NavLink>
 
                 {isAuthenticated ? (
                     <div className="user">
-                        <Link to="/create">Create Shelf</Link>
-                        <Link to="/logout">Logout</Link>
+                        <NavLink to="/create">Create Book</NavLink>
+                        <NavLink to="/logout">Logout</NavLink>
+                        <NavLink to="/shelf">Your Shelf</NavLink>
                         {isAuthenticated && user?.username && (
                             <div className="welcome">
                                 <span>Welcome, {user.username}</span>
@@ -43,8 +44,8 @@ export default function Header({
                     </div>
                 ) : (
                     <div className="guest">
-                        <Link to="/login">Login</Link>
-                        <Link to="/register">Register</Link>
+                        <NavLink to="/login">Login</NavLink>
+                        <NavLink to="/register">Register</NavLink>
                     </div>
                 )}
 

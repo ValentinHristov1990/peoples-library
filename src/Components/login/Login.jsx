@@ -25,7 +25,7 @@ export default function Login({
                 return;
             }
             onLogin(matchedUser);
-            navigate("/");
+            navigate("/shelf");
         } catch (error) {
             alert(error.message);
         }

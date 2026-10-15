@@ -10,6 +10,7 @@ import Catalog from "./Components/catalog/Catalog";
 import Details from "./Components/details/Details";
 import { useState } from "react";
 import Logout from "./Components/logout/Logout";
+import BookShelf from "./Components/shelf/BookShelf";
 
 export default function App() {
 
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register onRegister={UserHandler} />} />
             <Route path="/login" element={<Login onLogin={UserHandler} />} />
+            <Route path="/shelf" element={<BookShelf user={user} />} />
             <Route path="/create" element={<Create />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/details/:bookId" element={<Details />} />
