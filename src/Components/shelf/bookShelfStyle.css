@@ -433,3 +433,22 @@
   scrollbar-width: thin;
   scrollbar-color: #7c481f rgba(15, 9, 5, 0.7);
 }
+
+.modal-details-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.modal-details-actions .form-btn {
+  flex: 1;
+  margin-top: 0 !important;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}

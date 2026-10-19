@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 export default function BookDetailsModal({
     book,
     onClose,
@@ -6,8 +8,26 @@ export default function BookDetailsModal({
 }) {
     if (!book) return null;
 
+    const [isMouseDownOutside, setIsMouseDownOutside] = useState(false);
+    const notesCount = book.notes?.length || 0;
+
     return (
-        <div className="modal-backdrop" onClick={onClose}>
+        <div
+            className="modal-backdrop"
+            onMouseDown={(e) => {
+                if (e.target === e.currentTarget) {
+                    setIsMouseDownOutside(true);
+                } else {
+                    setIsMouseDownOutside(false);
+                }
+            }}
+            onClick={(e) => {
+                if (isMouseDownOutside && e.target === e.currentTarget) {
+                    onClose();
+                }
+                setIsMouseDownOutside(false);
+            }}
+        >
             <div className="modal-card" onClick={(e) => e.stopPropagation()}>
                 <button className="modal-close-btn" onClick={onClose}>✕</button>
 
@@ -27,7 +47,7 @@ export default function BookDetailsModal({
                         className="form-btn shelf-btn-secondary"
                         onClick={onOpenNotes}
                     >
-                        📝 {book.note ? 'View / Edit Note' : 'Add Note'}
+                        📝 Notes ({notesCount})
                     </button>
 
                     <button

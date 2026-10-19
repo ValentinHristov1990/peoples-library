@@ -7,7 +7,9 @@ import BookNotesModal from './notes/BookNotesModal';
 import { allBooks } from '../../books-data/allBooks';
 import './bookShelfStyle.css';
 
-export default function BookShelf({ user }) {
+export default function BookShelf({
+	user
+}) {
 	const libraryName = user?.username
 		? `${user.username.charAt(0).toUpperCase() + user.username.slice(1)}'s Library`
 		: "My Library";
@@ -54,7 +56,7 @@ export default function BookShelf({ user }) {
 		};
 	}, [isDragging, dragStart]);
 
-	const handleMouseDown = (e) => {
+	function handleMouseDown(e) {
 		if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
 		setIsDragging(true);
 		setDragStart({
@@ -89,7 +91,7 @@ export default function BookShelf({ user }) {
 		setIsCreating(false);
 	}
 
-	function toggleBookSelection(bookId) {
+	const toggleBookSelection = (bookId) => {
 		setSelectedBookIds(curr => {
 			if (curr.includes(bookId)) {
 				return curr.filter(id => id !== bookId);
@@ -131,14 +133,14 @@ export default function BookShelf({ user }) {
 		setSelectedCollectionId(null);
 	}
 
-	function handleSaveNote(collectionId, bookId, noteText) {
+	function handleSaveNotes(collectionId, bookId, updatedNotes) {
 		setCollections(currCollections =>
 			currCollections.map(col => {
 				if (col.id !== collectionId) return col;
 
 				const updatedBooks = col.books.map(b => {
 					if (b.id === bookId) {
-						return { ...b, note: noteText };
+						return { ...b, notes: updatedNotes };
 					}
 					return b;
 				});
@@ -148,10 +150,8 @@ export default function BookShelf({ user }) {
 		);
 
 		if (selectedBook && selectedBook.id === bookId) {
-			setSelectedBook(prev => ({ ...prev, note: noteText }));
+			setSelectedBook(prev => ({ ...prev, notes: updatedNotes }));
 		}
-
-		setActiveNoteBook(null);
 	}
 
 	function handleShelfDragStart(e, bookId, collectionId) {
@@ -285,7 +285,7 @@ export default function BookShelf({ user }) {
 				book={activeNoteBook?.book}
 				collectionId={activeNoteBook?.collectionId}
 				onClose={() => setActiveNoteBook(null)}
-				onSaveNote={handleSaveNote}
+				onSaveNotes={handleSaveNotes}
 			/>
 
 			<BookPreviewModal

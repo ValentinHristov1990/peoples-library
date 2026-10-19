@@ -1,45 +1,115 @@
-.modal-notes-section {
+.notes-modal-card {
+  max-width: 500px;
+}
+
+.modal-notes-container {
   margin: 10px 0;
 }
 
-.modal-notes-textarea {
-  width: 100%;
-  resize: vertical;
-  min-height: 80px;
-  font-family: inherit;
-  font-size: 0.88rem;
-  box-sizing: border-box;
-}
-
-.modal-notes-actions {
+.notes-list-header {
   display: flex;
-  gap: 8px;
-  margin-top: 10px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
-.modal-notes-content {
-  color: #f5f2eb;
-  font-style: italic;
-  font-size: 0.9rem;
-  background: rgba(255, 255, 255, 0.04);
-  padding: 12px;
-  border-radius: 6px;
-  border-left: 3px solid #d4a373;
-  margin: 0 0 10px 0;
-  white-space: pre-wrap;
+.notes-subtitle {
+  color: #d4a373;
+  margin: 0;
+  font-size: 1rem;
 }
 
-.modal-details-actions {
+.notes-add-btn {
+  padding: 5px 12px;
+  font-size: 0.8rem;
+}
+
+.notes-cards-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.note-preview-item {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(212, 163, 115, 0.2);
+  border-radius: 6px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.note-preview-item:hover {
+  background: rgba(212, 163, 115, 0.12);
+  border-color: #d4a373;
+}
+
+.note-preview-title {
+  color: #f5f2eb;
+  margin: 0 0 4px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.note-preview-snippet {
+  color: #aaa;
+  font-size: 0.8rem;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notes-back-btn {
+  background: none;
+  border: none;
+  color: #d4a373;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+  text-decoration: underline;
+}
+
+.notes-back-btn:hover {
+  color: #fff;
+}
+
+.note-detail-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 4px solid #d4a373;
+  padding: 14px;
+  border-radius: 4px;
+}
+
+.note-detail-title {
+  color: #d4a373;
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+}
+
+.note-detail-content {
+  color: #f5f2eb;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 5px;
+  margin-bottom: 15px;
+}
+
+.note-delete-btn {
+  background: rgba(180, 40, 40, 0.6);
+}
+
+.note-delete-btn:hover {
+  background: rgba(220, 50, 50, 0.8);
+}
+
+.modal-close-bottom-btn {
   margin-top: 10px;
-}
-
-.modal-remove-btn {
-  background: rgba(180, 40, 40, 0.8);
-}
-
-.modal-remove-btn:hover {
-  background: rgba(220, 50, 50, 0.9);
 }
