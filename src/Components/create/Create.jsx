@@ -1,23 +1,78 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import request from '../service/request';
 import { GENRE_PRESETS } from '../../books-data/genrePresets';
+import BookCoverPicker from './BookCoverPicker';
 
 export default function Create() {
+    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
+
     const [formData, setFormData] = useState({
         title: '',
         author: '',
         category: 'Fantasy & Sci-Fi',
-        imageUrl: '',
         description: '',
     });
+
+    const [useCustomUrl, setUseCustomUrl] = useState(false);
+    const [imageUrl, setImageUrl] = useState('');
+    const [selectedPreset, setSelectedPreset] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((current) => ({ ...current, [name]: value }));
+
+        if (name === 'category') {
+            setSelectedPreset('');
+            if (!useCustomUrl) setImageUrl('');
+        }
+    };
+
+    const handlePresetSelect = (imgUrl) => {
+        setSelectedPreset(imgUrl);
+        setImageUrl(imgUrl);
+    };
+
+    const handleToggleCustom = () => {
+        setUseCustomUrl(!useCustomUrl);
+        setImageUrl('');
+        setSelectedPreset('');
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!formData.title.trim() || !formData.author.trim() || !formData.description.trim()) {
+            alert("Title, Author, and Description are required!");
+            return;
+        }
+
+        const finalImageUrl = imageUrl.trim() || 'https://via.placeholder.com/150';
+
+        setIsLoading(true);
+
+        try {
+            await request('/books', 'POST', {
+                title: formData.title.trim(),
+                author: formData.author.trim(),
+                genre: formData.category,
+                imageUrl: finalImageUrl,
+                description: formData.description.trim(),
+            });
+
+            alert('Book successfully added to catalog!');
+            navigate('/catalog');
+        } catch (error) {
+            alert(`Failed to add book: ${error.message}`);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
         <section className="form-container">
-            <form className="form-card form-card-wide" onSubmit={(e) => e.preventDefault()}>
+            <form className="form-card form-card-wide" onSubmit={handleSubmit}>
                 <h2 className="form-title">Add a Book</h2>
 
                 <div className="form-group">
@@ -63,18 +118,16 @@ export default function Create() {
                     </select>
                 </div>
 
-                <div className="form-group">
-                    <label htmlFor="imageUrl" className="form-label">Book Cover URL</label>
-                    <input
-                        type="url"
-                        id="imageUrl"
-                        name="imageUrl"
-                        className="form-input"
-                        placeholder="https://example.com/book-cover.jpg"
-                        value={formData.imageUrl}
-                        onChange={handleChange}
-                    />
-                </div>
+                <BookCoverPicker
+                    category={formData.category}
+                    genrePresets={GENRE_PRESETS}
+                    selectedImage={selectedPreset}
+                    useCustomUrl={useCustomUrl}
+                    customUrl={imageUrl}
+                    onToggleCustom={handleToggleCustom}
+                    onPresetSelect={handlePresetSelect}
+                    onCustomUrlChange={(e) => setImageUrl(e.target.value)}
+                />
 
                 <div className="form-group">
                     <label htmlFor="description" className="form-label">Description</label>
@@ -90,8 +143,8 @@ export default function Create() {
                     ></textarea>
                 </div>
 
-                <button type="submit" className="form-btn">
-                    Add Book to Shalf
+                <button type="submit" className="form-btn" disabled={isLoading}>
+                    {isLoading ? 'Adding Book...' : 'Add Book to Catalog'}
                 </button>
             </form>
         </section>

@@ -11,6 +11,7 @@ import Details from "./Components/details/Details";
 import { useState } from "react";
 import Logout from "./Components/logout/Logout";
 import BookShelf from "./Components/shelf/BookShelf";
+import Edit from "./Components/edit/Edit";
 
 export default function App() {
 
@@ -36,11 +37,12 @@ export default function App() {
         <Header isAuthenticated={!!user} user={user} />
         <main>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home isAuthenticated={!!user} />} />
             <Route path="/register" element={<Register onRegister={UserHandler} />} />
             <Route path="/login" element={<Login onLogin={UserHandler} />} />
             <Route path="/shelf" element={<BookShelf user={user} />} />
             <Route path="/create" element={<Create />} />
+            <Route path="/edit/:bookId" element={<Edit />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/details/:bookId" element={<Details />} />
             <Route path="/logout" element={<Logout onLogout={logoutAction} />} />
