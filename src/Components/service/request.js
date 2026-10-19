@@ -1,17 +1,20 @@
-const url = "https://stsrqzkttgyjnyjavknl.supabase.co/rest/v1";
+const restUrl = "https://stsrqzkttgyjnyjavknl.supabase.co/rest/v1";
+const authUrl = "https://stsrqzkttgyjnyjavknl.supabase.co/auth/v1";
 
-export default async function request(
+async function baseRequest(
+  url,
   path = "/",
   method = "GET",
   data = null,
   opts = {},
 ) {
   const options = {
+    ...opts,
     headers: {
+      ...opts.headers,
       apikey: import.meta.env.VITE_API_KEY,
       Prefer: "return=representation",
     },
-    ...opts,
   };
 
   if (method !== "GET") {
@@ -28,7 +31,9 @@ export default async function request(
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(
-      errorData.message || `HTTP error! Status: ${response.status}`,
+      errorData.msg ||
+        errorData.message ||
+        `HTTP error! Status: ${response.status}`,
     );
   }
 
@@ -38,3 +43,6 @@ export default async function request(
 
   return response.json();
 }
+
+export default baseRequest.bind(null, restUrl);
+export const authRequest = baseRequest.bind(null, authUrl);

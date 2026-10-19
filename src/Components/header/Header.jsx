@@ -1,56 +1,48 @@
-import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
-export default function Header({
-    isAuthenticated,
-    user,
-}) {
-    const [time, setTime] = useState(new Date());
-
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setTime(new Date());
-        }, 1000);
-
-        return () => clearInterval(timer);
-    }, []);
+export default function Header() {
+    const { isAuthenticated, user } = useAuth();
 
     return (
         <header className="header-container">
             <div className="site-title">
                 <h1>People's Library</h1>
-                <p>Your personal digital bookshelf and catalog</p>
+                <p>Personal Reading Space</p>
             </div>
-
-
             <nav>
-                <span className="nav-clock">
-                    {time.toLocaleTimeString('en-BG', { hour12: false })}
-                </span>
+                <NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')}>
+                    Home
+                </NavLink>
 
-                <NavLink to="/">Home</NavLink>
-                <NavLink to="/catalog">Books Catalog</NavLink>
+                <NavLink to="/catalog" className={({ isActive }) => (isActive ? 'active' : '')}>
+                    Catalog
+                </NavLink>
 
                 {isAuthenticated ? (
                     <div className="user">
-                        <NavLink to="/create">Create Book</NavLink>
-                        <NavLink to="/logout">Logout</NavLink>
-                        <NavLink to="/shelf">Your Shelf</NavLink>
-                        {isAuthenticated && user?.username && (
-                            <div className="welcome">
-                                <span>Welcome, {user.username}</span>
-                            </div>
-                        )}
+                        <NavLink to="/shelf" className={({ isActive }) => (isActive ? 'active' : '')}>
+                            My Shelf
+                        </NavLink>
+                        <NavLink to="/create" className={({ isActive }) => (isActive ? 'active' : '')}>
+                            Add Book
+                        </NavLink>
+                        <NavLink to="/logout" className={({ isActive }) => (isActive ? 'active' : '')}>
+                            Logout
+                        </NavLink>
+                        <span className="welcome">Welcome, {user?.email}</span>
                     </div>
                 ) : (
                     <div className="guest">
-                        <NavLink to="/login">Login</NavLink>
-                        <NavLink to="/register">Register</NavLink>
+                        <NavLink to="/login" className={({ isActive }) => (isActive ? 'active' : '')}>
+                            Login
+                        </NavLink>
+                        <NavLink to="/register" className={({ isActive }) => (isActive ? 'active' : '')}>
+                            Register
+                        </NavLink>
                     </div>
                 )}
-
             </nav>
-
         </header>
     );
 }

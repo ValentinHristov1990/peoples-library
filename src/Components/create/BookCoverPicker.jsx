@@ -19,7 +19,7 @@ export default function BookCoverPicker({
                     className="toggle-custom-btn"
                     onClick={onToggleCustom}
                 >
-                    {useCustomUrl ? 'Use Preset Covers' : 'Custom Image URL?'}
+                    {useCustomUrl ? 'Custom Image URL?' : 'Use Preset Covers'}
                 </button>
             </div>
 

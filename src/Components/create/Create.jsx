@@ -15,7 +15,7 @@ export default function Create() {
         description: '',
     });
 
-    const [useCustomUrl, setUseCustomUrl] = useState(false);
+    const [useCustomUrl, setUseCustomUrl] = useState(true);
     const [imageUrl, setImageUrl] = useState('');
     const [selectedPreset, setSelectedPreset] = useState('');
 
