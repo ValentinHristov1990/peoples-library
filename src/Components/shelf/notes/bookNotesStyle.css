@@ -1,0 +1,45 @@
+.modal-notes-section {
+  margin: 10px 0;
+}
+
+.modal-notes-textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  box-sizing: border-box;
+}
+
+.modal-notes-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.modal-notes-content {
+  color: #f5f2eb;
+  font-style: italic;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 3px solid #d4a373;
+  margin: 0 0 10px 0;
+  white-space: pre-wrap;
+}
+
+.modal-details-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.modal-remove-btn {
+  background: rgba(180, 40, 40, 0.8);
+}
+
+.modal-remove-btn:hover {
+  background: rgba(220, 50, 50, 0.9);
+}

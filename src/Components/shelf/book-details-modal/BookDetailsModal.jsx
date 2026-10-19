@@ -1,7 +1,8 @@
 export default function BookDetailsModal({
     book,
     onClose,
-    onRemove
+    onRemove,
+    onOpenNotes,
 }) {
     if (!book) return null;
 
@@ -20,12 +21,23 @@ export default function BookDetailsModal({
                 <p className="modal-author">Author: {book.author}</p>
                 <p className="modal-desc">{book.description || 'No description available for this book.'}</p>
 
-                <button
-                    className="form-btn"
-                    onClick={() => onRemove(book.id)}
-                >
-                    Remove from Shelf
-                </button>
+                <div className="modal-details-actions">
+                    <button
+                        type="button"
+                        className="form-btn shelf-btn-secondary"
+                        onClick={onOpenNotes}
+                    >
+                        📝 {book.note ? 'View / Edit Note' : 'Add Note'}
+                    </button>
+
+                    <button
+                        type="button"
+                        className="form-btn modal-remove-btn"
+                        onClick={() => onRemove(book.id)}
+                    >
+                        Remove from Shelf
+                    </button>
+                </div>
             </div>
         </div>
     );

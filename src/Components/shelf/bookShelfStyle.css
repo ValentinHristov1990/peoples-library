@@ -272,7 +272,7 @@
 }
 
 .catalog-picker-info-disabled {
-  cursor: default !important;
+  cursor: default;
 }
 
 .catalog-checkbox {
@@ -315,18 +315,18 @@
 }
 
 .shelf-btn-secondary {
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .shelf-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .shelf-view-btn {
-  width: auto !important;
-  padding: 4px 12px !important;
-  font-size: 0.75rem !important;
-  margin-top: 0 !important;
+  width: auto;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  margin-top: 0;
 }
 
 .preview-modal-backdrop {

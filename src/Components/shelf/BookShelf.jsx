@@ -3,6 +3,7 @@ import ShelfRow from './shelf-row/ShelfRow';
 import BookDetailsModal from './book-details-modal/BookDetailsModal';
 import BookPreviewModal from './book-preview-modal/BookPreviewModal';
 import CatalogModal from './catalog-modal/CatalogModal';
+import BookNotesModal from './notes/BookNotesModal';
 import { allBooks } from '../../books-data/allBooks';
 import './bookShelfStyle.css';
 
@@ -15,7 +16,9 @@ export default function BookShelf({ user }) {
 	const [isCreating, setIsCreating] = useState(false);
 	const [newCollectionName, setNewCollectionName] = useState('');
 	const [selectedBook, setSelectedBook] = useState(null);
+	const [selectedCollectionId, setSelectedCollectionId] = useState(null);
 	const [previewBook, setPreviewBook] = useState(null);
+	const [activeNoteBook, setActiveNoteBook] = useState(null);
 
 	const [previewPos, setPreviewPos] = useState({ x: 0, y: 0 });
 	const [isDragging, setIsDragging] = useState(false);
@@ -125,6 +128,30 @@ export default function BookShelf({ user }) {
 			}))
 		);
 		setSelectedBook(null);
+		setSelectedCollectionId(null);
+	}
+
+	function handleSaveNote(collectionId, bookId, noteText) {
+		setCollections(currCollections =>
+			currCollections.map(col => {
+				if (col.id !== collectionId) return col;
+
+				const updatedBooks = col.books.map(b => {
+					if (b.id === bookId) {
+						return { ...b, note: noteText };
+					}
+					return b;
+				});
+
+				return { ...col, books: updatedBooks };
+			})
+		);
+
+		if (selectedBook && selectedBook.id === bookId) {
+			setSelectedBook(prev => ({ ...prev, note: noteText }));
+		}
+
+		setActiveNoteBook(null);
 	}
 
 	function handleShelfDragStart(e, bookId, collectionId) {
@@ -231,7 +258,10 @@ export default function BookShelf({ user }) {
 								setSearchFilter('');
 								setSelectedGenre('');
 							}}
-							onBookClick={(book) => setSelectedBook(book)}
+							onBookClick={(book) => {
+								setSelectedBook(book);
+								setSelectedCollectionId(col.id);
+							}}
 							onDragStart={handleShelfDragStart}
 							onDragOver={handleShelfDragOver}
 							onDrop={handleShelfDrop}
@@ -242,8 +272,20 @@ export default function BookShelf({ user }) {
 
 			<BookDetailsModal
 				book={selectedBook}
-				onClose={() => setSelectedBook(null)}
+				onClose={() => {
+					setSelectedBook(null);
+					setSelectedCollectionId(null);
+				}}
 				onRemove={handleRemoveBook}
+				onOpenNotes={() => setActiveNoteBook({ book: selectedBook, collectionId: selectedCollectionId })}
+			/>
+
+			<BookNotesModal
+				isOpen={activeNoteBook !== null}
+				book={activeNoteBook?.book}
+				collectionId={activeNoteBook?.collectionId}
+				onClose={() => setActiveNoteBook(null)}
+				onSaveNote={handleSaveNote}
 			/>
 
 			<BookPreviewModal
