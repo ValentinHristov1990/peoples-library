@@ -4,15 +4,16 @@ import BookDetailsModal from './book-details-modal/BookDetailsModal';
 import BookPreviewModal from './book-preview-modal/BookPreviewModal';
 import CatalogModal from './catalog-modal/CatalogModal';
 import BookNotesModal from './notes/BookNotesModal';
+import ConfirmModal from './confirm-modal/ConfirmModal';
 import { allBooks } from '../../books-data/allBooks';
 import './bookShelfStyle.css';
 
-export default function BookShelf({
-	user
-}) {
-	const libraryName = user?.username
-		? `${user.username.charAt(0).toUpperCase() + user.username.slice(1)}'s Library`
-		: "My Library";
+export default function BookShelf({ user }) {
+	const libraryName = user?.user_metadata?.username
+		? `${user.user_metadata.username.charAt(0).toUpperCase() + user.user_metadata.username.slice(1)}'s Library`
+		: user?.username
+			? `${user.username.charAt(0).toUpperCase() + user.username.slice(1)}'s Library`
+			: "My Library";
 
 	const [collections, setCollections] = useState([]);
 	const [isCreating, setIsCreating] = useState(false);
@@ -21,6 +22,25 @@ export default function BookShelf({
 	const [selectedCollectionId, setSelectedCollectionId] = useState(null);
 	const [previewBook, setPreviewBook] = useState(null);
 	const [activeNoteBook, setActiveNoteBook] = useState(null);
+
+	const [confirmModal, setConfirmModal] = useState({
+		isOpen: false,
+		title: '',
+		message: '',
+		onConfirm: null
+	});
+
+	const triggerConfirm = (title, message, onConfirm) => {
+		setConfirmModal({
+			isOpen: true,
+			title,
+			message,
+			onConfirm: () => {
+				onConfirm();
+				setConfirmModal(curr => ({ ...curr, isOpen: false }));
+			}
+		});
+	};
 
 	const [previewPos, setPreviewPos] = useState({ x: 0, y: 0 });
 	const [isDragging, setIsDragging] = useState(false);
@@ -91,6 +111,13 @@ export default function BookShelf({
 		setIsCreating(false);
 	}
 
+	function handleDeleteCollection(collectionId) {
+		setCollections(curr => curr.filter(col => col.id !== collectionId));
+		if (activeCollectionId === collectionId) {
+			setActiveCollectionId(null);
+		}
+	}
+
 	const toggleBookSelection = (bookId) => {
 		setSelectedBookIds(curr => {
 			if (curr.includes(bookId)) {
@@ -123,14 +150,20 @@ export default function BookShelf({
 	}
 
 	function handleRemoveBook(bookId) {
-		setCollections(currCollections =>
-			currCollections.map(col => ({
-				...col,
-				books: col.books.filter(b => b.id !== bookId)
-			}))
+		triggerConfirm(
+			"Remove Book",
+			"Are you sure you want to remove this book from the shelf?",
+			() => {
+				setCollections(currCollections =>
+					currCollections.map(col => ({
+						...col,
+						books: col.books.filter(b => b.id !== bookId)
+					}))
+				);
+				setSelectedBook(null);
+				setSelectedCollectionId(null);
+			}
 		);
-		setSelectedBook(null);
-		setSelectedCollectionId(null);
 	}
 
 	function handleSaveNotes(collectionId, bookId, updatedNotes) {
@@ -258,9 +291,14 @@ export default function BookShelf({
 								setSearchFilter('');
 								setSelectedGenre('');
 							}}
+							onDeleteCollection={handleDeleteCollection}
+							onConfirmAction={triggerConfirm}
 							onBookClick={(book) => {
 								setSelectedBook(book);
 								setSelectedCollectionId(col.id);
+							}}
+							onNotesClick={(book, collectionId) => {
+								setActiveNoteBook({ book, collectionId });
 							}}
 							onDragStart={handleShelfDragStart}
 							onDragOver={handleShelfDragOver}
@@ -286,6 +324,7 @@ export default function BookShelf({
 				collectionId={activeNoteBook?.collectionId}
 				onClose={() => setActiveNoteBook(null)}
 				onSaveNotes={handleSaveNotes}
+				onConfirmAction={triggerConfirm}
 			/>
 
 			<BookPreviewModal
@@ -309,6 +348,14 @@ export default function BookShelf({
 				toggleBookSelection={toggleBookSelection}
 				onViewBook={(book) => setPreviewBook(book)}
 				onAddSelectedBooks={handleAddSelectedBooks}
+			/>
+
+			<ConfirmModal
+				isOpen={confirmModal.isOpen}
+				title={confirmModal.title}
+				message={confirmModal.message}
+				onConfirm={confirmModal.onConfirm}
+				onCancel={() => setConfirmModal(curr => ({ ...curr, isOpen: false }))}
 			/>
 		</div>
 	);

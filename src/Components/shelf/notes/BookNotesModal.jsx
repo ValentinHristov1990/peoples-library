@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './bookNotesStyle.css';
 
-export default function BookNotesModal({ isOpen, book, collectionId, onClose, onSaveNotes }) {
+export default function BookNotesModal({ isOpen, book, collectionId, onClose, onSaveNotes, onConfirmAction }) {
     if (!isOpen || !book) return null;
 
     const [notes, setNotes] = useState(book.notes || []);
@@ -11,7 +11,6 @@ export default function BookNotesModal({ isOpen, book, collectionId, onClose, on
 
     const [titleInput, setTitleInput] = useState('');
     const [contentInput, setContentInput] = useState('');
-
     const [isMouseDownOutside, setIsMouseDownOutside] = useState(false);
 
     useEffect(() => {
@@ -74,12 +73,18 @@ export default function BookNotesModal({ isOpen, book, collectionId, onClose, on
     }
 
     function handleDeleteNote(noteId) {
-        const updatedNotes = notes.filter(n => n.id !== noteId);
-        setNotes(updatedNotes);
-        onSaveNotes(collectionId, book.id, updatedNotes);
+        onConfirmAction(
+            "Delete Note",
+            "Are you sure you want to delete this note?",
+            () => {
+                const updatedNotes = notes.filter(n => n.id !== noteId);
+                setNotes(updatedNotes);
+                onSaveNotes(collectionId, book.id, updatedNotes);
 
-        setActiveNote(null);
-        setIsEditing(false);
+                setActiveNote(null);
+                setIsEditing(false);
+            }
+        );
     }
 
     return (
@@ -193,7 +198,7 @@ export default function BookNotesModal({ isOpen, book, collectionId, onClose, on
                                         </button>
                                         <button
                                             type="button"
-                                            className="form-btn shelf-btn-secondary note-delete-btn"
+                                            className="form-btn note-delete-btn"
                                             onClick={() => handleDeleteNote(activeNote.id)}
                                         >
                                             Delete
