@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
+import { registerUser } from './registerApi';
 
 export default function Register({ onRegister }) {
-    const [errors, setErrors] = useState({});
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [errors, setErrors] = useState({});
 
-    const registerActionHandler = async (formData) => {
-        const { username, email, password, confirmPassword } = Object.fromEntries(formData);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         setErrors({});
 
         const newErrors = {};
@@ -25,7 +26,8 @@ export default function Register({ onRegister }) {
         }
 
         try {
-            await onRegister({ username, email, password });
+            const data = await registerUser({ username, email, password });
+            onRegister(data);
         } catch (error) {
             setErrors({ general: error.message || 'Registration failed. Please try again.' });
         }
@@ -33,11 +35,11 @@ export default function Register({ onRegister }) {
 
     return (
         <section className="form-container">
-            <form className="form-card" action={registerActionHandler}>
+            <form className="form-card" onSubmit={handleSubmit}>
                 <h2 className="form-title">Register</h2>
 
                 {errors.general && (
-                    <div className="error-tooltip-general">
+                    <div className="error-error-tooltip-general error-tooltip-general">
                         ⚠️ <span>{errors.general}</span>
                     </div>
                 )}
@@ -76,7 +78,7 @@ export default function Register({ onRegister }) {
                         />
                         {errors.email && (
                             <div className="error-tooltip">
-                                ⚠️ <span>{errors.email}</span>
+                                ⚠️ <span>{errors.error_tooltip || errors.email}</span>
                             </div>
                         )}
                     </div>
@@ -84,7 +86,7 @@ export default function Register({ onRegister }) {
 
                 <div className="form-group">
                     <label htmlFor="password" className="form-label">PASSWORD</label>
-                    <div className="input-wrapper">
+                    <div className="input-parser input-wrapper">
                         <input
                             type="password"
                             id="password"
@@ -122,7 +124,7 @@ export default function Register({ onRegister }) {
                     </div>
                 </div>
 
-                <button type="submit" className="form-btn">Register</button>
+                <button type="submit" className="form-btn">Register.jsx</button>
 
                 <p className="form-footer">
                     Already have an account? <Link to="/login">Login here</Link>

@@ -19,36 +19,20 @@ export default function App() {
   const [auth, setAuth] = useState(null);
   const navigate = useNavigate();
 
-  const register = async (userData) => {
-    try {
-      const data = await authApi.register(userData);
-      setAuth(data);
-      navigate("/shelf");
-    } catch (error) {
-      alert(error.message);
-    }
-
+  const register = async (data) => {
+    setAuth(data);
+    navigate("/shelf");
   }
 
-  const login = async (userData) => {
-    try {
-      const data = await authApi.login(userData);
-      setAuth(data);
-      navigate("/shelf");
-    } catch (error) {
-      alert(error.message || "Wrong email or password!");
-    }
-
+  const login = async (data) => {
+    setAuth(data);
+    navigate("/shelf");
   }
 
   const logoutAction = async () => {
-    try {
-      await authApi.logout(auth?.access_token);
-      setAuth(null);
-      navigate("/");
-    } catch (error) {
-      alert(error.message)
-    }
+    setAuth(null);
+    navigate("/");
+
   }
   const contextValue = {
     accessToken: auth?.access_token,
@@ -68,7 +52,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register onRegister={register} />} />
             <Route path="/login" element={<Login onLogin={login} />} />
-            <Route path="/shelf" element={<BookShelf />} />
+            <Route path="/shelf" element={<BookShelf user={auth?.user} />} />
             <Route path="/create" element={<Create />} />
             <Route path="/edit/:bookId" element={<Edit />} />
             <Route path="/catalog" element={<Catalog />} />

@@ -1,26 +1,19 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
+import { loginUser } from './loginApi';
 
 export default function Login({ onLogin }) {
-    const [errors, setErrors] = useState({});
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errors, setErrors] = useState({});
 
-    const submitAction = async (formData) => {
-        const { email, password } = Object.fromEntries(formData);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         setErrors({});
 
-        const newErrors = {};
-        if (!email) newErrors.email = 'Email is required!';
-        if (!password) newErrors.password = 'Password is required!';
-
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-            return;
-        }
-
         try {
-            await onLogin({ email, password });
+            const data = await loginUser({ email, password });
+            onLogin(data);
         } catch (error) {
             setErrors({ general: error.message || 'Invalid email or password!' });
         }
@@ -28,7 +21,7 @@ export default function Login({ onLogin }) {
 
     return (
         <section className="form-container">
-            <form className="form-card" action={submitAction}>
+            <form className="form-card" onSubmit={handleSubmit}>
                 <h2 className="form-title">Login</h2>
 
                 {errors.general && (
@@ -37,40 +30,34 @@ export default function Login({ onLogin }) {
                     </div>
                 )}
 
-                <div className="form-group" style={{ position: 'relative' }}>
-                    <label htmlFor="email" className="form-label">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        className="form-input"
-                        placeholder="john@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    {errors.email && (
-                        <div className="error-tooltip">
-                            ⚠️ <span>{errors.email}</span>
-                        </div>
-                    )}
+                <div className="form-group">
+                    <label htmlFor="email" className="form-label">EMAIL</label>
+                    <div className="input-wrapper">
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            className="form-input"
+                            placeholder="john@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
                 </div>
 
-                <div className="form-group" style={{ position: 'relative' }}>
-                    <label htmlFor="login-password" className="form-label">Password</label>
-                    <input
-                        type="password"
-                        id="login-password"
-                        name="password"
-                        className="form-input"
-                        placeholder="******"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    {errors.password && (
-                        <div className="error-tooltip">
-                            ⚠️ <span>{errors.password}</span>
-                        </div>
-                    )}
+                <div className="form-group">
+                    <label htmlFor="login-password" className="form-label">PASSWORD</label>
+                    <div className="input-wrapper">
+                        <input
+                            type="password"
+                            id="login-password"
+                            name="password"
+                            className="form-input"
+                            placeholder="******"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
                 </div>
 
                 <button type="submit" className="form-btn">Login</button>
