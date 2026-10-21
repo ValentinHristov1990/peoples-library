@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router';
 import { fantasyBooks } from '../../books-data/fantasy';
 import { personalDevelopmentBooks } from '../../books-data/personalDevelopmentBooks';
 import { mysteryBooks } from '../../books-data/mystery';

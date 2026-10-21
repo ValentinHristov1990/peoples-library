@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { allBooks } from '../../books-data/allBooks';
 
 export default function Home({ isAuthenticated }) {

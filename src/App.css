@@ -716,3 +716,30 @@ select.form-input option {
   opacity: 0.9;
   transform: translateY(-2px);
 }
+
+.error-box {
+  background-color: #d32f2f;
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.success-box {
+  background-color: #2e7d32;
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+nav a.active {
+  border: 1px solid #c29b61;
+  background-color: rgba(194, 155, 97, 0.1);
+}

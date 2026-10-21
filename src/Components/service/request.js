@@ -29,12 +29,7 @@ async function baseRequest(
   const response = await fetch(`${url}${path}`, options);
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.msg ||
-        errorData.message ||
-        `HTTP error! Status: ${response.status}`,
-    );
+    throw new Error(`HTTP error! Status: ${response.status}`);
   }
 
   if (response.status === 204) {

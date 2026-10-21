@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router';
 import request from '../service/request';
 import { GENRE_PRESETS } from '../../books-data/genrePresets';
 import BookCoverPicker from '../create/BookCoverPicker';

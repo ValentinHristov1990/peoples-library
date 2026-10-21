@@ -1,8 +1,7 @@
-import { Link, NavLink } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { NavLink } from 'react-router';
 
-export default function Header() {
-    const { isAuthenticated, user } = useAuth();
+export default function Header({ isAuthenticated, user }) {
+
 
     return (
         <header className="header-container">
@@ -11,33 +10,33 @@ export default function Header() {
                 <p>Personal Reading Space</p>
             </div>
             <nav>
-                <NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')}>
+                <NavLink to="/">
                     Home
                 </NavLink>
 
-                <NavLink to="/catalog" className={({ isActive }) => (isActive ? 'active' : '')}>
+                <NavLink to="/catalog">
                     Catalog
                 </NavLink>
 
                 {isAuthenticated ? (
                     <div className="user">
-                        <NavLink to="/shelf" className={({ isActive }) => (isActive ? 'active' : '')}>
+                        <NavLink to="/shelf">
                             My Shelf
                         </NavLink>
-                        <NavLink to="/create" className={({ isActive }) => (isActive ? 'active' : '')}>
+                        <NavLink to="/create">
                             Add Book
                         </NavLink>
-                        <NavLink to="/logout" className={({ isActive }) => (isActive ? 'active' : '')}>
+                        <NavLink to="/logout">
                             Logout
                         </NavLink>
                         <span className="welcome">Welcome, {user?.email}</span>
                     </div>
                 ) : (
                     <div className="guest">
-                        <NavLink to="/login" className={({ isActive }) => (isActive ? 'active' : '')}>
+                        <NavLink to="/login">
                             Login
                         </NavLink>
-                        <NavLink to="/register" className={({ isActive }) => (isActive ? 'active' : '')}>
+                        <NavLink to="/register">
                             Register
                         </NavLink>
                     </div>
