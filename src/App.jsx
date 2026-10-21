@@ -20,15 +20,25 @@ export default function App() {
   const navigate = useNavigate();
 
   const register = async (userData) => {
-    const data = await authApi.register(userData);
-    setAuth(data);
-    navigate("/shelf");
+    try {
+      const data = await authApi.register(userData);
+      setAuth(data);
+      navigate("/shelf");
+    } catch (error) {
+      alert(error.message);
+    }
+
   }
 
   const login = async (userData) => {
-    const data = await authApi.login(userData);
-    setAuth(data);
-    navigate("/shelf");
+    try {
+      const data = await authApi.login(userData);
+      setAuth(data);
+      navigate("/shelf");
+    } catch (error) {
+      alert(error.message || "Wrong email or password!");
+    }
+
   }
 
   const logoutAction = async () => {

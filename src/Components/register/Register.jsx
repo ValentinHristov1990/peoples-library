@@ -1,52 +1,33 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 
 export default function Register({ onRegister }) {
-    const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
+    const [errors, setErrors] = useState({});
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     const registerActionHandler = async (formData) => {
-        setErrorMessage('');
-        setSuccessMessage('');
-
         const { username, email, password, confirmPassword } = Object.fromEntries(formData);
+        setErrors({});
 
-        if (!username || !email || !password || !confirmPassword) {
-            setErrorMessage('Please fill in all required fields.');
+        const newErrors = {};
+        if (!username) newErrors.username = 'Username is required!';
+        if (!email) newErrors.email = 'Email is required!';
+        if (!password) newErrors.password = 'Password is required!';
+        if (password && password.length < 6) newErrors.password = 'Password must be at least 6 characters!';
+        if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match!';
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
             return;
         }
-
-        if (password !== confirmPassword) {
-            setErrorMessage('Passwords do not match!');
-            return;
-        }
-
-        if (password.length < 6) {
-            setErrorMessage('Password should be at least 6 characters long.');
-            return;
-        }
-
-        setIsLoading(true);
 
         try {
-            await onRegister({
-                username: username,
-                email: email,
-                password: password,
-            });
-
-            setSuccessMessage('Account created successfully! Redirecting...');
-
-            setTimeout(() => {
-                navigate('/login');
-            }, 2000);
+            await onRegister({ username, email, password });
         } catch (error) {
-            console.error('Registration error:', error);
-            setErrorMessage(error.message || 'Registration failed. Please try again.');
-        } finally {
-            setIsLoading(false);
+            setErrors({ general: error.message || 'Registration failed. Please try again.' });
         }
     };
 
@@ -55,41 +36,93 @@ export default function Register({ onRegister }) {
             <form className="form-card" action={registerActionHandler}>
                 <h2 className="form-title">Register</h2>
 
-                {successMessage && (
-                    <div style={{ backgroundColor: '#2e7d32', color: '#fff', padding: '10px', borderRadius: '6px', marginBottom: '16px', textAlign: 'center' }}>
-                        ✓ {successMessage}
-                    </div>
-                )}
-
-                {errorMessage && (
-                    <div style={{ backgroundColor: '#d32f2f', color: '#fff', padding: '10px', borderRadius: '6px', marginBottom: '16px', textAlign: 'center' }}>
-                        ⚠ {errorMessage}
+                {errors.general && (
+                    <div className="error-tooltip-general">
+                        ⚠️ <span>{errors.general}</span>
                     </div>
                 )}
 
                 <div className="form-group">
-                    <label htmlFor="username" className="form-label">Username</label>
-                    <input type="text" id="username" name="username" className="form-input" placeholder="john_doe" />
+                    <label htmlFor="username" className="form-label">USERNAME</label>
+                    <div className="input-wrapper">
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            className="form-input"
+                            placeholder="john_doe"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
+                        {errors.username && (
+                            <div className="error-tooltip">
+                                ⚠️ <span>{errors.username}</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="email" className="form-label">Email</label>
-                    <input type="email" id="email" name="email" className="form-input" placeholder="john@example.com" />
+                    <label htmlFor="email" className="form-label">EMAIL</label>
+                    <div className="input-wrapper">
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            className="form-input"
+                            placeholder="john@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        {errors.email && (
+                            <div className="error-tooltip">
+                                ⚠️ <span>{errors.email}</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="password" className="form-label">Password</label>
-                    <input type="password" id="password" name="password" className="form-input" placeholder="••••••••" />
+                    <label htmlFor="password" className="form-label">PASSWORD</label>
+                    <div className="input-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            className="form-input"
+                            placeholder="******"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                        {errors.password && (
+                            <div className="error-tooltip">
+                                ⚠️ <span>{errors.password}</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" className="form-input" placeholder="••••••••" />
+                    <label htmlFor="confirmPassword" className="form-label">CONFIRM PASSWORD</label>
+                    <div className="input-wrapper">
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            className="form-input"
+                            placeholder="******"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                        {errors.confirmPassword && (
+                            <div className="error-tooltip">
+                                ⚠️ <span>{errors.confirmPassword}</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                <button type="submit" className="form-btn" disabled={isLoading || !!successMessage}>
-                    {isLoading ? 'Creating Account...' : 'Register'}
-                </button>
+                <button type="submit" className="form-btn">Register</button>
 
                 <p className="form-footer">
                     Already have an account? <Link to="/login">Login here</Link>

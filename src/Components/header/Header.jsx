@@ -29,7 +29,7 @@ export default function Header({ isAuthenticated, user }) {
                         <NavLink to="/logout">
                             Logout
                         </NavLink>
-                        <span className="welcome">Welcome, {user?.email}</span>
+                        <span className="welcome">Welcome, {user?.username}</span>
                     </div>
                 ) : (
                     <div className="guest">

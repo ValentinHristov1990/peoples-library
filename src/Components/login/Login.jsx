@@ -1,30 +1,28 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 
 export default function Login({ onLogin }) {
-    const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [errors, setErrors] = useState({});
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     const submitAction = async (formData) => {
-        setErrorMessage('');
         const { email, password } = Object.fromEntries(formData);
+        setErrors({});
 
-        if (!email || !password) {
-            setErrorMessage('Please fill in both email and password.');
+        const newErrors = {};
+        if (!email) newErrors.email = 'Email is required!';
+        if (!password) newErrors.password = 'Password is required!';
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
             return;
         }
 
-        setIsLoading(true);
-
         try {
-            await onLogin({ email: email.trim(), password: password.trim() });
-            navigate('/shelf');
+            await onLogin({ email, password });
         } catch (error) {
-            console.error('Login error:', error);
-            setErrorMessage(error.message || 'Login failed. Please check your credentials.');
-        } finally {
-            setIsLoading(false);
+            setErrors({ general: error.message || 'Invalid email or password!' });
         }
     };
 
@@ -33,24 +31,31 @@ export default function Login({ onLogin }) {
             <form className="form-card" action={submitAction}>
                 <h2 className="form-title">Login</h2>
 
-                {errorMessage && (
-                    <div style={{ backgroundColor: '#d32f2f', color: '#fff', padding: '10px', borderRadius: '6px', marginBottom: '16px', textAlign: 'center' }}>
-                        ⚠ {errorMessage}
+                {errors.general && (
+                    <div className="error-tooltip-general">
+                        ⚠️ <span>{errors.general}</span>
                     </div>
                 )}
 
-                <div className="form-group">
+                <div className="form-group" style={{ position: 'relative' }}>
                     <label htmlFor="email" className="form-label">Email</label>
                     <input
                         type="email"
                         id="email"
                         name="email"
                         className="form-input"
-                        placeholder="Your Email"
+                        placeholder="john@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
+                    {errors.email && (
+                        <div className="error-tooltip">
+                            ⚠️ <span>{errors.email}</span>
+                        </div>
+                    )}
                 </div>
 
-                <div className="form-group">
+                <div className="form-group" style={{ position: 'relative' }}>
                     <label htmlFor="login-password" className="form-label">Password</label>
                     <input
                         type="password"
@@ -58,12 +63,17 @@ export default function Login({ onLogin }) {
                         name="password"
                         className="form-input"
                         placeholder="******"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
+                    {errors.password && (
+                        <div className="error-tooltip">
+                            ⚠️ <span>{errors.password}</span>
+                        </div>
+                    )}
                 </div>
 
-                <button type="submit" className="form-btn" disabled={isLoading}>
-                    {isLoading ? 'Logging In...' : 'Login'}
-                </button>
+                <button type="submit" className="form-btn">Login</button>
 
                 <p className="form-footer">
                     Don't have an account? <Link to="/register">Sign Up</Link>
