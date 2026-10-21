@@ -501,16 +501,21 @@
   width: 100%;
 }
 
-.note-delete-btn {
-  background-color: #a93226;
+.form-btn.danger-btn,
+.form-btn.note-delete-btn {
+  background: #a93226;
   border: 1px solid #c0392b;
   color: #ffffff;
+  box-shadow: 0 4px 12px rgba(169, 50, 38, 0.4);
   transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease;
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.note-delete-btn:hover {
-  background-color: #cb4335;
+.form-btn.danger-btn:hover,
+.form-btn.note-delete-btn:hover {
+  background: #cb4335;
   border-color: #e74c3c;
+  box-shadow: 0 6px 16px rgba(203, 67, 53, 0.6);
 }

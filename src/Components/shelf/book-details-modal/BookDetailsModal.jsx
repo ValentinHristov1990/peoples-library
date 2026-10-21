@@ -52,7 +52,7 @@ export default function BookDetailsModal({
 
                     <button
                         type="button"
-                        className="form-btn modal-remove-btn"
+                        className="form-btn danger-btn"
                         onClick={() => onRemove(book.id)}
                     >
                         Remove from Shelf

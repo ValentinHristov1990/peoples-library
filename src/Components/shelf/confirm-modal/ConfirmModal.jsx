@@ -1,6 +1,6 @@
 import './confirmModalStyle.css';
 
-export default function ConfirmModal({ isOpen, title, message, onConfirm, onCancel }) {
+export default function ConfirmModal({ isOpen, title, message, onConfirm, onCancel, confirmText = "Delete" }) {
     if (!isOpen) return null;
 
     return (
@@ -19,10 +19,10 @@ export default function ConfirmModal({ isOpen, title, message, onConfirm, onCanc
                     </button>
                     <button
                         type="button"
-                        className="form-btn note-delete-btn"
+                        className="form-btn danger-btn"
                         onClick={onConfirm}
                     >
-                        Delete
+                        {confirmText}
                     </button>
                 </div>
             </div>

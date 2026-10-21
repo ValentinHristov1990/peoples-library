@@ -124,7 +124,7 @@ export default function Register({ onRegister }) {
                     </div>
                 </div>
 
-                <button type="submit" className="form-btn">Register.jsx</button>
+                <button type="submit" className="form-btn">Register</button>
 
                 <p className="form-footer">
                     Already have an account? <Link to="/login">Login here</Link>

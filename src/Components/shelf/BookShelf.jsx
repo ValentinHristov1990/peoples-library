@@ -6,6 +6,7 @@ import CatalogModal from './catalog-modal/CatalogModal';
 import BookNotesModal from './notes/BookNotesModal';
 import ConfirmModal from './confirm-modal/ConfirmModal';
 import { allBooks } from '../../books-data/allBooks';
+import { useEscClose } from '../hooks/useEscClose';
 import './bookShelfStyle.css';
 
 export default function BookShelf({ user }) {
@@ -27,14 +28,16 @@ export default function BookShelf({ user }) {
 		isOpen: false,
 		title: '',
 		message: '',
-		onConfirm: null
+		onConfirm: null,
+		confirmText: 'Delete'
 	});
 
-	const triggerConfirm = (title, message, onConfirm) => {
+	const triggerConfirm = (title, message, onConfirm, confirmText = "Delete") => {
 		setConfirmModal({
 			isOpen: true,
 			title,
 			message,
+			confirmText,
 			onConfirm: () => {
 				onConfirm();
 				setConfirmModal(curr => ({ ...curr, isOpen: false }));
@@ -84,6 +87,22 @@ export default function BookShelf({ user }) {
 			y: e.clientY - previewPos.y
 		});
 	};
+
+	useEscClose({
+		confirmModal,
+		setConfirmModal,
+		activeNoteBook,
+		setActiveNoteBook,
+		previewBook,
+		setPreviewBook,
+		selectedBook,
+		setSelectedBook,
+		setSelectedCollectionId,
+		activeCollectionId,
+		setActiveCollectionId,
+		isCreating,
+		setIsCreating
+	});
 
 	if (!user) {
 		return (
@@ -162,7 +181,8 @@ export default function BookShelf({ user }) {
 				);
 				setSelectedBook(null);
 				setSelectedCollectionId(null);
-			}
+			},
+			"Remove"
 		);
 	}
 
@@ -354,6 +374,7 @@ export default function BookShelf({ user }) {
 				isOpen={confirmModal.isOpen}
 				title={confirmModal.title}
 				message={confirmModal.message}
+				confirmText={confirmModal.confirmText}
 				onConfirm={confirmModal.onConfirm}
 				onCancel={() => setConfirmModal(curr => ({ ...curr, isOpen: false }))}
 			/>
