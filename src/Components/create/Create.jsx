@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
-import request from '../service/request';
+import request from '../utils/request';
 import { GENRE_PRESETS } from '../../books-data/genrePresets';
 import BookCoverPicker from './BookCoverPicker';
+import AuthContext from '../../context/authContext';
 
 export default function Create() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
+    const { user } = useContext(AuthContext);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -59,6 +61,7 @@ export default function Create() {
                 genre: formData.category,
                 imageUrl: finalImageUrl,
                 description: formData.description.trim(),
+                user_id: user.id,
             });
 
             alert('Book successfully added to catalog!');

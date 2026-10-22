@@ -8,12 +8,16 @@ async function baseRequest(
   data = null,
   opts = {},
 ) {
+  const authData = JSON.parse(localStorage.getItem("auth") || "{}");
+  const token = authData.accessToken || authData.token || authData.access_token;
+
   const options = {
     ...opts,
     headers: {
       ...opts.headers,
       apikey: import.meta.env.VITE_API_KEY,
       Prefer: "return=representation",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   };
 

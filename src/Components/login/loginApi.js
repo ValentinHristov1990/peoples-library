@@ -1,4 +1,4 @@
-import { authRequest } from "../service/request";
+import { authRequest } from "../utils/request";
 
 export async function loginUser({ email, password }) {
   if (!email || !password) {

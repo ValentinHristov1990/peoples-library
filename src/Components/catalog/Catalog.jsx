@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router';
+import request from '../utils/request';
 import { fantasyBooks } from '../../books-data/fantasy';
 import { personalDevelopmentBooks } from '../../books-data/personalDevelopmentBooks';
 import { mysteryBooks } from '../../books-data/mystery';
@@ -29,15 +31,37 @@ const booksMap = {
 
 export default function Catalog() {
     const [searchParams, setSearchParams] = useSearchParams();
+    const [dbBooks, setDbBooks] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const selectedGenre = searchParams.get('genre') || 'all';
     const searchQuery = searchParams.get('search') || '';
     const currentPage = parseInt(searchParams.get('page')) || 1;
     const booksPerPage = 5;
 
-    const books = booksMap[selectedGenre] || allBooks;
+    useEffect(() => {
+        async function fetchBooks() {
+            try {
+                const data = await request('/books');
+                setDbBooks(data ? data.reverse() : []);
+            } catch (error) {
+                console.error('Failed to fetch books:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchBooks();
+    }, []);
 
-    const filteredBooks = books.filter((book) => {
+    const staticBooks = booksMap[selectedGenre] || allBooks;
+
+    const filteredDbBooks = dbBooks.filter(book =>
+        selectedGenre === 'all' || book.genre === selectedGenre
+    );
+
+    const combinedBooks = [...filteredDbBooks, ...staticBooks];
+
+    const filteredBooks = combinedBooks.filter((book) => {
         const title = book.title?.toLowerCase() || '';
         const author = book.author?.toLowerCase() || '';
         const query = searchQuery.toLowerCase();
@@ -52,7 +76,6 @@ export default function Catalog() {
         safeCurrentPage * booksPerPage
     );
 
-
     const updateParams = (newParams) => {
         setSearchParams({
             genre: selectedGenre,
@@ -61,6 +84,17 @@ export default function Catalog() {
             ...newParams,
         });
     };
+
+    if (loading) {
+        return (
+            <section className="form-container">
+                <div className="form-card form-card-wide catalog-card-wide">
+                    <h2 className="form-title">Books Catalog</h2>
+                    <p className="catalog-no-books">Loading books...</p>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section className="form-container">
@@ -102,17 +136,17 @@ export default function Catalog() {
                 <div className="books-grid">
                     {currentBooks.length > 0 ? (
                         currentBooks.map((book) => (
-                            <div key={book.id} className="book-card">
+                            <div key={book.id || book._id} className="book-card">
                                 <div>
                                     <div className="book-img-wrapper">
-                                        <img src={book.imageUrl} alt={book.title} />
+                                        <img src={book.imageurl || book.imageUrl} alt={book.title} />
                                     </div>
                                     <h3 className="book-title">{book.title}</h3>
                                     <p className="book-author">By: {book.author}</p>
                                     <p className="book-genre">{book.genre}</p>
                                 </div>
 
-                                <Link to={`/details/${book.id}`} className="form-btn book-details-btn">
+                                <Link to={`/details/${book.id || book._id}`} className="form-btn book-details-btn">
                                     Details
                                 </Link>
                             </div>
