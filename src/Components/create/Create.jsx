@@ -1,34 +1,32 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import request from '../utils/request';
 import { GENRE_PRESETS } from '../../books-data/genrePresets';
 import BookCoverPicker from './BookCoverPicker';
+import { useNotification } from '../notifications/Notification';
 import AuthContext from '../../context/authContext';
+import { useContext } from 'react';
 
 export default function Create() {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+    const { showNotification } = useNotification();
     const { user } = useContext(AuthContext);
 
     const [formData, setFormData] = useState({
         title: '',
         author: '',
-        category: 'Fantasy & Sci-Fi',
+        genre: 'Fantasy & Sci-Fi',
         description: '',
     });
 
-    const [useCustomUrl, setUseCustomUrl] = useState(true);
+    const [useCustomUrl, setUseCustomUrl] = useState(false);
     const [imageUrl, setImageUrl] = useState('');
     const [selectedPreset, setSelectedPreset] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((current) => ({ ...current, [name]: value }));
-
-        if (name === 'category') {
-            setSelectedPreset('');
-            if (!useCustomUrl) setImageUrl('');
-        }
     };
 
     const handlePresetSelect = (imgUrl) => {
@@ -46,30 +44,28 @@ export default function Create() {
         e.preventDefault();
 
         if (!formData.title.trim() || !formData.author.trim() || !formData.description.trim()) {
-            alert("Title, Author, and Description are required!");
+            showNotification('Title, Author, and Description are required!', 'error');
             return;
         }
 
-        const finalImageUrl = imageUrl.trim() || 'https://via.placeholder.com/150';
-
-        setIsLoading(true);
+        setIsSubmitting(true);
 
         try {
             await request('/books', 'POST', {
                 title: formData.title.trim(),
                 author: formData.author.trim(),
-                genre: formData.category,
-                imageUrl: finalImageUrl,
+                genre: formData.genre,
+                imageUrl: imageUrl.trim() || 'https://via.placeholder.com/150',
                 description: formData.description.trim(),
-                user_id: user.id,
+                user_id: user?.id,
             });
 
-            alert('Book successfully added to catalog!');
+            showNotification('Book successfully added to catalog!');
             navigate('/catalog');
         } catch (error) {
-            alert(`Failed to add book: ${error.message}`);
+            showNotification(`Failed to add book: ${error.message}`, 'error');
         } finally {
-            setIsLoading(false);
+            setIsSubmitting(false);
         }
     };
 
@@ -85,7 +81,7 @@ export default function Create() {
                         id="title"
                         name="title"
                         className="form-input"
-                        placeholder="e.g. The Hobbit"
+                        placeholder="Enter book title..."
                         value={formData.title}
                         onChange={handleChange}
                         required
@@ -99,7 +95,7 @@ export default function Create() {
                         id="author"
                         name="author"
                         className="form-input"
-                        placeholder="e.g. J. R. R. Tolkien"
+                        placeholder="Enter author name..."
                         value={formData.author}
                         onChange={handleChange}
                         required
@@ -107,12 +103,12 @@ export default function Create() {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="category" className="form-label">Genre</label>
+                    <label htmlFor="genre" className="form-label">Genre</label>
                     <select
-                        id="category"
-                        name="category"
+                        id="genre"
+                        name="genre"
                         className="form-input"
-                        value={formData.category}
+                        value={formData.genre}
                         onChange={handleChange}
                     >
                         {Object.keys(GENRE_PRESETS).map((genre) => (
@@ -122,7 +118,7 @@ export default function Create() {
                 </div>
 
                 <BookCoverPicker
-                    category={formData.category}
+                    category={formData.genre}
                     genrePresets={GENRE_PRESETS}
                     selectedImage={selectedPreset}
                     useCustomUrl={useCustomUrl}
@@ -138,17 +134,26 @@ export default function Create() {
                         id="description"
                         name="description"
                         className="form-input"
-                        placeholder="Add a short description of the book..."
-                        rows="3"
+                        rows="4"
+                        placeholder="Write a short summary or description of the book..."
                         value={formData.description}
                         onChange={handleChange}
                         required
                     ></textarea>
                 </div>
 
-                <button type="submit" className="form-btn" disabled={isLoading}>
-                    {isLoading ? 'Adding Book...' : 'Add Book to Catalog'}
-                </button>
+                <div className="modal-details-actions" style={{ marginTop: '20px' }}>
+                    <button type="submit" className="form-btn" disabled={isSubmitting}>
+                        {isSubmitting ? 'Adding...' : 'Add Book to Catalog'}
+                    </button>
+                    <button
+                        type="button"
+                        className="form-btn shelf-btn-secondary"
+                        onClick={() => navigate(-1)}
+                    >
+                        Cancel
+                    </button>
+                </div>
             </form>
         </section>
     );

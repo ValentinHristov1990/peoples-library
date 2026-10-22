@@ -87,7 +87,6 @@ export default function Edit() {
                 description: formData.description.trim(),
             });
 
-            alert('Book updated successfully!');
             navigate(`/details/${bookId}`);
         } catch (error) {
             alert(`Failed to update book: ${error.message}`);

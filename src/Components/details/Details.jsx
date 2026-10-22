@@ -1,14 +1,18 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import { useState, useEffect, useContext } from 'react';
+import { useParams, useNavigate, Link } from 'react-router';
 import { allBooks } from '../../books-data/allBooks';
 import request from '../utils/request';
+import AuthContext from '../../context/authContext';
+import ConfirmModal from '../shelf/confirm-modal/ConfirmModal';
 
 export default function Details() {
     const { bookId } = useParams();
     const navigate = useNavigate();
+    const { user } = useContext(AuthContext);
 
     const [book, setBook] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
         async function fetchBookDetails() {
@@ -34,6 +38,15 @@ export default function Details() {
         fetchBookDetails();
     }, [bookId]);
 
+    const confirmDelete = async () => {
+        try {
+            await request(`/books?id=eq.${bookId}`, 'DELETE');
+            navigate('/catalog');
+        } catch (error) {
+            console.error('Failed to delete book', error);
+        }
+    };
+
     if (loading) {
         return (
             <div className="details-container">
@@ -43,21 +56,44 @@ export default function Details() {
         );
     }
 
+    const isOwner = book && user && book.user_id === user.id;
+
     return (
-        <div className="details-container">
-            <h2>Book Details</h2>
-            {book ? (
-                <>
-                    <img src={book.imageurl || book.imageUrl} alt={book.title} />
-                    <h3>Title: {book.title}</h3>
-                    <p>Author: {book.author}</p>
-                    <p>Genre: {book.genre}</p>
-                    <p>Description: {book.description}</p>
-                </>
-            ) : (
-                <p>Book not found.</p>
-            )}
-            <button onClick={() => navigate(-1)}>Back</button>
-        </div>
+        <>
+            <div className="details-container">
+                <h2>Book Details</h2>
+                {book ? (
+                    <>
+                        <img src={book.imageUrl} alt={book.title} />
+                        <h3>Title: {book.title}</h3>
+                        <p>Author: {book.author}</p>
+                        <p>Genre: {book.genre}</p>
+                        <p>Description: {book.description}</p>
+
+                        {isOwner && (
+                            <div className="book-actions" style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '15px' }}>
+                                <Link to={`/edit/${book.id}`} className="form-btn">Edit</Link>
+                                <button onClick={() => setShowDeleteModal(true)} className="form-btn danger-btn">
+                                    Delete
+                                </button>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <p>Book not found.</p>
+                )}
+
+                <button onClick={() => navigate(-1)} className="form-btn shelf-btn-secondary" style={{ marginTop: '15px' }}>Back</button>
+            </div>
+
+            <ConfirmModal
+                isOpen={showDeleteModal}
+                title="Confirm Deletion"
+                message="Are you sure you want to delete this book?"
+                confirmText="Delete"
+                onConfirm={confirmDelete}
+                onCancel={() => setShowDeleteModal(false)}
+            />
+        </>
     );
 }
