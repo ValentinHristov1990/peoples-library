@@ -11,29 +11,38 @@ import Edit from "./Components/edit/Edit";
 import BookShelf from "./Components/shelf/BookShelf";
 import Footer from "./Footer";
 import "./App.css";
-import { authApi } from "./Components/service/index.js";
+// import { authApi } from "./Components/service/index.js";
 import { useState } from "react";
 import AuthContext from "./context/authContext.js";
+import GuestRoute from "./Components/protected-route/GuestRoute.jsx"
+import ProtectedRoute from "./Components/protected-route/ProtectedRoute.jsx";
 
 export default function App() {
-  const [auth, setAuth] = useState(null);
+  const [auth, setAuth] = useState(() => {
+    const savedAuth = localStorage.getItem('auth');
+    return savedAuth ? JSON.parse(savedAuth) : null;
+  });
+
   const navigate = useNavigate();
 
   const register = async (data) => {
     setAuth(data);
+    localStorage.setItem('auth', JSON.stringify(data));
     navigate("/shelf");
   }
 
   const login = async (data) => {
     setAuth(data);
+    localStorage.setItem('auth', JSON.stringify(data));
     navigate("/shelf");
   }
 
   const logoutAction = async () => {
     setAuth(null);
+    localStorage.removeItem('auth');
     navigate("/");
-
   }
+
   const contextValue = {
     accessToken: auth?.access_token,
     user: auth?.user,
@@ -50,14 +59,20 @@ export default function App() {
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/register" element={<Register onRegister={register} />} />
-            <Route path="/login" element={<Login onLogin={login} />} />
-            <Route path="/shelf" element={<BookShelf user={auth?.user} />} />
-            <Route path="/create" element={<Create />} />
-            <Route path="/edit/:bookId" element={<Edit />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/details/:bookId" element={<Details />} />
-            <Route path="/logout" element={<Logout />} />
+
+            <Route element={<GuestRoute />}>
+              <Route path="/register" element={<Register onRegister={register} />} />
+              <Route path="/login" element={<Login onLogin={login} />} />
+            </Route>
+
+            <Route element={<ProtectedRoute />}>
+              <Route path="/shelf" element={<BookShelf user={auth?.user} />} />
+              <Route path="/create" element={<Create />} />
+              <Route path="/edit/:bookId" element={<Edit />} />
+              <Route path="/logout" element={<Logout />} />
+            </Route>
           </Routes>
         </main>
         <Footer />
