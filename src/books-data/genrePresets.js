@@ -29,4 +29,9 @@ export const GENRE_PRESETS = {
     "/create-shelf-images/psychology/self-improvement-img2.jpg",
     "/create-shelf-images/psychology/self-improvement-img3.jpg",
   ],
+  "Geography & Travel": [
+    "/create-shelf-images/geography/geo-img1.jpg",
+    "/create-shelf-images/geography/geo-img2.jpg",
+    "/create-shelf-images/geography/geo-img3.jpg",
+  ],
 };

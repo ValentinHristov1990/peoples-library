@@ -88,4 +88,97 @@ export const personalDevelopmentBooks = [
       "Small things that can change your life... and maybe the world.",
     imageUrl: "/books-cover-images/personal-development/make-your-bed.jpg",
   },
+  {
+    id: "pd-11",
+    title: "Thinking, Fast and Slow",
+    author: "Daniel Kahneman",
+    genre: "Personal Development",
+    description:
+      "An exploration of the two systems that drive the way we think and make choices.",
+    imageUrl:
+      "/books-cover-images/personal-development/thinking-fast-and-slow.jpg",
+  },
+  {
+    id: "pd-12",
+    title: "Grit: The Power of Passion and Perseverance",
+    author: "Angela Duckworth",
+    genre: "Personal Development",
+    description:
+      "Why the secret to outstanding achievement is not talent, but a special blend of passion and persistence.",
+    imageUrl: "/books-cover-images/personal-development/grit.jpg",
+  },
+  {
+    id: "pd-13",
+    title: "The Compound Effect",
+    author: "Darren Hardy",
+    genre: "Personal Development",
+    description:
+      "Jumpstart your income, your life, your success by mastering small daily choices.",
+    imageUrl: "/books-cover-images/personal-development/compound-effect.jpg",
+  },
+  {
+    id: "pd-14",
+    title: "Man's Search for Meaning",
+    author: "Viktor E. Frankl",
+    genre: "Personal Development",
+    description:
+      "Finding purpose and strength through life's deepest hardships.",
+    imageUrl:
+      "/books-cover-images/personal-development/mans-search-for-meaning.jpg",
+  },
+  {
+    id: "pd-15",
+    title: "The Obstacle Is the Way",
+    author: "Ryan Holiday",
+    genre: "Personal Development",
+    description:
+      "The ancient art of turning trials into triumph based on Stoicism.",
+    imageUrl:
+      "/books-cover-images/personal-development/obstacle-is-the-way.jpg",
+  },
+  {
+    id: "pd-16",
+    title: "Essentialism",
+    author: "Greg McKeown",
+    genre: "Personal Development",
+    description:
+      "The disciplined pursuit of less to focus on what truly matters.",
+    imageUrl: "/books-cover-images/personal-development/essentialism.jpg",
+  },
+  {
+    id: "pd-17",
+    title: "Influence: The Psychology of Persuasion",
+    author: "Robert Cialdini",
+    genre: "Personal Development",
+    description:
+      "The classic book on the psychology of why people say yes and how to apply understandings.",
+    imageUrl: "/books-cover-images/personal-development/influence.jpg",
+  },
+  {
+    id: "pd-18",
+    title: "Flow: The Psychology of Optimal Experience",
+    author: "Mihaly Csikszentmihalyi",
+    genre: "Personal Development",
+    description:
+      "How to achieve happiness and peak performance through complete absorption in activities.",
+    imageUrl: "/books-cover-images/personal-development/flow.jpg",
+  },
+  {
+    id: "pd-19",
+    title: "Quiet: The Power of Introverts in a World That Can't Stop Talking",
+    author: "Susan Cain",
+    genre: "Personal Development",
+    description:
+      "Reassessing the hidden strengths and value of introverts in modern society.",
+    imageUrl: "/books-cover-images/personal-development/quiet.jpg",
+  },
+  {
+    id: "pd-20",
+    title: "Outlive: The Science and Art of Longevity",
+    author: "Peter Attia",
+    genre: "Personal Development",
+    description:
+      "A ground-breaking operating manual for long-term physical and mental health.",
+    imageUrl: "/books-cover-images/personal-development/outlive.jpg",
+  },
 ];

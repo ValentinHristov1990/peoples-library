@@ -89,4 +89,94 @@ export const techBooks = [
       "A craftsman's guide to software structure and design principles for long-term maintainability.",
     imageUrl: "/books-cover-images/tech/clean-architecture.jpg",
   },
+  {
+    id: "tech-11",
+    title: "Superintelligence: Paths, Dangers, Strategies",
+    author: "Nick Bostrom",
+    genre: "Tech & Programming",
+    description:
+      "An investigation into what happens when machine intelligence surpasses human intelligence.",
+    imageUrl: "/books-cover-images/tech/superintelligence.jpg",
+  },
+  {
+    id: "tech-12",
+    title: "Chip War: The Fight for the World's Most Critical Technology",
+    author: "Chris Miller",
+    genre: "Tech & Programming",
+    description:
+      "The epic battle for microchip supremacy that shapes modern geopolitics.",
+    imageUrl: "/books-cover-images/tech/chip-war.jpg",
+  },
+  {
+    id: "tech-13",
+    title: "Life 3.0: Being Human in the Age of Artificial Intelligence",
+    author: "Max Tegmark",
+    genre: "Tech & Programming",
+    description:
+      "Explores the future of AI and its impact on the fabric of human society.",
+    imageUrl: "/books-cover-images/tech/life-3-0.jpg",
+  },
+  {
+    id: "tech-14",
+    title: "The Innovators",
+    author: "Walter Isaacson",
+    genre: "Tech & Programming",
+    description:
+      "How a group of hackers, geniuses, and geeks created the digital revolution.",
+    imageUrl: "/books-cover-images/tech/the-innovators.jpg",
+  },
+  {
+    id: "tech-15",
+    title: "The Code Breaker",
+    author: "Walter Isaacson",
+    genre: "Tech & Programming",
+    description:
+      "Jennifer Doudna, gene editing, and the future of the human species.",
+    imageUrl: "/books-cover-images/tech/code-breaker.jpg",
+  },
+  {
+    id: "tech-16",
+    title: "Sandworm: A New Era of Cyberwar",
+    author: "Andy Greenberg",
+    genre: "Tech & Programming",
+    description:
+      "A chilling journey into the dark frontiers of state-sponsored cyberwarfare.",
+    imageUrl: "/books-cover-images/tech/sandworm.jpg",
+  },
+  {
+    id: "tech-17",
+    title: "Zero to One",
+    author: "Peter Thiel",
+    genre: "Tech & Programming",
+    description:
+      "Notes on startups, building the future, and radical technological progress.",
+    imageUrl: "/books-cover-images/tech/zero-to-one.jpg",
+  },
+  {
+    id: "tech-18",
+    title: "The Shallows: What the Internet Is Doing to Our Brains",
+    author: "Nicholas Carr",
+    genre: "Tech & Programming",
+    description:
+      "An investigation into how digital technology reshapes human cognition.",
+    imageUrl: "/books-cover-images/tech/the-shallows.jpg",
+  },
+  {
+    id: "tech-19",
+    title: "The Second Machine Age",
+    author: "Erik Brynjolfsson & Andrew McAfee",
+    genre: "Tech & Programming",
+    description:
+      "Work, progress, and prosperity in a time of brilliant technologies.",
+    imageUrl: "/books-cover-images/tech/second-machine-age.jpg",
+  },
+  {
+    id: "tech-20",
+    title: "Algorithms to Live By",
+    author: "Brian Christian & Tom Griffiths",
+    genre: "Tech & Programming",
+    description:
+      "How computer algorithms can be applied to human decision-making.",
+    imageUrl: "/books-cover-images/tech/algorithms-to-live-by.jpg",
+  },
 ];

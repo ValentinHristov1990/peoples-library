@@ -89,4 +89,94 @@ export const mysteryBooks = [
       "A woman wakes up every day with no memory of her past due to a traumatic accident.",
     imageUrl: "/books-cover-images/mystery/before-i-go-to-sleep.jpg",
   },
+  {
+    id: "myst-11",
+    title: "The Silent Patient",
+    author: "Alex Michaelides",
+    genre: "Mystery & Thriller",
+    description:
+      "A woman's act of violence, and a therapist's obsession to uncover her motive.",
+    imageUrl: "/books-cover-images/mystery/the-silent-patient.jpg",
+  },
+  {
+    id: "myst-12",
+    title: "The Girl on the Train",
+    author: "Paula Hawkins",
+    genre: "Mystery & Thriller",
+    description:
+      "A commuter gets entangled in a missing persons investigation from her train window.",
+    imageUrl: "/books-cover-images/mystery/girl-on-the-train.jpg",
+  },
+  {
+    id: "myst-13",
+    title: "And Then There Were None",
+    author: "Agatha Christie",
+    genre: "Mystery & Thriller",
+    description:
+      "Ten strangers are lured to an isolated island and targeted one by one.",
+    imageUrl: "/books-cover-images/mystery/and-then-there-were-none.jpg",
+  },
+  {
+    id: "myst-14",
+    title: "The Guest List",
+    author: "Lucy Foley",
+    genre: "Mystery & Thriller",
+    description:
+      "A glamorous celebrity wedding on a remote Irish island turns deadly.",
+    imageUrl: "/books-cover-images/mystery/the-guest-list.jpg",
+  },
+  {
+    id: "myst-15",
+    title: "The Turn of the Key",
+    author: "Ruth Ware",
+    genre: "Mystery & Thriller",
+    description:
+      "A nanny takes a dream job in a smart, high-tech Scottish smart home that turns into a nightmare.",
+    imageUrl: "/books-cover-images/mystery/turn-of-the-key.jpg",
+  },
+  {
+    id: "myst-16",
+    title: "The Thursday Murder Club",
+    author: "Richard Osman",
+    genre: "Mystery & Thriller",
+    description:
+      "Four residents in a retirement village gather weekly to solve unsolved crimes.",
+    imageUrl: "/books-cover-images/mystery/thursday-murder-club.jpg",
+  },
+  {
+    id: "myst-17",
+    title: "The Housemaid",
+    author: "Freida McFadden",
+    genre: "Mystery & Thriller",
+    description:
+      "A struggling woman takes a live-in job working for a wealthy couple, uncovering dark family secrets.",
+    imageUrl: "/books-cover-images/mystery/the-housemaid.jpg",
+  },
+  {
+    id: "myst-18",
+    title: "The Paris Apartment",
+    author: "Lucy Foley",
+    genre: "Mystery & Thriller",
+    description:
+      "A woman arrives in Paris to stay with her half-brother, only to find he has vanished.",
+    imageUrl: "/books-cover-images/mystery/paris-apartment.jpg",
+  },
+  {
+    id: "myst-19",
+    title: "The Woman in White",
+    author: "Wilkie Collins",
+    genre: "Mystery & Thriller",
+    description:
+      "A Victorian masterpiece of suspense involving mistaken identity and dark conspiracies.",
+    imageUrl: "/books-cover-images/mystery/woman-in-white.jpg",
+  },
+  {
+    id: "myst-20",
+    title: "Misery",
+    author: "Stephen King",
+    genre: "Mystery & Thriller",
+    description:
+      "A famous author is held captive by his obsessed former nurse and 'number one fan'.",
+    imageUrl: "/books-cover-images/mystery/misery.jpg",
+  },
 ];

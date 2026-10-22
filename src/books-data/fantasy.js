@@ -88,4 +88,93 @@ export const fantasyBooks = [
       "A talented young boy is recruited to military school to prepare for an alien invasion.",
     imageUrl: "/books-cover-images/fantasy/ender's-game.jpg",
   },
+  {
+    id: "fan-11",
+    title: "The Hobbit",
+    author: "J.R.R. Tolkien",
+    genre: "Fantasy & Sci-Fi",
+    description: "Bilbo Baggins' unforgettable journey to the Lonely Mountain.",
+    imageUrl: "/books-cover-images/fantasy/the-hobbit.jpg",
+  },
+  {
+    id: "fan-12",
+    title: "The Three-Body Problem",
+    author: "Cixin Liu",
+    genre: "Fantasy & Sci-Fi",
+    description:
+      "Humanity's first contact with an alien civilization on the brink of destruction.",
+    imageUrl: "/books-cover-images/fantasy/three-body-problem.jpg",
+  },
+  {
+    id: "fan-13",
+    title: "Mistborn: The Final Empire",
+    author: "Brandon Sanderson",
+    genre: "Fantasy & Sci-Fi",
+    description:
+      "In a world where ash falls from the sky, a crew plans an impossible heist.",
+    imageUrl: "/books-cover-images/fantasy/mistborn-final-empire.jpg",
+  },
+  {
+    id: "fan-14",
+    title: "American Gods",
+    author: "Neil Gaiman",
+    genre: "Fantasy & Sci-Fi",
+    description:
+      "A mysterious ex-convict travels across America and encounters old gods hiding in modern life.",
+    imageUrl: "/books-cover-images/fantasy/american-gods.jpg",
+  },
+  {
+    id: "fan-15",
+    title: "The Left Hand of Darkness",
+    author: "Ursula K. Le Guin",
+    genre: "Fantasy & Sci-Fi",
+    description:
+      "A landmark sci-fi novel exploring gender, culture, and diplomacy on an icy planet.",
+    imageUrl: "/books-cover-images/fantasy/left-hand-of-darkness.jpg",
+  },
+  {
+    id: "fan-16",
+    title: "Gardens of the Moon",
+    author: "Steven Erikson",
+    genre: "Fantasy & Sci-Fi",
+    description:
+      "The opening epic of the grand and intricate Malazan Book of the Fallen.",
+    imageUrl: "/books-cover-images/fantasy/gardens-of-the-moon.jpg",
+  },
+  {
+    id: "fan-17",
+    title: "Red Rising",
+    author: "Pierce Brown",
+    genre: "Fantasy & Sci-Fi",
+    description:
+      "A story of vengeance and revolution set in a color-coded dystopian society on Mars.",
+    imageUrl: "/books-cover-images/fantasy/red-rising.jpg",
+  },
+  {
+    id: "fan-18",
+    title: "The Eye of the World",
+    author: "Robert Jordan",
+    genre: "Fantasy & Sci-Fi",
+    description:
+      "The Wheel of Time turns, and a dangerous journey begins for five young villagers.",
+    imageUrl: "/books-cover-images/fantasy/the-eye-of-the-world.jpg",
+  },
+  {
+    id: "fan-19",
+    title: "Solaris",
+    author: "Stanislaw Lem",
+    genre: "Fantasy & Sci-Fi",
+    description:
+      "A psychological masterpiece about scientists trying to communicate with an oceanic alien intelligence.",
+    imageUrl: "/books-cover-images/fantasy/solaris.jpg",
+  },
+  {
+    id: "fan-20",
+    title: "The Lies of Locke Lamora",
+    author: "Scott Lynch",
+    genre: "Fantasy & Sci-Fi",
+    description:
+      "An orphan becomes a master thief in a Venetian-inspired fantasy city.",
+    imageUrl: "/books-cover-images/fantasy/the-lies-of-locke-lamora.jpg",
+  },
 ];

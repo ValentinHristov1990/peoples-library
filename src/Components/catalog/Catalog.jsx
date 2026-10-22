@@ -8,6 +8,7 @@ import { classicsBooks } from '../../books-data/classics';
 import { techBooks } from '../../books-data/tech';
 import { historyBooks } from '../../books-data/history';
 import { allBooks } from '../../books-data/allBooks';
+import { geographyBooks } from '../../books-data/geography';
 
 const GENRES = [
     { id: 'all', name: 'All Books' },
@@ -17,6 +18,7 @@ const GENRES = [
     { id: 'classics', name: 'Classics & Literature' },
     { id: 'tech', name: 'Tech & Programming' },
     { id: 'history', name: 'History & Biography' },
+    { id: 'geography', name: 'Geography & Travel' },
 ];
 
 const booksMap = {
@@ -27,6 +29,7 @@ const booksMap = {
     'classics': classicsBooks,
     'tech': techBooks,
     'history': historyBooks,
+    'geography': geographyBooks,
 };
 
 export default function Catalog() {

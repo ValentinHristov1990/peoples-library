@@ -190,27 +190,26 @@ export default function BookShelf({ user }) {
 		});
 	}
 
-	function handleAddSelectedBooks() {
-		if (selectedBookIds.length === 0) return;
+	async function handleAddSelectedBooks() {
+		if (selectedBookIds.length === 0 || !activeCollectionId) return;
 
-		const booksToAdd = allBooks.filter(book => selectedBookIds.includes(book.id));
+		try {
+			for (const bookId of selectedBookIds) {
+				await request('/shelf_books', 'POST', {
+					shelf_id: activeCollectionId,
+					book_id: bookId
+				});
+			}
 
-		setCollections(currCollections =>
-			currCollections.map(col => {
-				if (col.id === activeCollectionId) {
-					const existingIds = new Set(col.books.map(b => b.id));
-					const uniqueNewBooks = booksToAdd.filter(b => !existingIds.has(b.id));
-					return { ...col, books: [...col.books, ...uniqueNewBooks] };
-				}
-				return col;
-			})
-		);
-
-		setActiveCollectionId(null);
-		setSelectedBookIds([]);
-		setSearchFilter('');
-		setSelectedGenre('');
-		showNotification('Books added to collection successfully!');
+			showNotification('Books added to collection successfully!');
+			setActiveCollectionId(null);
+			setSelectedBookIds([]);
+			setSearchFilter('');
+			setSelectedGenre('');
+			fetchShelves();
+		} catch (error) {
+			showNotification(`Failed to add books: ${error.message}`, 'error');
+		}
 	}
 
 	function handleRemoveBook(bookId) {
