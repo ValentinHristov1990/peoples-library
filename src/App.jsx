@@ -40,7 +40,6 @@ export default function App() {
   const logoutAction = async () => {
     setAuth(null);
     localStorage.removeItem('auth');
-    navigate("/");
   }
 
   const contextValue = {
@@ -61,6 +60,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/details/:bookId" element={<Details />} />
+            <Route path="/logout" element={<Logout />} />
 
             <Route element={<GuestRoute />}>
               <Route path="/register" element={<Register onRegister={register} />} />
@@ -71,7 +71,6 @@ export default function App() {
               <Route path="/shelf" element={<BookShelf user={auth?.user} />} />
               <Route path="/create" element={<Create />} />
               <Route path="/edit/:bookId" element={<Edit />} />
-              <Route path="/logout" element={<Logout />} />
             </Route>
           </Routes>
         </main>

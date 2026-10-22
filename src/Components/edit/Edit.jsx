@@ -3,13 +3,12 @@ import { useParams, useNavigate } from 'react-router';
 import request from '../utils/request';
 import { GENRE_PRESETS } from '../../books-data/genrePresets';
 import BookCoverPicker from '../create/BookCoverPicker';
+import { useNotification } from '../notifications/Notification';
 
 export default function Edit() {
     const { bookId } = useParams();
     const navigate = useNavigate();
-
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
+    const { showNotification } = useNotification();
 
     const [formData, setFormData] = useState({
         title: '',
@@ -21,35 +20,40 @@ export default function Edit() {
     const [useCustomUrl, setUseCustomUrl] = useState(false);
     const [imageUrl, setImageUrl] = useState('');
     const [selectedPreset, setSelectedPreset] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        async function fetchBookDetails() {
+        async function fetchBook() {
             try {
-                const [book] = await request(`/books?id=eq.${bookId}`, 'GET');
-                if (book) {
+                const data = await request(`/books?id=eq.${bookId}`);
+                if (data && data.length > 0) {
+                    const book = data[0];
                     setFormData({
                         title: book.title || '',
                         author: book.author || '',
                         genre: book.genre || 'Fantasy & Sci-Fi',
                         description: book.description || '',
                     });
-                    setImageUrl(book.imageUrl || '');
-                    const genrePresetList = GENRE_PRESETS[book.genre] || [];
-                    if (genrePresetList.includes(book.imageUrl)) {
-                        setSelectedPreset(book.imageUrl);
+                    const currentImg = book.imageUrl || '';
+                    setImageUrl(currentImg);
+
+                    const isPreset = Object.values(GENRE_PRESETS).flat().includes(currentImg);
+                    if (isPreset) {
+                        setSelectedPreset(currentImg);
                         setUseCustomUrl(false);
-                    } else {
+                    } else if (currentImg) {
                         setUseCustomUrl(true);
                     }
                 }
             } catch (error) {
-                alert(`Error loading book: ${error.message}`);
+                showNotification(`Failed to load book data: ${error.message}`, 'error');
             } finally {
-                setIsLoading(false);
+                setLoading(false);
             }
         }
 
-        fetchBookDetails();
+        fetchBook();
     }, [bookId]);
 
     const handleChange = (e) => {
@@ -72,11 +76,11 @@ export default function Edit() {
         e.preventDefault();
 
         if (!formData.title.trim() || !formData.author.trim() || !formData.description.trim()) {
-            alert("Title, Author, and Description are required!");
+            showNotification('Title, Author, and Description are required!', 'error');
             return;
         }
 
-        setIsSaving(true);
+        setIsSubmitting(true);
 
         try {
             await request(`/books?id=eq.${bookId}`, 'PATCH', {
@@ -87,20 +91,19 @@ export default function Edit() {
                 description: formData.description.trim(),
             });
 
+            showNotification('Book updated successfully!');
             navigate(`/details/${bookId}`);
         } catch (error) {
-            alert(`Failed to update book: ${error.message}`);
+            showNotification(`Failed to update book: ${error.message}`, 'error');
         } finally {
-            setIsSaving(false);
+            setIsSubmitting(false);
         }
     };
 
-    if (isLoading) {
+    if (loading) {
         return (
             <div className="form-container">
-                <div className="form-card text-center">
-                    <p style={{ color: '#f5f2eb' }}>Loading book details...</p>
-                </div>
+                <p style={{ color: '#fff', textAlign: 'center' }}>Loading book data...</p>
             </div>
         );
     }
@@ -117,6 +120,7 @@ export default function Edit() {
                         id="title"
                         name="title"
                         className="form-input"
+                        placeholder="e.g., The Great Gatsby"
                         value={formData.title}
                         onChange={handleChange}
                         required
@@ -130,6 +134,7 @@ export default function Edit() {
                         id="author"
                         name="author"
                         className="form-input"
+                        placeholder="e.g., F. Scott Fitzgerald"
                         value={formData.author}
                         onChange={handleChange}
                         required
@@ -168,6 +173,7 @@ export default function Edit() {
                         id="description"
                         name="description"
                         className="form-input"
+                        placeholder="Write a short summary or description of the book..."
                         rows="4"
                         value={formData.description}
                         onChange={handleChange}
@@ -176,8 +182,8 @@ export default function Edit() {
                 </div>
 
                 <div className="modal-details-actions" style={{ marginTop: '20px' }}>
-                    <button type="submit" className="form-btn" disabled={isSaving}>
-                        {isSaving ? 'Saving...' : 'Save Changes'}
+                    <button type="submit" className="form-btn" disabled={isSubmitting}>
+                        {isSubmitting ? 'Saving...' : 'Save Changes'}
                     </button>
                     <button
                         type="button"

@@ -7,9 +7,13 @@ import BookNotesModal from './notes/BookNotesModal';
 import ConfirmModal from './confirm-modal/ConfirmModal';
 import { allBooks } from '../../books-data/allBooks';
 import { useEscClose } from '../hooks/useEscClose';
+import { useNotification } from '../notifications/Notification';
+import request from '../utils/request';
 import './bookShelfStyle.css';
 
 export default function BookShelf({ user }) {
+	const { showNotification } = useNotification();
+
 	const libraryName = user?.user_metadata?.username
 		? `${user.user_metadata.username.charAt(0).toUpperCase() + user.user_metadata.username.slice(1)}'s Library`
 		: user?.username
@@ -31,6 +35,26 @@ export default function BookShelf({ user }) {
 		onConfirm: null,
 		confirmText: 'Delete'
 	});
+
+	useEffect(() => {
+		if (user) {
+			fetchShelves();
+		}
+	}, [user]);
+
+	const fetchShelves = async () => {
+		try {
+			const data = await request(`/shelves?user_id=eq.${user.id}&select=*,shelf_books(*)`);
+			const formatted = (data || []).map(shelf => ({
+				id: shelf.id,
+				title: shelf.title,
+				books: shelf.shelf_books || []
+			}));
+			setCollections(formatted);
+		} catch (error) {
+			showNotification(`Failed to load shelves: ${error.message}`, 'error');
+		}
+	};
 
 	const triggerConfirm = (title, message, onConfirm, confirmText = "Delete") => {
 		setConfirmModal({
@@ -115,26 +139,46 @@ export default function BookShelf({ user }) {
 		);
 	}
 
-	function handleCreateCollection(e) {
+	async function handleCreateCollection(e) {
 		e.preventDefault();
-		if (!newCollectionName.trim()) return;
+		if (!newCollectionName.trim()) {
+			showNotification('Collection name cannot be empty!', 'error');
+			return;
+		}
 
-		const newCollection = {
-			id: Date.now(),
-			title: newCollectionName.trim(),
-			books: []
-		};
+		try {
+			await request('/shelves', 'POST', {
+				title: newCollectionName.trim(),
+				user_id: user.id
+			});
 
-		setCollections(curr => [...curr, newCollection]);
-		setNewCollectionName('');
-		setIsCreating(false);
+			setNewCollectionName('');
+			setIsCreating(false);
+			showNotification('Collection created successfully!');
+			fetchShelves();
+		} catch (error) {
+			showNotification(`Failed to create collection: ${error.message}`, 'error');
+		}
 	}
 
 	function handleDeleteCollection(collectionId) {
-		setCollections(curr => curr.filter(col => col.id !== collectionId));
-		if (activeCollectionId === collectionId) {
-			setActiveCollectionId(null);
-		}
+		triggerConfirm(
+			"Delete Collection",
+			"Are you sure you want to delete this collection?",
+			async () => {
+				try {
+					await request(`/shelves?id=eq.${collectionId}`, 'DELETE');
+					if (activeCollectionId === collectionId) {
+						setActiveCollectionId(null);
+					}
+					showNotification('Collection deleted successfully!');
+					fetchShelves();
+				} catch (error) {
+					showNotification(`Failed to delete collection: ${error.message}`, 'error');
+				}
+			},
+			"Delete"
+		);
 	}
 
 	const toggleBookSelection = (bookId) => {
@@ -166,6 +210,7 @@ export default function BookShelf({ user }) {
 		setSelectedBookIds([]);
 		setSearchFilter('');
 		setSelectedGenre('');
+		showNotification('Books added to collection successfully!');
 	}
 
 	function handleRemoveBook(bookId) {
@@ -181,6 +226,7 @@ export default function BookShelf({ user }) {
 				);
 				setSelectedBook(null);
 				setSelectedCollectionId(null);
+				showNotification('Book removed from shelf successfully!');
 			},
 			"Remove"
 		);
@@ -205,6 +251,7 @@ export default function BookShelf({ user }) {
 		if (selectedBook && selectedBook.id === bookId) {
 			setSelectedBook(prev => ({ ...prev, notes: updatedNotes }));
 		}
+		showNotification('Notes saved successfully!');
 	}
 
 	function handleShelfDragStart(e, bookId, collectionId) {

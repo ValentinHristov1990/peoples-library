@@ -792,3 +792,97 @@ select.form-input option {
   align-items: center;
   gap: 8px;
 }
+
+/* --- Основен контейнер за страниците (Рафтове, Създаване, Редакция) --- */
+.shelf-page-container,
+.form-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 30px;
+  background: rgba(20, 15, 12, 0.85);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+}
+
+/* --- Хедър на рафтовете (заглавие + бутон) --- */
+.shelf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.shelf-header h2 {
+  color: #f5f0eb;
+  font-family: inherit;
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+/* --- Картов контейнер за всеки отделен рафт / колекция --- */
+.shelves-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.shelf-card {
+  background: rgba(30, 22, 17, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.shelf-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.shelf-card-header h3 {
+  color: #e2d9cc;
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.shelf-books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.shelf-book-item {
+  background: rgba(45, 34, 27, 0.8);
+  padding: 10px 14px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #e2d9cc;
+  font-size: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.remove-book-btn {
+  background: transparent;
+  border: none;
+  color: #f89d9d;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.remove-book-btn:hover {
+  background: rgba(248, 157, 157, 0.15);
+}

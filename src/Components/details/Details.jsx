@@ -4,11 +4,13 @@ import { allBooks } from '../../books-data/allBooks';
 import request from '../utils/request';
 import AuthContext from '../../context/authContext';
 import ConfirmModal from '../shelf/confirm-modal/ConfirmModal';
+import { useNotification } from '../notifications/Notification';
 
 export default function Details() {
     const { bookId } = useParams();
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
+    const { showNotification } = useNotification();
 
     const [book, setBook] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -28,7 +30,7 @@ export default function Details() {
                         setBook(data[0]);
                     }
                 } catch (error) {
-                    console.error('Failed to fetch book details:', error);
+                    showNotification(`Failed to load book details: ${error.message}`, 'error');
                 } finally {
                     setLoading(false);
                 }
@@ -41,9 +43,10 @@ export default function Details() {
     const confirmDelete = async () => {
         try {
             await request(`/books?id=eq.${bookId}`, 'DELETE');
+            showNotification('Book deleted successfully!');
             navigate('/catalog');
         } catch (error) {
-            console.error('Failed to delete book', error);
+            showNotification(`Failed to delete book: ${error.message}`, 'error');
         }
     };
 
