@@ -74,7 +74,8 @@
   display: flex;
   gap: 14px;
   overflow-x: auto;
-  padding: 8px 4px 12px 4px;
+  overflow-y: visible;
+  padding: 12px 4px 12px 4px;
   align-items: stretch;
 }
 
@@ -518,4 +519,17 @@
   background: #cb4335;
   border-color: #e74c3c;
   box-shadow: 0 6px 16px rgba(203, 67, 53, 0.6);
+}
+
+.modal-desc {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.mini-book-card.drag-over {
+  transform: translateY(-8px) scale(1.04);
+  background-color: rgba(212, 163, 115, 0.25);
+  border-color: #d4a373;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
 }

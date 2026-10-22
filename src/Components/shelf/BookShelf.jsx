@@ -5,11 +5,11 @@ import BookPreviewModal from './book-preview-modal/BookPreviewModal';
 import CatalogModal from './catalog-modal/CatalogModal';
 import BookNotesModal from './notes/BookNotesModal';
 import ConfirmModal from './confirm-modal/ConfirmModal';
-import { allBooks } from '../../books-data/allBooks';
 import { useEscClose } from '../hooks/useEscClose';
 import { useNotification } from '../notifications/Notification';
 import request from '../utils/request';
 import './bookShelfStyle.css';
+import useBookDragDrop from '../hooks/useBookDragDrop';
 
 export default function BookShelf({ user }) {
 	const { showNotification } = useNotification();
@@ -21,12 +21,21 @@ export default function BookShelf({ user }) {
 			: "My Library";
 
 	const [collections, setCollections] = useState([]);
+	const [dbBooks, setDbBooks] = useState([]);
 	const [isCreating, setIsCreating] = useState(false);
 	const [newCollectionName, setNewCollectionName] = useState('');
 	const [selectedBook, setSelectedBook] = useState(null);
 	const [selectedCollectionId, setSelectedCollectionId] = useState(null);
 	const [previewBook, setPreviewBook] = useState(null);
 	const [activeNoteBook, setActiveNoteBook] = useState(null);
+
+	const {
+		dragOverBookId,
+		handleDragStart,
+		handleDragOver,
+		handleDragLeave,
+		handleDrop
+	} = useBookDragDrop(collections, setCollections);
 
 	const [confirmModal, setConfirmModal] = useState({
 		isOpen: false,
@@ -39,20 +48,51 @@ export default function BookShelf({ user }) {
 	useEffect(() => {
 		if (user) {
 			fetchShelves();
+			fetchBooks();
 		}
 	}, [user]);
 
 	const fetchShelves = async () => {
 		try {
-			const data = await request(`/shelves?user_id=eq.${user.id}&select=*,shelf_books(*)`);
+			const data = await request(`/shelves?user_id=eq.${user.id}&select=*,shelf_books(*,books(*,notes(*)))`);
 			const formatted = (data || []).map(shelf => ({
 				id: shelf.id,
 				title: shelf.title,
-				books: shelf.shelf_books || []
+				books: (shelf.shelf_books || []).map(sb => ({
+					shelfBookId: sb.id,
+					status: sb.status || 'to-read',
+					id: sb.books?.id,
+					title: sb.books?.title,
+					author: sb.books?.author,
+					genre: sb.books?.genre,
+					description: sb.books?.description,
+					imageUrl: sb.books?.imageUrl,
+					notes: sb.books?.notes || []
+				})).filter(b => b.id)
 			}));
 			setCollections(formatted);
 		} catch (error) {
 			showNotification(`Failed to load shelves: ${error.message}`, 'error');
+		}
+	};
+
+	function handleStatusUpdate(bookId, newStatus) {
+		setCollections(prevCollections =>
+			prevCollections.map(col => ({
+				...col,
+				books: col.books.map(book =>
+					book.id === bookId ? { ...book, status: newStatus } : book
+				)
+			}))
+		);
+	}
+
+	const fetchBooks = async () => {
+		try {
+			const data = await request('/books');
+			setDbBooks(data || []);
+		} catch (error) {
+			console.error('Failed to fetch books:', error);
 		}
 	};
 
@@ -77,7 +117,6 @@ export default function BookShelf({ user }) {
 	const [searchFilter, setSearchFilter] = useState('');
 	const [selectedGenre, setSelectedGenre] = useState('');
 	const [selectedBookIds, setSelectedBookIds] = useState([]);
-	const [draggedBookInfo, setDraggedBookInfo] = useState(null);
 
 	useEffect(() => {
 		const handleMouseMove = (e) => {
@@ -110,7 +149,7 @@ export default function BookShelf({ user }) {
 			x: e.clientX - previewPos.x,
 			y: e.clientY - previewPos.y
 		});
-	};
+	}
 
 	useEscClose({
 		confirmModal,
@@ -188,7 +227,7 @@ export default function BookShelf({ user }) {
 			}
 			return [...curr, bookId];
 		});
-	}
+	};
 
 	async function handleAddSelectedBooks() {
 		if (selectedBookIds.length === 0 || !activeCollectionId) return;
@@ -253,44 +292,9 @@ export default function BookShelf({ user }) {
 		showNotification('Notes saved successfully!');
 	}
 
-	function handleShelfDragStart(e, bookId, collectionId) {
-		setDraggedBookInfo({ bookId, collectionId });
-	}
+	const allGenres = [...new Set(dbBooks.map(book => book.genre).filter(Boolean))];
 
-	function handleShelfDragOver(e) {
-		e.preventDefault();
-	}
-
-	function handleShelfDrop(e, targetBookId, targetCollectionId) {
-		e.preventDefault();
-		if (!draggedBookInfo || draggedBookInfo.collectionId !== targetCollectionId) return;
-
-		const sourceBookId = draggedBookInfo.bookId;
-		if (sourceBookId === targetBookId) return;
-
-		setCollections(currCollections =>
-			currCollections.map(col => {
-				if (col.id !== targetCollectionId) return col;
-
-				const booksCopy = [...col.books];
-				const sourceIndex = booksCopy.findIndex(b => b.id === sourceBookId);
-				const targetIndex = booksCopy.findIndex(b => b.id === targetBookId);
-
-				if (sourceIndex === -1 || targetIndex === -1) return col;
-
-				const [movedBook] = booksCopy.splice(sourceIndex, 1);
-				booksCopy.splice(targetIndex, 0, movedBook);
-
-				return { ...col, books: booksCopy };
-			})
-		);
-
-		setDraggedBookInfo(null);
-	}
-
-	const allGenres = [...new Set(allBooks.map(book => book.genre).filter(Boolean))];
-
-	const filteredCatalogBooks = allBooks.filter(book => {
+	const filteredCatalogBooks = dbBooks.filter(book => {
 		const title = book.title?.toLowerCase() || '';
 		const author = book.author?.toLowerCase() || '';
 		const query = searchFilter.toLowerCase();
@@ -351,6 +355,7 @@ export default function BookShelf({ user }) {
 						<ShelfRow
 							key={col.id}
 							collection={col}
+							onStatusUpdate={handleStatusUpdate}
 							onAddBookClick={() => {
 								setActiveCollectionId(col.id);
 								setSelectedBookIds([]);
@@ -366,9 +371,11 @@ export default function BookShelf({ user }) {
 							onNotesClick={(book, collectionId) => {
 								setActiveNoteBook({ book, collectionId });
 							}}
-							onDragStart={handleShelfDragStart}
-							onDragOver={handleShelfDragOver}
-							onDrop={handleShelfDrop}
+							onDragStart={handleDragStart}
+							onDragOver={handleDragOver}
+							onDragLeave={handleDragLeave}
+							onDrop={handleDrop}
+							dragOverBookId={dragOverBookId}
 						/>
 					))
 				)}
@@ -382,6 +389,7 @@ export default function BookShelf({ user }) {
 				}}
 				onRemove={handleRemoveBook}
 				onOpenNotes={() => setActiveNoteBook({ book: selectedBook, collectionId: selectedCollectionId })}
+				onStatusUpdated={handleStatusUpdate}
 			/>
 
 			<BookNotesModal
@@ -391,6 +399,7 @@ export default function BookShelf({ user }) {
 				onClose={() => setActiveNoteBook(null)}
 				onSaveNotes={handleSaveNotes}
 				onConfirmAction={triggerConfirm}
+				user={user}
 			/>
 
 			<BookPreviewModal

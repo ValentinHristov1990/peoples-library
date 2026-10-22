@@ -1,0 +1,37 @@
+.book-status-wrapper {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.book-status-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-color, #ffffff);
+}
+
+.book-status-select {
+  width: 100%;
+  cursor: pointer;
+  background-color: var(--card-bg, #2a2a2a);
+  color: var(--text-color, #ffffff);
+  border: 1px solid var(--border-color, #444);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+}
+
+.book-status-select:focus {
+  outline: none;
+  border-color: var(--primary-color, #007bff);
+}
+
+.book-status-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

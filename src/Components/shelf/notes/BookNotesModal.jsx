@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
+import request from '../../utils/request';
+import { useNotification } from '../../notifications/Notification';
 import './bookNotesStyle.css';
 
-export default function BookNotesModal({ isOpen, book, collectionId, onClose, onSaveNotes, onConfirmAction }) {
+export default function BookNotesModal({ isOpen, book, collectionId, onClose, onSaveNotes, onConfirmAction, user }) {
     if (!isOpen || !book) return null;
 
+    const { showNotification } = useNotification();
     const [notes, setNotes] = useState(book.notes || []);
     const [activeNote, setActiveNote] = useState(null);
     const [isCreating, setIsCreating] = useState(false);
@@ -36,53 +39,83 @@ export default function BookNotesModal({ isOpen, book, collectionId, onClose, on
         setIsEditing(false);
     }
 
-    function handleSaveNewNote(e) {
+    async function handleSaveNewNote(e) {
         e.preventDefault();
         if (!titleInput.trim() || !contentInput.trim()) return;
 
-        const newNote = {
-            id: Date.now(),
-            title: titleInput.trim(),
-            content: contentInput.trim()
-        };
+        try {
+            const data = await request('/notes', 'POST', {
+                book_id: book.id,
+                user_id: user.id,
+                title: titleInput.trim(),
+                content: contentInput.trim()
+            });
 
-        const updatedNotes = [...notes, newNote];
-        setNotes(updatedNotes);
-        onSaveNotes(collectionId, book.id, updatedNotes);
+            const createdNote = Array.isArray(data) ? data[0] : data;
+            const newNote = createdNote || {
+                id: Date.now(),
+                title: titleInput.trim(),
+                content: contentInput.trim()
+            };
 
-        setIsCreating(false);
-        handleOpenNote(newNote);
+            const updatedNotes = [...notes, newNote];
+            setNotes(updatedNotes);
+            onSaveNotes(collectionId, book.id, updatedNotes);
+
+            setIsCreating(false);
+            handleOpenNote(newNote);
+            showNotification('Note created successfully!');
+        } catch (error) {
+            showNotification(`Failed to create note: ${error.message}`, 'error');
+        }
     }
 
-    function handleSaveEditedNote() {
+    async function handleSaveEditedNote() {
         if (!titleInput.trim() || !contentInput.trim()) return;
 
-        const updatedNotes = notes.map(n => {
-            if (n.id === activeNote.id) {
-                return { ...n, title: titleInput.trim(), content: contentInput.trim() };
-            }
-            return n;
-        });
+        try {
+            await request(`/notes?id=eq.${activeNote.id}`, 'PATCH', {
+                title: titleInput.trim(),
+                content: contentInput.trim()
+            });
 
-        setNotes(updatedNotes);
-        onSaveNotes(collectionId, book.id, updatedNotes);
+            const updatedNotes = notes.map(n => {
+                if (n.id === activeNote.id) {
+                    return { ...n, title: titleInput.trim(), content: contentInput.trim() };
+                }
+                return n;
+            });
 
-        const updatedActiveNote = { ...activeNote, title: titleInput.trim(), content: contentInput.trim() };
-        setActiveNote(updatedActiveNote);
-        setIsEditing(false);
+            setNotes(updatedNotes);
+            onSaveNotes(collectionId, book.id, updatedNotes);
+
+            const updatedActiveNote = { ...activeNote, title: titleInput.trim(), content: contentInput.trim() };
+            setActiveNote(updatedActiveNote);
+            setIsEditing(false);
+            showNotification('Note updated successfully!');
+        } catch (error) {
+            showNotification(`Failed to update note: ${error.message}`, 'error');
+        }
     }
 
     function handleDeleteNote(noteId) {
         onConfirmAction(
             "Delete Note",
             "Are you sure you want to delete this note?",
-            () => {
-                const updatedNotes = notes.filter(n => n.id !== noteId);
-                setNotes(updatedNotes);
-                onSaveNotes(collectionId, book.id, updatedNotes);
+            async () => {
+                try {
+                    await request(`/notes?id=eq.${noteId}`, 'DELETE');
 
-                setActiveNote(null);
-                setIsEditing(false);
+                    const updatedNotes = notes.filter(n => n.id !== noteId);
+                    setNotes(updatedNotes);
+                    onSaveNotes(collectionId, book.id, updatedNotes);
+
+                    setActiveNote(null);
+                    setIsEditing(false);
+                    showNotification('Note deleted successfully!');
+                } catch (error) {
+                    showNotification(`Failed to delete note: ${error.message}`, 'error');
+                }
             }
         );
     }

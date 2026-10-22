@@ -854,9 +854,9 @@ select.form-input option {
 }
 
 .shelf-books-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
+  display: flex;
+
+  /* gap: 5px; */
   margin-top: 10px;
 }
 

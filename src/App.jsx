@@ -16,8 +16,12 @@ import { useState } from "react";
 import AuthContext from "./context/authContext.js";
 import GuestRoute from "./Components/protected-route/GuestRoute.jsx"
 import ProtectedRoute from "./Components/protected-route/ProtectedRoute.jsx";
+import usePreventGlobalDrop from "./Components/hooks/usePreventGlobalDrop.jsx";
 
 export default function App() {
+
+  usePreventGlobalDrop();
+
   const [auth, setAuth] = useState(() => {
     const savedAuth = localStorage.getItem('auth');
     return savedAuth ? JSON.parse(savedAuth) : null;

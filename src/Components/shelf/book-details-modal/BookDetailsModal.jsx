@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import BookStatus from '../book-status/BookStatus';
 
 export default function BookDetailsModal({
     book,
     onClose,
     onRemove,
     onOpenNotes,
+    onStatusUpdated,
 }) {
     if (!book) return null;
 
@@ -40,6 +42,18 @@ export default function BookDetailsModal({
                 <h3 className="modal-title">{book.title}</h3>
                 <p className="modal-author">Author: {book.author}</p>
                 <p className="modal-desc">{book.description || 'No description available for this book.'}</p>
+
+                {book.shelfBookId && (
+                    <BookStatus
+                        shelfBookId={book.shelfBookId}
+                        currentStatus={book.status}
+                        onStatusUpdated={(newStatus) => {
+                            if (onStatusUpdated) {
+                                onStatusUpdated(book.id, newStatus);
+                            }
+                        }}
+                    />
+                )}
 
                 <div className="modal-details-actions">
                     <button
