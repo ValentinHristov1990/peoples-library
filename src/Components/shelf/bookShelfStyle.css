@@ -80,6 +80,7 @@
 }
 
 .mini-book-card {
+  position: relative;
   width: 105px;
   min-width: 105px;
   height: 175px;
@@ -91,12 +92,21 @@
   transition:
     border-color 0.2s,
     background 0.2s,
-    transform 0.2s;
+    transform 0.2s,
+    box-shadow 0.2s;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   box-sizing: border-box;
+}
+
+.mini-book-card.drag-over {
+  transform: translateY(-8px) scale(1.04);
+  background-color: rgba(212, 163, 115, 0.25);
+  border-color: #d4a373;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  z-index: 10;
 }
 
 .mini-book-card:hover {
