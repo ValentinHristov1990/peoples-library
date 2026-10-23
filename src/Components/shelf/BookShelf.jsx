@@ -48,7 +48,6 @@ export default function BookShelf({ user }) {
 	useEffect(() => {
 		if (user) {
 			fetchShelves();
-			fetchBooks();
 		}
 	}, [user]);
 
@@ -117,6 +116,12 @@ export default function BookShelf({ user }) {
 	const [searchFilter, setSearchFilter] = useState('');
 	const [selectedGenre, setSelectedGenre] = useState('');
 	const [selectedBookIds, setSelectedBookIds] = useState([]);
+
+	useEffect(() => {
+		if (activeCollectionId !== null && dbBooks.length === 0) {
+			fetchBooks();
+		}
+	}, [activeCollectionId, dbBooks.length]);
 
 	useEffect(() => {
 		const handleMouseMove = (e) => {

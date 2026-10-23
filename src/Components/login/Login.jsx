@@ -41,6 +41,7 @@ export default function Login({ onLogin }) {
                             placeholder="john@example.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            required
                         />
                     </div>
                 </div>
@@ -56,6 +57,7 @@ export default function Login({ onLogin }) {
                             placeholder="******"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            required
                         />
                     </div>
                 </div>

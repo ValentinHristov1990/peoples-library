@@ -55,6 +55,7 @@ export default function Register({ onRegister }) {
                             placeholder="john_doe"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            required
                         />
                         {errors.username && (
                             <div className="error-tooltip">
@@ -75,6 +76,7 @@ export default function Register({ onRegister }) {
                             placeholder="john@example.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            required
                         />
                         {errors.email && (
                             <div className="error-tooltip">
@@ -95,6 +97,7 @@ export default function Register({ onRegister }) {
                             placeholder="******"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            required
                         />
                         {errors.password && (
                             <div className="error-tooltip">
@@ -115,6 +118,7 @@ export default function Register({ onRegister }) {
                             placeholder="******"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
                         />
                         {errors.confirmPassword && (
                             <div className="error-tooltip">

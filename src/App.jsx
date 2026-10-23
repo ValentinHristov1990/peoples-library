@@ -12,7 +12,7 @@ import BookShelf from "./Components/shelf/BookShelf";
 import Footer from "./Footer";
 import "./App.css";
 // import { authApi } from "./Components/service/index.js";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import AuthContext from "./context/authContext.js";
 import GuestRoute from "./Components/protected-route/GuestRoute.jsx"
 import ProtectedRoute from "./Components/protected-route/ProtectedRoute.jsx";
@@ -46,14 +46,14 @@ export default function App() {
     localStorage.removeItem('auth');
   }
 
-  const contextValue = {
+  const contextValue = useMemo(() => ({
     accessToken: auth?.access_token,
     user: auth?.user,
     isAuthenticated: !!auth,
     register,
     login,
     logout: logoutAction
-  }
+  }), [auth])
   return (
 
     <AuthContext.Provider value={contextValue}>
