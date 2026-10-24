@@ -89,6 +89,7 @@ nav {
   gap: 25px;
   padding: 18px 0;
   margin: 0;
+  position: relative;
 }
 
 .user,
@@ -128,18 +129,17 @@ nav a.active {
 
 .welcome {
   position: absolute;
-  right: 50px;
+  right: 150px;
+  color: #d4a373;
+  font-weight: 500;
 }
 
 .nav-clock {
   position: absolute;
-  left: 50px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #d4c5b9;
-  font-size: 0.9rem;
+  left: 150px;
+  color: #d4a373;
   font-family: monospace;
-  letter-spacing: 0.5px;
+  font-weight: 500;
 }
 
 /* Hero Section */

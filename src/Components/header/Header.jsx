@@ -1,7 +1,16 @@
 import { NavLink } from 'react-router';
+import { useState, useEffect } from 'react';
 
 export default function Header({ isAuthenticated, user }) {
+    const [time, setTime] = useState(new Date());
 
+    useEffect(() => {
+        const timer = setInterval(() => setTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const username = user?.user_metadata?.username || user?.username;
+    const formattedTime = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) + ' h';
 
     return (
         <header className="header-container">
@@ -10,6 +19,8 @@ export default function Header({ isAuthenticated, user }) {
                 <p>Personal Reading Space</p>
             </div>
             <nav>
+                <span className="nav-clock">{formattedTime}</span>
+
                 <NavLink to="/">
                     Home
                 </NavLink>
@@ -29,7 +40,7 @@ export default function Header({ isAuthenticated, user }) {
                         <NavLink to="/logout">
                             Logout
                         </NavLink>
-                        <span className="welcome">Welcome, {user?.username}</span>
+                        <span className="welcome">Welcome, {username}</span>
                     </div>
                 ) : (
                     <div className="guest">

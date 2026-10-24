@@ -1,6 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
-import { allBooks } from '../../books-data/allBooks';
 import request from '../utils/request';
 import AuthContext from '../../context/authContext';
 import ConfirmModal from '../shelf/confirm-modal/ConfirmModal';
@@ -18,22 +17,15 @@ export default function Details() {
 
     useEffect(() => {
         async function fetchBookDetails() {
-            const foundInStatic = allBooks.find((item) => item.id === bookId);
-
-            if (foundInStatic) {
-                setBook(foundInStatic);
-                setLoading(false);
-            } else {
-                try {
-                    const data = await request(`/books?id=eq.${bookId}`);
-                    if (data && data.length > 0) {
-                        setBook(data[0]);
-                    }
-                } catch (error) {
-                    showNotification(`Failed to load book details: ${error.message}`, 'error');
-                } finally {
-                    setLoading(false);
+            try {
+                const data = await request(`/books?id=eq.${bookId}`);
+                if (data && data.length > 0) {
+                    setBook(data[0]);
                 }
+            } catch (error) {
+                showNotification(`Failed to load book details: ${error.message}`, 'error');
+            } finally {
+                setLoading(false);
             }
         }
 
@@ -67,7 +59,7 @@ export default function Details() {
                 <h2>Book Details</h2>
                 {book ? (
                     <>
-                        <img src={book.imageUrl} alt={book.title} />
+                        <img src={book.imageUrl || book.imageurl} alt={book.title} />
                         <h3>Title: {book.title}</h3>
                         <p>Author: {book.author}</p>
                         <p>Genre: {book.genre}</p>
@@ -85,7 +77,6 @@ export default function Details() {
                 ) : (
                     <p>Book not found.</p>
                 )}
-
                 <button onClick={() => navigate(-1)} className="form-btn shelf-btn-secondary" style={{ marginTop: '15px' }}>Back</button>
             </div>
 

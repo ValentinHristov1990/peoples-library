@@ -58,7 +58,7 @@ export default function App() {
 
     <AuthContext.Provider value={contextValue}>
       <div className="app-layout">
-        <Header isAuthenticated={!!auth} />
+        <Header isAuthenticated={!!auth} user={auth?.user} />
         <main>
           <Routes>
             <Route path="/" element={<Home />} />

@@ -1,23 +1,23 @@
 import { Link } from 'react-router';
-import { allBooks } from '../../books-data/allBooks';
+import { useState, useEffect } from 'react';
+import request from '../utils/request';
 
 export default function Home({ isAuthenticated }) {
-    const getDailyTopBooks = (books) => {
-        const now = new Date();
-        const start = new Date(now.getFullYear(), 0, 0);
-        const diff = now - start;
-        const oneDay = 1000 * 60 * 60 * 24;
-        const dayOfYear = Math.floor(diff / oneDay);
+    const [dailyBooks, setDailyBooks] = useState([]);
 
-        const startIdx = dayOfYear % books.length;
-        const top3 = [];
-        for (let i = 0; i < 3; i++) {
-            top3.push(books[(startIdx + i) % books.length]);
+    useEffect(() => {
+        async function fetchDailyBooks() {
+            try {
+                const data = await request('/books');
+                if (data && data.length > 0) {
+                    setDailyBooks(data.slice(0, 3));
+                }
+            } catch (error) {
+                console.error('Failed to fetch top books:', error);
+            }
         }
-        return top3;
-    };
-
-    const dailyBooks = getDailyTopBooks(allBooks);
+        fetchDailyBooks();
+    }, []);
 
     return (
         <section className="hero-container">
@@ -46,17 +46,17 @@ export default function Home({ isAuthenticated }) {
                     <h3 className="hero-daily-title">Today's Top 3 Books</h3>
                     <div className="hero-daily-grid">
                         {dailyBooks.map((book) => (
-                            <div key={book.id} className="book-card">
+                            <div key={book.id || book._id} className="book-card">
                                 <div>
                                     <div className="book-img-wrapper">
-                                        <img src={book.imageUrl || book.img} alt={book.title} />
+                                        <img src={book.imageUrl || book.imageurl} alt={book.title} />
                                     </div>
                                     <h3 className="book-title">{book.title}</h3>
                                     <p className="book-author">By: {book.author}</p>
                                     <p className="book-genre">{book.genre}</p>
                                 </div>
 
-                                <Link to={`/details/${book.id}`} className="form-btn book-details-btn">
+                                <Link to={`/details/${book.id || book._id}`} className="form-btn book-details-btn">
                                     Details
                                 </Link>
                             </div>

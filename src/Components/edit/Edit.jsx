@@ -1,9 +1,33 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import request from '../utils/request';
-import { GENRE_PRESETS } from '../../books-data/genrePresets';
 import BookCoverPicker from '../create/BookCoverPicker';
 import { useNotification } from '../notifications/Notification';
+
+const GENRE_PRESETS = {
+    'Fantasy & Sci-Fi': [
+        '/books-cover-images/fantasy/cover1.jpg',
+        '/books-cover-images/fantasy/cover2.jpg',
+    ],
+    'Personal Development': [
+        '/books-cover-images/personal-development/cover1.jpg',
+    ],
+    'Mystery & Thriller': [
+        '/books-cover-images/mystery/cover1.jpg',
+    ],
+    'Classics & Literature': [
+        '/books-cover-images/classics/cover1.jpg',
+    ],
+    'Tech & Programming': [
+        '/books-cover-images/tech/cover1.jpg',
+    ],
+    'History & Biography': [
+        '/books-cover-images/history/cover1.jpg',
+    ],
+    'Geography & Travel': [
+        '/books-cover-images/geography/cover1.jpg',
+    ],
+};
 
 export default function Edit() {
     const { bookId } = useParams();
@@ -35,7 +59,7 @@ export default function Edit() {
                         genre: book.genre || 'Fantasy & Sci-Fi',
                         description: book.description || '',
                     });
-                    const currentImg = book.imageUrl || '';
+                    const currentImg = book.imageUrl || book.imageurl || '';
                     setImageUrl(currentImg);
 
                     const isPreset = Object.values(GENRE_PRESETS).flat().includes(currentImg);

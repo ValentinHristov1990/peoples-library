@@ -1,36 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import request from '../utils/request';
-import { fantasyBooks } from '../../books-data/fantasy';
-import { personalDevelopmentBooks } from '../../books-data/personalDevelopmentBooks';
-import { mysteryBooks } from '../../books-data/mystery';
-import { classicsBooks } from '../../books-data/classics';
-import { techBooks } from '../../books-data/tech';
-import { historyBooks } from '../../books-data/history';
-import { allBooks } from '../../books-data/allBooks';
-import { geographyBooks } from '../../books-data/geography';
 
 const GENRES = [
     { id: 'all', name: 'All Books' },
-    { id: 'fantasy', name: 'Fantasy & Sci-Fi' },
-    { id: 'personal-development', name: 'Personal Development' },
-    { id: 'mystery', name: 'Mystery & Thriller' },
-    { id: 'classics', name: 'Classics & Literature' },
-    { id: 'tech', name: 'Tech & Programming' },
-    { id: 'history', name: 'History & Biography' },
-    { id: 'geography', name: 'Geography & Travel' },
+    { id: 'Fantasy & Sci-Fi', name: 'Fantasy & Sci-Fi' },
+    { id: 'Personal Development', name: 'Personal Development' },
+    { id: 'Mystery & Thriller', name: 'Mystery & Thriller' },
+    { id: 'Classics & Literature', name: 'Classics & Literature' },
+    { id: 'Tech & Programming', name: 'Tech & Programming' },
+    { id: 'History & Biography', name: 'History & Biography' },
+    { id: 'Geography & Travel', name: 'Geography & Travel' },
 ];
-
-const booksMap = {
-    'all': allBooks,
-    'fantasy': fantasyBooks,
-    'personal-development': personalDevelopmentBooks,
-    'mystery': mysteryBooks,
-    'classics': classicsBooks,
-    'tech': techBooks,
-    'history': historyBooks,
-    'geography': geographyBooks,
-};
 
 export default function Catalog() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -56,19 +37,13 @@ export default function Catalog() {
         fetchBooks();
     }, []);
 
-    const staticBooks = booksMap[selectedGenre] || allBooks;
-
-    const filteredDbBooks = dbBooks.filter(book =>
-        selectedGenre === 'all' || book.genre === selectedGenre
-    );
-
-    const combinedBooks = [...filteredDbBooks, ...staticBooks];
-
-    const filteredBooks = combinedBooks.filter((book) => {
+    const filteredBooks = dbBooks.filter(book => {
+        const matchesGenre = selectedGenre === 'all' || book.genre === selectedGenre;
         const title = book.title?.toLowerCase() || '';
         const author = book.author?.toLowerCase() || '';
         const query = searchQuery.toLowerCase();
-        return title.includes(query) || author.includes(query);
+        const matchesQuery = title.includes(query) || author.includes(query);
+        return matchesGenre && matchesQuery;
     });
 
     const totalPages = Math.ceil(filteredBooks.length / booksPerPage) || 1;
@@ -142,7 +117,7 @@ export default function Catalog() {
                             <div key={book.id || book._id} className="book-card">
                                 <div>
                                     <div className="book-img-wrapper">
-                                        <img src={book.imageurl || book.imageUrl} alt={book.title} />
+                                        <img src={book.imageUrl || book.imageurl} alt={book.title} />
                                     </div>
                                     <h3 className="book-title">{book.title}</h3>
                                     <p className="book-author">By: {book.author}</p>
@@ -161,29 +136,27 @@ export default function Catalog() {
                     )}
                 </div>
 
-                {totalPages > 1 && (
-                    <div className="catalog-pagination">
-                        <button
-                            className={`form-btn pagination-btn ${safeCurrentPage === 1 ? 'disabled' : ''}`}
-                            onClick={() => updateParams({ page: Math.max(safeCurrentPage - 1, 1) })}
-                            disabled={safeCurrentPage === 1}
-                        >
-                            &larr; Prev
-                        </button>
+                <div className="catalog-pagination">
+                    <button
+                        className={`form-btn pagination-btn ${safeCurrentPage === 1 ? 'disabled' : ''}`}
+                        onClick={() => updateParams({ page: Math.max(safeCurrentPage - 1, 1) })}
+                        disabled={safeCurrentPage === 1}
+                    >
+                        &larr; Prev
+                    </button>
 
-                        <span className="pagination-info">
-                            Page {safeCurrentPage} of {totalPages}
-                        </span>
+                    <span className="pagination-info">
+                        Page {safeCurrentPage} of {totalPages}
+                    </span>
 
-                        <button
-                            className={`form-btn pagination-btn ${safeCurrentPage === totalPages ? 'disabled' : ''}`}
-                            onClick={() => updateParams({ page: Math.min(safeCurrentPage + 1, totalPages) })}
-                            disabled={safeCurrentPage === totalPages}
-                        >
-                            Next &rarr;
-                        </button>
-                    </div>
-                )}
+                    <button
+                        className={`form-btn pagination-btn ${safeCurrentPage === totalPages ? 'disabled' : ''}`}
+                        onClick={() => updateParams({ page: Math.min(safeCurrentPage + 1, totalPages) })}
+                        disabled={safeCurrentPage === totalPages}
+                    >
+                        Next &rarr;
+                    </button>
+                </div>
             </div>
         </section>
     );
