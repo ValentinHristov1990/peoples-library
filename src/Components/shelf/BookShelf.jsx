@@ -7,11 +7,13 @@ import BookNotesModal from './notes/BookNotesModal';
 import ConfirmModal from './confirm-modal/ConfirmModal';
 import { useEscClose } from '../hooks/useEscClose';
 import { useNotification } from '../notifications/Notification';
+import { useAuth } from '../../context/authContext';
 import request from '../utils/request';
 import './bookShelfStyle.css';
 import useBookDragDrop from '../hooks/useBookDragDrop';
 
-export default function BookShelf({ user }) {
+export default function BookShelf() {
+	const { user } = useAuth();
 	const { showNotification } = useNotification();
 
 	const libraryName = user?.user_metadata?.username
@@ -260,16 +262,31 @@ export default function BookShelf({ user }) {
 		triggerConfirm(
 			"Remove Book",
 			"Are you sure you want to remove this book from the shelf?",
-			() => {
-				setCollections(currCollections =>
-					currCollections.map(col => ({
-						...col,
-						books: col.books.filter(b => b.id !== bookId)
-					}))
-				);
-				setSelectedBook(null);
-				setSelectedCollectionId(null);
-				showNotification('Book removed from shelf successfully!');
+			async () => {
+				try {
+					const currentCollection = collections.find(col => col.id === selectedCollectionId);
+					const bookToRemove = currentCollection?.books.find(b => b.id === bookId);
+
+					if (bookToRemove?.shelfBookId) {
+						await request(`/shelf_books?id=eq.${bookToRemove.shelfBookId}`, 'DELETE');
+					}
+
+					setCollections(currCollections =>
+						currCollections.map(col => {
+							if (col.id !== selectedCollectionId) return col;
+							return {
+								...col,
+								books: col.books.filter(b => b.id !== bookId)
+							};
+						})
+					);
+
+					setSelectedBook(null);
+					setSelectedCollectionId(null);
+					showNotification('Book removed from shelf successfully!');
+				} catch (error) {
+					showNotification(`Failed to remove book: ${error.message}`, 'error');
+				}
 			},
 			"Remove"
 		);

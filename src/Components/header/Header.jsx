@@ -1,7 +1,9 @@
 import { NavLink } from 'react-router';
 import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/authContext';
 
-export default function Header({ isAuthenticated, user }) {
+export default function Header() {
+    const { isAuthenticated, user } = useAuth();
     const [time, setTime] = useState(new Date());
 
     useEffect(() => {
@@ -21,35 +23,21 @@ export default function Header({ isAuthenticated, user }) {
             <nav>
                 <span className="nav-clock">{formattedTime}</span>
 
-                <NavLink to="/">
-                    Home
-                </NavLink>
-
-                <NavLink to="/catalog">
-                    Catalog
-                </NavLink>
+                <NavLink to="/">Home</NavLink>
+                <NavLink to="/catalog">Catalog</NavLink>
 
                 {isAuthenticated ? (
                     <div className="user">
-                        <NavLink to="/shelf">
-                            My Shelf
-                        </NavLink>
-                        <NavLink to="/create">
-                            Add Book
-                        </NavLink>
-                        <NavLink to="/logout">
-                            Logout
-                        </NavLink>
+                        <NavLink to="/shelf">My Shelf</NavLink>
+                        <NavLink to="/my-books">My Books</NavLink>
+                        <NavLink to="/create">Add Book</NavLink>
+                        <NavLink to="/logout">Logout</NavLink>
                         <span className="welcome">Welcome, {username}</span>
                     </div>
                 ) : (
                     <div className="guest">
-                        <NavLink to="/login">
-                            Login
-                        </NavLink>
-                        <NavLink to="/register">
-                            Register
-                        </NavLink>
+                        <NavLink to="/login">Login</NavLink>
+                        <NavLink to="/register">Register</NavLink>
                     </div>
                 )}
             </nav>

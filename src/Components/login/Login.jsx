@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { loginUser } from './loginApi';
+import { useAuth } from '../../context/authContext';
 
-export default function Login({ onLogin }) {
+
+export default function Login() {
+
+    const { login } = useAuth()
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
@@ -13,7 +18,7 @@ export default function Login({ onLogin }) {
 
         try {
             const data = await loginUser({ email, password });
-            onLogin(data);
+            login(data);
         } catch (error) {
             setErrors({ general: error.message || 'Invalid email or password!' });
         }

@@ -1,14 +1,14 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
 import request from '../utils/request';
-import AuthContext from '../../context/authContext';
 import ConfirmModal from '../shelf/confirm-modal/ConfirmModal';
 import { useNotification } from '../notifications/Notification';
+import { useAuth } from '../../context/authContext';
 
 export default function Details() {
     const { bookId } = useParams();
     const navigate = useNavigate();
-    const { user } = useContext(AuthContext);
+    const { user } = useAuth()
     const { showNotification } = useNotification();
 
     const [book, setBook] = useState(null);

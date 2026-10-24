@@ -1,13 +1,19 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { registerUser } from './registerApi';
+import { useAuth } from '../../context/authContext';
 
-export default function Register({ onRegister }) {
+
+export default function Register() {
+
+    const { register } = useAuth()
+
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errors, setErrors] = useState({});
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -27,7 +33,7 @@ export default function Register({ onRegister }) {
 
         try {
             const data = await registerUser({ username, email, password });
-            onRegister(data);
+            register(data);
         } catch (error) {
             setErrors({ general: error.message || 'Registration failed. Please try again.' });
         }

@@ -21,7 +21,7 @@ export default function Catalog() {
     const selectedGenre = searchParams.get('genre') || 'all';
     const searchQuery = searchParams.get('search') || '';
     const currentPage = parseInt(searchParams.get('page')) || 1;
-    const booksPerPage = 5;
+    const booksPerPage = 10;
 
     useEffect(() => {
         async function fetchBooks() {

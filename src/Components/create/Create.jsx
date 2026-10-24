@@ -1,15 +1,15 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import request from '../utils/request';
 import BookCoverPicker from './BookCoverPicker';
 import { useNotification } from '../notifications/Notification';
-import AuthContext from '../../context/authContext';
+import { useAuth } from '../../context/authContext';
 import { GENRE_PRESETS } from '../../constants/genrePresets';
 
 export default function Create() {
     const navigate = useNavigate();
     const { showNotification } = useNotification();
-    const { user } = useContext(AuthContext);
+    const { user } = useAuth();
 
     const [formData, setFormData] = useState({
         title: '',

@@ -1,0 +1,17 @@
+.my-books-empty-container {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.my-books-empty-text {
+  font-size: 1.2rem;
+  color: #e0e0e0;
+}
+
+.my-books-created-btn {
+  display: inline-block;
+  padding: 6px 14px;
+  margin: 0 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
