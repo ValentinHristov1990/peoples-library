@@ -13,12 +13,6 @@ export function ShelfProvider({ children }) {
     const { loading, isLoading } = useLoading();
     const { showNotification } = useNotification();
 
-    const libraryName = user?.user_metadata?.username
-        ? `${user.user_metadata.username.charAt(0).toUpperCase() + user.user_metadata.username.slice(1)}'s Library`
-        : user?.username
-            ? `${user.username.charAt(0).toUpperCase() + user.username.slice(1)}'s Library`
-            : "My Library";
-
     const [isCreating, setIsCreating] = useState(false);
     const [newCollectionName, setNewCollectionName] = useState('');
     const [selectedBook, setSelectedBook] = useState(null);
@@ -56,7 +50,6 @@ export function ShelfProvider({ children }) {
         });
     };
 
-    // Драг енд дроп преместване на прегледа (preview modal dragging)
     useEffect(() => {
         const handleMouseMove = (e) => {
             if (!isDragging) return;
@@ -130,7 +123,6 @@ export function ShelfProvider({ children }) {
     const value = {
         user,
         loading,
-        libraryName,
         activeCollectionId,
         setActiveCollectionId,
         confirmModal,

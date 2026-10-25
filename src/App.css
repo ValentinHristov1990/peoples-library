@@ -73,7 +73,6 @@ main {
 }
 
 /* Navigation */
-
 .header-container {
   width: 100%;
 }
@@ -153,6 +152,12 @@ nav a.active {
   color: #ffffff;
 }
 
+.hero-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 .hero-content h2 {
   font-size: 2.5rem;
   margin-bottom: 15px;
@@ -197,12 +202,6 @@ nav a.active {
 
 .cta-btn:hover {
   transform: translateY(-2px);
-}
-
-.hero-content {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 .hero-daily-section {
@@ -283,7 +282,6 @@ nav a.active {
 }
 
 /* Forms style */
-
 .form-container {
   display: flex;
   justify-content: center;
@@ -473,8 +471,7 @@ select.form-input option {
   color: #f5f2eb;
 }
 
-/* catalog */
-
+/* Catalog */
 .form-card.catalog-card-wide {
   display: block;
   width: 100%;
@@ -512,6 +509,7 @@ select.form-input option {
   gap: 20px;
   width: 100%;
   margin-top: 20px;
+  min-height: 440px;
 }
 
 @media (max-width: 1200px) {
@@ -610,14 +608,9 @@ select.form-input option {
   font-size: 16px;
 }
 
-.books-grid {
-  min-height: 440px;
-}
-
 .catalog-no-books {
   grid-column: 1 / -1;
   align-self: center;
-  text-align: center;
 }
 
 .catalog-pagination {
@@ -647,8 +640,7 @@ select.form-input option {
   letter-spacing: 0.5px;
 }
 
-/* details */
-
+/* Details */
 .details-container {
   background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(10px);
@@ -661,17 +653,16 @@ select.form-input option {
   align-items: center;
   text-align: center;
   gap: 16px;
-
   width: 100%;
   max-width: 600px;
   margin: 40px auto;
-
   box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
   box-sizing: border-box;
   transition:
     transform 0.2s ease,
     border-color 0.2s ease;
 }
+
 .details-container h3,
 .details-container p {
   margin: 0;
@@ -719,6 +710,7 @@ select.form-input option {
   transform: translateY(-2px);
 }
 
+/* Tooltips & Errors */
 .input-wrapper {
   position: relative;
   display: flex;
@@ -781,21 +773,8 @@ select.form-input option {
   gap: 8px;
 }
 
-.error-tooltip-general {
-  background-color: rgba(220, 38, 38, 0.15);
-  border: 1px solid rgba(220, 38, 38, 0.4);
-  color: #fca5a5;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* --- Основен контейнер за страниците (Рафтове, Създаване, Редакция) --- */
-.shelf-page-container,
-.form-container {
+/* Shelf & Collections Pages */
+.shelf-page-container {
   max-width: 1100px;
   margin: 40px auto;
   padding: 30px;
@@ -806,7 +785,6 @@ select.form-input option {
   box-sizing: border-box;
 }
 
-/* --- Хедър на рафтовете (заглавие + бутон) --- */
 .shelf-header {
   display: flex;
   justify-content: space-between;
@@ -825,7 +803,6 @@ select.form-input option {
   margin: 0;
 }
 
-/* --- Картов контейнер за всеки отделен рафт / колекция --- */
 .shelves-list {
   display: flex;
   flex-direction: column;
@@ -855,8 +832,6 @@ select.form-input option {
 
 .shelf-books-grid {
   display: flex;
-
-  /* gap: 5px; */
   margin-top: 10px;
 }
 

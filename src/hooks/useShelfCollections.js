@@ -14,7 +14,6 @@ export function useShelfCollections() {
   const { showNotification } = useNotification();
 
   const username = user?.user_metadata?.username || user?.username;
-
   const libraryName = username
     ? `${username.charAt(0).toUpperCase() + username.slice(1)}'s Library`
     : "My Library";
