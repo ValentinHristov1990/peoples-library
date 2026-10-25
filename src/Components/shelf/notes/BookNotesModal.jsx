@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import NoteList from './NoteList';
 import NoteForm from './NoteForm';
 import NoteDeleteButton from './NoteDeleteButton';
+import request from '../../utils/request';
 import './bookNotesStyle.css';
 
 export default function BookNotesModal({

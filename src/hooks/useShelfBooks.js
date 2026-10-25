@@ -134,16 +134,7 @@ export function useShelfBooks(
     );
   }
 
-  function handleSaveNotes(bookId, updatedNotes) {
-    const found = findBookInCollections(collections, bookId);
-
-    if (!found) {
-      showNotification("Book not found!", "error");
-      return;
-    }
-
-    const { collectionId } = found;
-
+  function handleSaveNotes(collectionId, bookId, updatedNotes) {
     setCollections((currCollections) =>
       currCollections.map((col) => {
         if (col.id !== collectionId) return col;
