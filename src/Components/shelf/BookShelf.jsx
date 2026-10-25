@@ -7,7 +7,7 @@ import BookNotesModal from './notes/BookNotesModal';
 import ConfirmModal from './confirm-modal/ConfirmModal';
 import { useEscClose } from '../hooks/useEscClose';
 import { useNotification } from '../notifications/Notification';
-import { useAuth } from '../../context/authContext';
+import useAuth from '../../Components/hooks/useAuth';
 import request from '../utils/request';
 import './bookShelfStyle.css';
 import useBookDragDrop from '../hooks/useBookDragDrop';

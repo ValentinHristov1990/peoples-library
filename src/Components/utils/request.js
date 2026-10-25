@@ -34,7 +34,6 @@ async function baseRequest(
 
   if (response.status === 401) {
     localStorage.removeItem("auth");
-    window.location.href = "/login";
     throw new Error("Session expired. Please log in again.");
   }
 

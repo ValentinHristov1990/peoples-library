@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { Navigate } from 'react-router';
-import { useAuth } from '../../context/authContext';
+import useAuth from '../../Components/hooks/useAuth';
 
 
 export default function Logout() {
-    const { logout } = useAuth;
+    const { logout } = useAuth();
 
     useEffect(() => {
         logout();

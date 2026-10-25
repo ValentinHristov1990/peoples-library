@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { registerUser } from './registerApi';
-import { useAuth } from '../../context/authContext';
+import useAuth from '../../Components/hooks/useAuth';
 
 
 export default function Register() {

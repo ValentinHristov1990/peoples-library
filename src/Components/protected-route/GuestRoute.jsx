@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router";
-import { useAuth } from "../../context/authContext";
+import useAuth from "../../Components/hooks/useAuth";
 
 export default function GuestRoute() {
     const { isAuthenticated } = useAuth();

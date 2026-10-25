@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router';
 import request from '../utils/request';
 import ConfirmModal from '../shelf/confirm-modal/ConfirmModal';
 import { useNotification } from '../notifications/Notification';
-import { useAuth } from '../../context/authContext';
+import useAuth from '../../Components/hooks/useAuth';
 
 export default function Details() {
     const { bookId } = useParams();

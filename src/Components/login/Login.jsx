@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { loginUser } from './loginApi';
-import { useAuth } from '../../context/authContext';
+import useAuth from '../hooks/useAuth';
+import useLoading from '../hooks/useLoading';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 
 export default function Login() {
 
     const { login } = useAuth()
-
+    const { loading, isLoading } = useLoading()
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
@@ -17,18 +19,23 @@ export default function Login() {
         setErrors({});
 
         try {
-            const data = await loginUser({ email, password });
-            login(data);
+            await isLoading(async () => {
+                const data = await loginUser({ email, password });
+                login(data);
+            })
         } catch (error) {
             setErrors({ general: error.message || 'Invalid email or password!' });
         }
     };
 
+    if (loading) {
+        return <LoadingSpinner />
+    }
+
     return (
         <section className="form-container">
             <form className="form-card" onSubmit={handleSubmit}>
                 <h2 className="form-title">Login</h2>
-
                 {errors.general && (
                     <div className="error-tooltip-general">
                         ⚠️ <span>{errors.general}</span>

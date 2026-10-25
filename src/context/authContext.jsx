@@ -1,5 +1,6 @@
-import { createContext, useState, useMemo, useContext } from "react";
+import { createContext, useState, useMemo } from "react";
 import { useNavigate } from "react-router";
+import { authRequest } from "../Components/utils/request";
 
 const AuthContext = createContext({
   accessToken: "",
@@ -31,8 +32,14 @@ export function AuthProvider({ children }) {
   };
 
   const logoutAction = async () => {
-    setAuth(null);
-    localStorage.removeItem("auth");
+    try {
+      await authRequest('/logout', 'POST');
+    } catch (error) {
+      console.error("Logout request failed:", error.message);
+    } finally {
+      setAuth(null);
+      localStorage.removeItem("auth");
+    }
   };
 
   const contextValue = useMemo(
@@ -49,7 +56,5 @@ export function AuthProvider({ children }) {
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 }
-export function useAuth() {
-  return useContext(AuthContext);
-}
+
 export default AuthContext;
