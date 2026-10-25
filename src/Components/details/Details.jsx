@@ -35,7 +35,7 @@ export default function Details() {
             try {
                 await request(`/books?id=eq.${bookId}`, 'DELETE');
                 showNotification('Book deleted successfully!');
-                navigate('/catalog');
+                navigate('/my-books');
             } catch (error) {
                 showNotification(`Failed to delete book: ${error.message}`, 'error');
             }

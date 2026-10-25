@@ -29,7 +29,7 @@ export default function Catalog() {
             try {
                 await isLoading(async () => {
                     const data = await request('/books');
-                    setDbBooks(data ? data.reverse() : []);
+                    setDbBooks(data ? [...data].reverse() : []);
                 })
             } catch (error) {
                 console.error('Failed to fetch books:', error);

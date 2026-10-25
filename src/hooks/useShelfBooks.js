@@ -5,6 +5,7 @@ import {
   CONFIRM_MESSAGES,
   CONFIRM_TITLES,
 } from "../constants/confirmModalConst";
+import { findBookInCollections } from "../Components/utils/shelfIdFinder";
 
 export function useShelfBooks(
   collections,
@@ -13,26 +14,12 @@ export function useShelfBooks(
   isLoading,
   showNotification,
   triggerConfirm,
+  activeCollectionId,
+  setActiveCollectionId,
+  setSelectedBook,
+  setSelectedCollectionId,
 ) {
   const [dbBooks, setDbBooks] = useState([]);
-  const [selectedBook, setSelectedBook] = useState(null);
-  const [selectedCollectionId, setSelectedCollectionId] = useState(null);
-  const [previewBook, setPreviewBook] = useState(null);
-  const [activeNoteBook, setActiveNoteBook] = useState(null);
-
-  const [previewPos, setPreviewPos] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-
-  const [searchFilter, setSearchFilter] = useState("");
-  const [selectedGenre, setSelectedGenre] = useState("");
-  const [selectedBookIds, setSelectedBookIds] = useState([]);
-
-  const { handleSaveNotes } = useBookNotes(
-    setCollections,
-    setSelectedBook,
-    showNotification,
-  );
 
   const {
     dragOverBookId,
@@ -53,7 +40,7 @@ export function useShelfBooks(
     });
   };
 
-  const handleStatusUpdate = (bookId, newStatus) => {
+  function handleStatusUpdate(bookId, newStatus) {
     setCollections((prevCollections) =>
       prevCollections.map((col) => ({
         ...col,
@@ -62,9 +49,9 @@ export function useShelfBooks(
         ),
       })),
     );
-  };
+  }
 
-  const toggleBookSelection = (bookId) => {
+  const toggleBookSelection = (bookId, selectedBookIds, setSelectedBookIds) => {
     setSelectedBookIds((curr) => {
       if (curr.includes(bookId)) {
         return curr.filter((id) => id !== bookId);
@@ -73,7 +60,11 @@ export function useShelfBooks(
     });
   };
 
-  const handleAddSelectedBooks = async (activeCollectionId) => {
+  async function handleAddSelectedBooks(
+    selectedBookIds,
+    setSearchFilter,
+    setSelectedGenre,
+  ) {
     if (selectedBookIds.length === 0 || !activeCollectionId) return;
 
     await isLoading(async () => {
@@ -85,7 +76,7 @@ export function useShelfBooks(
           });
         }
         showNotification("Books added to collection successfully!");
-        setSelectedBookIds([]);
+        setActiveCollectionId(null);
         setSearchFilter("");
         setSelectedGenre("");
         fetchShelves();
@@ -93,22 +84,24 @@ export function useShelfBooks(
         showNotification(`Failed to add books: ${error.message}`, "error");
       }
     });
-  };
+  }
 
-  const handleRemoveBook = (bookId) => {
+  function handleRemoveBook(bookId) {
+    const found = findBookInCollections(collections, bookId);
+
+    if (!found) {
+      showNotification("Book not found!", "error");
+      return;
+    }
+
+    const { collectionId: targetCollectionId, book: bookToRemove } = found;
+
     triggerConfirm(
-      CONFIRM_TITLES.DELETE_BOOK,
-      CONFIRM_MESSAGES.DELETE_BOOK,
+      CONFIRM_TITLES.REMOVE_BOOK,
+      CONFIRM_MESSAGES.REMOVE_BOOK,
       async () => {
         await isLoading(async () => {
           try {
-            const currentCollection = collections.find(
-              (col) => col.id === selectedCollectionId,
-            );
-            const bookToRemove = currentCollection?.books.find(
-              (b) => b.id === bookId,
-            );
-
             if (bookToRemove?.shelfBookId) {
               await request(
                 `/shelf_books?id=eq.${bookToRemove.shelfBookId}`,
@@ -118,7 +111,7 @@ export function useShelfBooks(
 
             setCollections((currCollections) =>
               currCollections.map((col) => {
-                if (col.id !== selectedCollectionId) return col;
+                if (col.id !== targetCollectionId) return col;
                 return {
                   ...col,
                   books: col.books.filter((b) => b.id !== bookId),
@@ -139,64 +132,53 @@ export function useShelfBooks(
       },
       "Remove",
     );
-  };
+  }
 
-  function handleMouseDown(e) {
-    if (e.target.tagName === "BUTTON" || e.target.closest("button")) return;
-    setIsDragging(true);
-    setDragStart({
-      x: e.clientX - previewPos.x,
-      y: e.clientY - previewPos.y,
-    });
+  function handleSaveNotes(bookId, updatedNotes) {
+    const found = findBookInCollections(collections, bookId);
+
+    if (!found) {
+      showNotification("Book not found!", "error");
+      return;
+    }
+
+    const { collectionId } = found;
+
+    setCollections((currCollections) =>
+      currCollections.map((col) => {
+        if (col.id !== collectionId) return col;
+
+        const updatedBooks = col.books.map((b) => {
+          if (b.id === bookId) {
+            return { ...b, notes: updatedNotes };
+          }
+          return b;
+        });
+
+        return { ...col, books: updatedBooks };
+      }),
+    );
+    showNotification("Notes saved successfully!");
   }
 
   const allGenres = [
     ...new Set(dbBooks.map((book) => book.genre).filter(Boolean)),
   ];
 
-  const filteredCatalogBooks = dbBooks.filter((book) => {
-    const title = book.title?.toLowerCase() || "";
-    const author = book.author?.toLowerCase() || "";
-    const query = searchFilter.toLowerCase();
-
-    const matchesQuery = title.includes(query) || author.includes(query);
-    const matchesGenre = !selectedGenre || book.genre === selectedGenre;
-
-    return matchesQuery && matchesGenre;
-  });
-
   return {
     dbBooks,
-    selectedBook,
-    setSelectedBook,
-    selectedCollectionId,
-    setSelectedCollectionId,
-    previewBook,
-    setPreviewBook,
-    activeNoteBook,
-    setActiveNoteBook,
-    previewPos,
-    isDragging,
-    dragStart,
-    searchFilter,
-    setSearchFilter,
-    selectedGenre,
-    setSelectedGenre,
-    selectedBookIds,
-    setSelectedBookIds,
-    dragOverBookId,
-    handleDragStart,
-    handleDragOver,
-    handleDragLeave,
-    handleDrop,
+    setDbBooks,
     fetchBooks,
     handleStatusUpdate,
     toggleBookSelection,
     handleAddSelectedBooks,
     handleRemoveBook,
     handleSaveNotes,
-    handleMouseDown,
     allGenres,
-    filteredCatalogBooks,
+    dragOverBookId,
+    handleDragStart,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
   };
 }

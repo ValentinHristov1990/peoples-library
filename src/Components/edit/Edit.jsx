@@ -161,10 +161,10 @@ export default function Edit() {
                     genrePresets={GENRE_PRESETS}
                     selectedImage={selectedPreset}
                     useCustomUrl={useCustomUrl}
-                    customUrl={imageUrl}
+                    imageUrl={imageUrl}
                     onToggleCustom={handleToggleCustom}
                     onPresetSelect={handlePresetSelect}
-                    onCustomUrlChange={(e) => setImageUrl(e.target.value)}
+                    onImageChange={(e) => setImageUrl(e.target.value)}
                 />
 
                 <div className="form-group">

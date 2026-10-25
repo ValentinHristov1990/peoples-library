@@ -13,11 +13,11 @@ export function useShelfCollections() {
   const { loading, isLoading } = useLoading();
   const { showNotification } = useNotification();
 
-  const libraryName = user?.user_metadata?.username
-    ? `${user.user_metadata.username.charAt(0).toUpperCase() + user.user_metadata.username.slice(1)}'s Library`
-    : user?.username
-      ? `${user.username.charAt(0).toUpperCase() + user.username.slice(1)}'s Library`
-      : "My Library";
+  const username = user?.user_metadata?.username || user?.username;
+
+  const libraryName = username
+    ? `${username.charAt(0).toUpperCase() + username.slice(1)}'s Library`
+    : "My Library";
 
   const [collections, setCollections] = useState([]);
   const [isCreating, setIsCreating] = useState(false);

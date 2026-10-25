@@ -121,10 +121,10 @@ export default function Create() {
                     genrePresets={GENRE_PRESETS}
                     selectedImage={selectedPreset}
                     useCustomUrl={useCustomUrl}
-                    customUrl={imageUrl}
+                    imageUrl={imageUrl}
                     onToggleCustom={handleToggleCustom}
                     onPresetSelect={handlePresetSelect}
-                    onCustomUrlChange={(e) => setImageUrl(e.target.value)}
+                    onImageUrlChange={(e) => setImageUrl(e.target.value)}
                 />
 
                 <div className="form-group">

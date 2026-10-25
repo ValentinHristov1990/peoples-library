@@ -16,37 +16,42 @@ import ProtectedRoute from "./Components/protected-route/ProtectedRoute.jsx";
 import usePreventGlobalDrop from './hooks/usePreventGlobalDrop';
 import MyBooks from "./Components/my-books/MyBooks.jsx";
 import { AuthProvider } from "./context/authContext.jsx";
+import { ShelfProvider } from "./context/shelf-context/ShelfContext.jsx";
 
 export default function App() {
 
   usePreventGlobalDrop();
 
   return (
+
     <AuthProvider>
-      <div className="app-layout">
-        <Header />
-        <main>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/catalog" element={<Catalog />} />
-            <Route path="/details/:bookId" element={<Details />} />
-            <Route path="/logout" element={<Logout />} />
+      <ShelfProvider>
+        <div className="app-layout">
 
-            <Route element={<GuestRoute />}>
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-            </Route>
+          <Header />
+          <main>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/catalog" element={<Catalog />} />
+              <Route path="/details/:bookId" element={<Details />} />
+              <Route path="/logout" element={<Logout />} />
 
-            <Route element={<ProtectedRoute />}>
-              <Route path="/shelf" element={<BookShelf />} />
-              <Route path="/create" element={<Create />} />
-              <Route path="/my-books" element={<MyBooks />} />
-              <Route path="/edit/:bookId" element={<Edit />} />
-            </Route>
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+              <Route element={<GuestRoute />}>
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+              </Route>
+
+              <Route element={<ProtectedRoute />}>
+                <Route path="/shelf" element={<BookShelf />} />
+                <Route path="/create" element={<Create />} />
+                <Route path="/my-books" element={<MyBooks />} />
+                <Route path="/edit/:bookId" element={<Edit />} />
+              </Route>
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </ShelfProvider>
     </AuthProvider>
   );
 }

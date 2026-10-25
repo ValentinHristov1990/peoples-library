@@ -53,7 +53,7 @@ export default function Register() {
                 <h2 className="form-title">Register</h2>
 
                 {errors.general && (
-                    <div className="error-error-tooltip-general error-tooltip-general">
+                    <div className="error-tooltip-general">
                         ⚠️ <span>{errors.general}</span>
                     </div>
                 )}

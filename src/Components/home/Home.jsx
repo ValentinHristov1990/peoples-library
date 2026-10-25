@@ -1,8 +1,10 @@
 import { Link } from 'react-router';
 import { useState, useEffect } from 'react';
 import request from '../utils/request';
+import useAuth from "../../hooks/useAuth"
 
-export default function Home({ isAuthenticated }) {
+export default function Home() {
+    const { isAuthenticated } = useAuth();
     const [dailyBooks, setDailyBooks] = useState([]);
 
     useEffect(() => {
