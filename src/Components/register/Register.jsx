@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { registerUser } from './registerApi';
 import useAuth from '../../Components/hooks/useAuth';
+import useLoading from '../hooks/useLoading';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 
 export default function Register() {
 
     const { register } = useAuth()
-
+    const { loading, isLoading } = useLoading();
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -32,12 +34,18 @@ export default function Register() {
         }
 
         try {
-            const data = await registerUser({ username, email, password });
-            register(data);
+            await isLoading(async () => {
+                const data = await registerUser({ username, email, password });
+                register(data);
+            })
         } catch (error) {
             setErrors({ general: error.message || 'Registration failed. Please try again.' });
         }
     };
+
+    if (loading) {
+        return <LoadingSpinner />;
+    }
 
     return (
         <section className="form-container">

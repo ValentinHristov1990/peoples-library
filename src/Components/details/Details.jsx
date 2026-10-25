@@ -4,19 +4,21 @@ import request from '../utils/request';
 import ConfirmModal from '../shelf/confirm-modal/ConfirmModal';
 import { useNotification } from '../notifications/Notification';
 import useAuth from '../../Components/hooks/useAuth';
+import useLoading from '../hooks/useLoading';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 export default function Details() {
+    const { loading, isLoading } = useLoading()
     const { bookId } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth()
     const { showNotification } = useNotification();
 
     const [book, setBook] = useState(null);
-    const [loading, setLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
-        async function fetchBookDetails() {
+        isLoading(async () => {
             try {
                 const data = await request(`/books?id=eq.${bookId}`);
                 if (data && data.length > 0) {
@@ -24,31 +26,24 @@ export default function Details() {
                 }
             } catch (error) {
                 showNotification(`Failed to load book details: ${error.message}`, 'error');
-            } finally {
-                setLoading(false);
             }
-        }
-
-        fetchBookDetails();
+        });
     }, [bookId]);
 
     const confirmDelete = async () => {
-        try {
-            await request(`/books?id=eq.${bookId}`, 'DELETE');
-            showNotification('Book deleted successfully!');
-            navigate('/catalog');
-        } catch (error) {
-            showNotification(`Failed to delete book: ${error.message}`, 'error');
-        }
+        await isLoading(async () => {
+            try {
+                await request(`/books?id=eq.${bookId}`, 'DELETE');
+                showNotification('Book deleted successfully!');
+                navigate('/catalog');
+            } catch (error) {
+                showNotification(`Failed to delete book: ${error.message}`, 'error');
+            }
+        })
     };
 
     if (loading) {
-        return (
-            <div className="details-container">
-                <h2>Book Details</h2>
-                <p>Loading...</p>
-            </div>
-        );
+        return <LoadingSpinner />;
     }
 
     const isOwner = book && user && book.user_id === user.id;
