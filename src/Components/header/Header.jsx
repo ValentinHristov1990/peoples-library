@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router';
 import { useState, useEffect } from 'react';
-import useAuth from '../../Components/hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
+
 
 export default function Header() {
     const { isAuthenticated, user } = useAuth();

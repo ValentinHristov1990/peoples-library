@@ -3,8 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router';
 import request from '../utils/request';
 import ConfirmModal from '../shelf/confirm-modal/ConfirmModal';
 import { useNotification } from '../notifications/Notification';
-import useAuth from '../../Components/hooks/useAuth';
-import useLoading from '../hooks/useLoading';
+import useAuth from '../../hooks/useAuth';
+import useLoading from '../../hooks/useLoading';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 export default function Details() {

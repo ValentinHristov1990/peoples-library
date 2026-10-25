@@ -1,6 +1,13 @@
 import './confirmModalStyle.css';
 
-export default function ConfirmModal({ isOpen, title, message, onConfirm, onCancel, confirmText = "Delete" }) {
+export default function ConfirmModal({
+    isOpen,
+    title,
+    message,
+    onConfirm,
+    onCancel,
+    confirmText = "Delete",
+}) {
     if (!isOpen) return null;
 
     return (

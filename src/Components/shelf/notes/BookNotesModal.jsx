@@ -3,7 +3,15 @@ import request from '../../utils/request';
 import { useNotification } from '../../notifications/Notification';
 import './bookNotesStyle.css';
 
-export default function BookNotesModal({ isOpen, book, collectionId, onClose, onSaveNotes, onConfirmAction, user }) {
+export default function BookNotesModal({
+    isOpen,
+    book,
+    collectionId,
+    onClose,
+    onSaveNotes,
+    onConfirmAction,
+    user,
+}) {
     if (!isOpen || !book) return null;
 
     const { showNotification } = useNotification();

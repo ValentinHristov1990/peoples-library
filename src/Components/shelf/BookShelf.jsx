@@ -1,186 +1,60 @@
-import { useState, useEffect } from 'react';
 import ShelfRow from './shelf-row/ShelfRow';
 import BookDetailsModal from './book-details-modal/BookDetailsModal';
 import BookPreviewModal from './book-preview-modal/BookPreviewModal';
 import CatalogModal from './catalog-modal/CatalogModal';
 import BookNotesModal from './notes/BookNotesModal';
 import ConfirmModal from './confirm-modal/ConfirmModal';
-import { useEscClose } from '../hooks/useEscClose';
-import { useNotification } from '../notifications/Notification';
-import useAuth from '../../Components/hooks/useAuth';
-import request from '../utils/request';
-import './bookShelfStyle.css';
-import useBookDragDrop from '../hooks/useBookDragDrop';
-import useLoading from '../hooks/useLoading';
 import LoadingSpinner from '../common/LoadingSpinner';
+import { useShelf } from '../../context/shelf-context/ShelfContext';
+import './bookShelfStyle.css';
 
 export default function BookShelf() {
-	const { user } = useAuth();
-	const { loading, isLoading } = useLoading();
-	const { showNotification } = useNotification();
-
-	const libraryName = user?.user_metadata?.username
-		? `${user.user_metadata.username.charAt(0).toUpperCase() + user.user_metadata.username.slice(1)}'s Library`
-		: user?.username
-			? `${user.username.charAt(0).toUpperCase() + user.username.slice(1)}'s Library`
-			: "My Library";
-
-	const [collections, setCollections] = useState([]);
-	const [dbBooks, setDbBooks] = useState([]);
-	const [isCreating, setIsCreating] = useState(false);
-	const [newCollectionName, setNewCollectionName] = useState('');
-	const [selectedBook, setSelectedBook] = useState(null);
-	const [selectedCollectionId, setSelectedCollectionId] = useState(null);
-	const [previewBook, setPreviewBook] = useState(null);
-	const [activeNoteBook, setActiveNoteBook] = useState(null);
-
 	const {
+		user,
+		loading,
+		libraryName,
+		collections,
+		isCreating,
+		setIsCreating,
+		newCollectionName,
+		setNewCollectionName,
+		selectedBook,
+		setSelectedBook,
+		selectedCollectionId,
+		setSelectedCollectionId,
+		previewBook,
+		setPreviewBook,
+		activeNoteBook,
+		setActiveNoteBook,
+		previewPos,
+		activeCollectionId,
+		setActiveCollectionId,
+		searchFilter,
+		setSearchFilter,
+		selectedGenre,
+		setSelectedGenre,
+		selectedBookIds,
+		setSelectedBookIds,
 		dragOverBookId,
+		confirmModal,
+		setConfirmModal,
 		handleDragStart,
 		handleDragOver,
 		handleDragLeave,
-		handleDrop
-	} = useBookDragDrop(collections, setCollections);
-
-	const [confirmModal, setConfirmModal] = useState({
-		isOpen: false,
-		title: '',
-		message: '',
-		onConfirm: null,
-		confirmText: 'Delete'
-	});
-
-	useEffect(() => {
-		if (user) {
-			fetchShelves();
-		}
-	}, [user]);
-
-	const fetchShelves = async () => {
-
-		await isLoading(async () => {
-			try {
-				const data = await request(`/shelves?user_id=eq.${user.id}&select=*,shelf_books(*,books(*,notes(*)))`);
-				const formatted = (data || []).map(shelf => ({
-					id: shelf.id,
-					title: shelf.title,
-					books: (shelf.shelf_books || []).map(sb => ({
-						shelfBookId: sb.id,
-						status: sb.status || 'to-read',
-						id: sb.books?.id,
-						title: sb.books?.title,
-						author: sb.books?.author,
-						genre: sb.books?.genre,
-						description: sb.books?.description,
-						imageUrl: sb.books?.imageUrl,
-						notes: sb.books?.notes || []
-					})).filter(b => b.id)
-				}));
-				setCollections(formatted);
-			} catch (error) {
-				showNotification(`Failed to load shelves: ${error.message}`, 'error');
-			}
-		})
-	};
-
-	function handleStatusUpdate(bookId, newStatus) {
-		setCollections(prevCollections =>
-			prevCollections.map(col => ({
-				...col,
-				books: col.books.map(book =>
-					book.id === bookId ? { ...book, status: newStatus } : book
-				)
-			}))
-		);
-	}
-
-	const fetchBooks = async () => {
-		await isLoading(async () => {
-			try {
-				const data = await request('/books');
-				setDbBooks(data || []);
-			} catch (error) {
-				console.error('Failed to fetch books:', error);
-			}
-		})
-	};
-
-	const triggerConfirm = (title, message, onConfirm, confirmText = "Delete") => {
-		setConfirmModal({
-			isOpen: true,
-			title,
-			message,
-			confirmText,
-			onConfirm: () => {
-				onConfirm();
-				setConfirmModal(curr => ({ ...curr, isOpen: false }));
-			}
-		});
-	};
-
-	const [previewPos, setPreviewPos] = useState({ x: 0, y: 0 });
-	const [isDragging, setIsDragging] = useState(false);
-	const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-
-	const [activeCollectionId, setActiveCollectionId] = useState(null);
-	const [searchFilter, setSearchFilter] = useState('');
-	const [selectedGenre, setSelectedGenre] = useState('');
-	const [selectedBookIds, setSelectedBookIds] = useState([]);
-
-	useEffect(() => {
-		if (activeCollectionId !== null && dbBooks.length === 0) {
-			fetchBooks();
-		}
-	}, [activeCollectionId, dbBooks.length]);
-
-	useEffect(() => {
-		const handleMouseMove = (e) => {
-			if (!isDragging) return;
-			setPreviewPos({
-				x: e.clientX - dragStart.x,
-				y: e.clientY - dragStart.y
-			});
-		};
-
-		const handleMouseUp = () => {
-			setIsDragging(false);
-		};
-
-		if (isDragging) {
-			window.addEventListener('mousemove', handleMouseMove);
-			window.addEventListener('mouseup', handleMouseUp);
-		}
-
-		return () => {
-			window.removeEventListener('mousemove', handleMouseMove);
-			window.removeEventListener('mouseup', handleMouseUp);
-		};
-	}, [isDragging, dragStart]);
-
-	function handleMouseDown(e) {
-		if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
-		setIsDragging(true);
-		setDragStart({
-			x: e.clientX - previewPos.x,
-			y: e.clientY - previewPos.y
-		});
-	}
-
-	useEscClose({
-		confirmModal,
-		setConfirmModal,
-		activeNoteBook,
-		setActiveNoteBook,
-		previewBook,
-		setPreviewBook,
-		selectedBook,
-		setSelectedBook,
-		setSelectedCollectionId,
-		activeCollectionId,
-		setActiveCollectionId,
-		isCreating,
-		setIsCreating
-	});
+		handleDrop,
+		handleMouseDown,
+		handleCreateCollection,
+		handleDeleteCollection,
+		handleStatusUpdate,
+		toggleBookSelection,
+		handleAddSelectedBooks,
+		handleRemoveBook,
+		handleSaveNotes,
+		triggerConfirm,
+		allGenres,
+		filteredCatalogBooks,
+		existingBookIdsInActiveShelf
+	} = useShelf();
 
 	if (!user) {
 		return (
@@ -193,161 +67,9 @@ export default function BookShelf() {
 		);
 	}
 
-	async function handleCreateCollection(e) {
-		e.preventDefault();
-		if (!newCollectionName.trim()) {
-			showNotification('Collection name cannot be empty!', 'error');
-			return;
-		}
-
-		await isLoading(async () => {
-			try {
-				await request('/shelves', 'POST', {
-					title: newCollectionName.trim(),
-					user_id: user.id
-				});
-
-				setNewCollectionName('');
-				setIsCreating(false);
-				showNotification('Collection created successfully!');
-				fetchShelves();
-			} catch (error) {
-				showNotification(`Failed to create collection: ${error.message}`, 'error');
-			}
-		});
-	}
-
-	function handleDeleteCollection(collectionId) {
-		triggerConfirm(
-			"Delete Collection",
-			"Are you sure you want to delete this collection?",
-			async () => {
-				await isLoading(async () => {
-					try {
-						await request(`/shelves?id=eq.${collectionId}`, 'DELETE');
-						if (activeCollectionId === collectionId) {
-							setActiveCollectionId(null);
-						}
-						showNotification('Collection deleted successfully!');
-						fetchShelves();
-					} catch (error) {
-						showNotification(`Failed to delete collection: ${error.message}`, 'error');
-					}
-				});
-			},
-			"Delete"
-		);
-	}
-
-	const toggleBookSelection = (bookId) => {
-		setSelectedBookIds(curr => {
-			if (curr.includes(bookId)) {
-				return curr.filter(id => id !== bookId);
-			}
-			return [...curr, bookId];
-		});
-	};
-
-	async function handleAddSelectedBooks() {
-		if (selectedBookIds.length === 0 || !activeCollectionId) return;
-
-		await isLoading(async () => {
-			try {
-				for (const bookId of selectedBookIds) {
-					await request('/shelf_books', 'POST', {
-						shelf_id: activeCollectionId,
-						book_id: bookId
-					});
-				}
-				showNotification('Books added to collection successfully!');
-				setActiveCollectionId(null);
-				setSelectedBookIds([]);
-				setSearchFilter('');
-				setSelectedGenre('');
-				fetchShelves();
-			} catch (error) {
-				showNotification(`Failed to add books: ${error.message}`, 'error');
-			}
-		});
-	}
-
-	function handleRemoveBook(bookId) {
-		triggerConfirm(
-			"Remove Book",
-			"Are you sure you want to remove this book from the shelf?",
-			async () => {
-				await isLoading(async () => {
-					try {
-						const currentCollection = collections.find(col => col.id === selectedCollectionId);
-						const bookToRemove = currentCollection?.books.find(b => b.id === bookId);
-
-						if (bookToRemove?.shelfBookId) {
-							await request(`/shelf_books?id=eq.${bookToRemove.shelfBookId}`, 'DELETE');
-						}
-
-						setCollections(currCollections =>
-							currCollections.map(col => {
-								if (col.id !== selectedCollectionId) return col;
-								return {
-									...col,
-									books: col.books.filter(b => b.id !== bookId)
-								};
-							})
-						);
-
-						setSelectedBook(null);
-						setSelectedCollectionId(null);
-						showNotification('Book removed from shelf successfully!');
-					} catch (error) {
-						showNotification(`Failed to remove book: ${error.message}`, 'error');
-					}
-				});
-			},
-			"Remove"
-		);
-	};
-
-	function handleSaveNotes(collectionId, bookId, updatedNotes) {
-		setCollections(currCollections =>
-			currCollections.map(col => {
-				if (col.id !== collectionId) return col;
-
-				const updatedBooks = col.books.map(b => {
-					if (b.id === bookId) {
-						return { ...b, notes: updatedNotes };
-					}
-					return b;
-				});
-
-				return { ...col, books: updatedBooks };
-			})
-		);
-
-		if (selectedBook && selectedBook.id === bookId) {
-			setSelectedBook(prev => ({ ...prev, notes: updatedNotes }));
-		}
-		showNotification('Notes saved successfully!');
-	}
-
-	const allGenres = [...new Set(dbBooks.map(book => book.genre).filter(Boolean))];
-
-	const filteredCatalogBooks = dbBooks.filter(book => {
-		const title = book.title?.toLowerCase() || '';
-		const author = book.author?.toLowerCase() || '';
-		const query = searchFilter.toLowerCase();
-
-		const matchesQuery = title.includes(query) || author.includes(query);
-		const matchesGenre = !selectedGenre || book.genre === selectedGenre;
-
-		return matchesQuery && matchesGenre;
-	});
-
-	const activeCollection = collections.find(col => col.id === activeCollectionId);
-	const existingBookIdsInActiveShelf = new Set(activeCollection?.books.map(b => b.id) || []);
-
 	if (loading) {
 		return <LoadingSpinner />;
-	};
+	}
 
 	return (
 		<div className="shelf-wide-container">

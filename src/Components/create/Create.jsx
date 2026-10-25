@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import request from '../utils/request';
 import BookCoverPicker from './BookCoverPicker';
 import { useNotification } from '../notifications/Notification';
-import useAuth from '../../Components/hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
 import { GENRE_PRESETS } from '../../constants/genrePresets';
 
 export default function Create() {

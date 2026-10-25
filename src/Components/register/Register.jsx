@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { registerUser } from './registerApi';
-import useAuth from '../../Components/hooks/useAuth';
-import useLoading from '../hooks/useLoading';
+import useAuth from '../../hooks/useAuth';
+import useLoading from '../../hooks/useLoading';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 

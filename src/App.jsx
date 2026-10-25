@@ -8,12 +8,12 @@ import Catalog from "./Components/catalog/Catalog";
 import Details from "./Components/details/Details";
 import Create from "./Components/create/Create";
 import Edit from "./Components/edit/Edit";
-import BookShelf from "./Components/shelf/BookShelf";
+import BookShelf from "./Components/shelf/BookShelf.jsx";
 import Footer from "./Footer";
 import "./App.css";
-import GuestRoute from "./Components/protected-route/GuestRoute.jsx"
+import GuestRoute from "./Components/protected-route/GuestRoute.jsx";
 import ProtectedRoute from "./Components/protected-route/ProtectedRoute.jsx";
-import usePreventGlobalDrop from "./Components/hooks/usePreventGlobalDrop.jsx";
+import usePreventGlobalDrop from './hooks/usePreventGlobalDrop';
 import MyBooks from "./Components/my-books/MyBooks.jsx";
 import { AuthProvider } from "./context/authContext.jsx";
 
@@ -22,7 +22,6 @@ export default function App() {
   usePreventGlobalDrop();
 
   return (
-
     <AuthProvider>
       <div className="app-layout">
         <Header />
