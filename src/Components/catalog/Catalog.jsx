@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import request from '../utils/request';
+import LoadingSpinner from '../common/LoadingSpinner';
+import useLoading from '../hooks/useLoading';
 
 const GENRES = [
     { id: 'all', name: 'All Books' },
@@ -16,8 +18,7 @@ const GENRES = [
 export default function Catalog() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [dbBooks, setDbBooks] = useState([]);
-    const [loading, setLoading] = useState(true);
-
+    const { loading, isLoading } = useLoading();
     const selectedGenre = searchParams.get('genre') || 'all';
     const searchQuery = searchParams.get('search') || '';
     const currentPage = parseInt(searchParams.get('page')) || 1;
@@ -26,12 +27,12 @@ export default function Catalog() {
     useEffect(() => {
         async function fetchBooks() {
             try {
-                const data = await request('/books');
-                setDbBooks(data ? data.reverse() : []);
+                await isLoading(async () => {
+                    const data = await request('/books');
+                    setDbBooks(data ? data.reverse() : []);
+                })
             } catch (error) {
                 console.error('Failed to fetch books:', error);
-            } finally {
-                setLoading(false);
             }
         }
         fetchBooks();
@@ -64,14 +65,7 @@ export default function Catalog() {
     };
 
     if (loading) {
-        return (
-            <section className="form-container">
-                <div className="form-card form-card-wide catalog-card-wide">
-                    <h2 className="form-title">Books Catalog</h2>
-                    <p className="catalog-no-books">Loading books...</p>
-                </div>
-            </section>
-        );
+        return <LoadingSpinner />;
     }
 
     return (

@@ -94,7 +94,7 @@ export default function Register() {
                         />
                         {errors.email && (
                             <div className="error-tooltip">
-                                ⚠️ <span>{errors.error_tooltip || errors.email}</span>
+                                ⚠️ <span>{errors.email}</span>
                             </div>
                         )}
                     </div>

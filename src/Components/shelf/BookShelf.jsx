@@ -11,9 +11,12 @@ import useAuth from '../../Components/hooks/useAuth';
 import request from '../utils/request';
 import './bookShelfStyle.css';
 import useBookDragDrop from '../hooks/useBookDragDrop';
+import useLoading from '../hooks/useLoading';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 export default function BookShelf() {
 	const { user } = useAuth();
+	const { loading, isLoading } = useLoading();
 	const { showNotification } = useNotification();
 
 	const libraryName = user?.user_metadata?.username
@@ -54,27 +57,30 @@ export default function BookShelf() {
 	}, [user]);
 
 	const fetchShelves = async () => {
-		try {
-			const data = await request(`/shelves?user_id=eq.${user.id}&select=*,shelf_books(*,books(*,notes(*)))`);
-			const formatted = (data || []).map(shelf => ({
-				id: shelf.id,
-				title: shelf.title,
-				books: (shelf.shelf_books || []).map(sb => ({
-					shelfBookId: sb.id,
-					status: sb.status || 'to-read',
-					id: sb.books?.id,
-					title: sb.books?.title,
-					author: sb.books?.author,
-					genre: sb.books?.genre,
-					description: sb.books?.description,
-					imageUrl: sb.books?.imageUrl,
-					notes: sb.books?.notes || []
-				})).filter(b => b.id)
-			}));
-			setCollections(formatted);
-		} catch (error) {
-			showNotification(`Failed to load shelves: ${error.message}`, 'error');
-		}
+
+		await isLoading(async () => {
+			try {
+				const data = await request(`/shelves?user_id=eq.${user.id}&select=*,shelf_books(*,books(*,notes(*)))`);
+				const formatted = (data || []).map(shelf => ({
+					id: shelf.id,
+					title: shelf.title,
+					books: (shelf.shelf_books || []).map(sb => ({
+						shelfBookId: sb.id,
+						status: sb.status || 'to-read',
+						id: sb.books?.id,
+						title: sb.books?.title,
+						author: sb.books?.author,
+						genre: sb.books?.genre,
+						description: sb.books?.description,
+						imageUrl: sb.books?.imageUrl,
+						notes: sb.books?.notes || []
+					})).filter(b => b.id)
+				}));
+				setCollections(formatted);
+			} catch (error) {
+				showNotification(`Failed to load shelves: ${error.message}`, 'error');
+			}
+		})
 	};
 
 	function handleStatusUpdate(bookId, newStatus) {
@@ -89,12 +95,14 @@ export default function BookShelf() {
 	}
 
 	const fetchBooks = async () => {
-		try {
-			const data = await request('/books');
-			setDbBooks(data || []);
-		} catch (error) {
-			console.error('Failed to fetch books:', error);
-		}
+		await isLoading(async () => {
+			try {
+				const data = await request('/books');
+				setDbBooks(data || []);
+			} catch (error) {
+				console.error('Failed to fetch books:', error);
+			}
+		})
 	};
 
 	const triggerConfirm = (title, message, onConfirm, confirmText = "Delete") => {
@@ -192,19 +200,21 @@ export default function BookShelf() {
 			return;
 		}
 
-		try {
-			await request('/shelves', 'POST', {
-				title: newCollectionName.trim(),
-				user_id: user.id
-			});
+		await isLoading(async () => {
+			try {
+				await request('/shelves', 'POST', {
+					title: newCollectionName.trim(),
+					user_id: user.id
+				});
 
-			setNewCollectionName('');
-			setIsCreating(false);
-			showNotification('Collection created successfully!');
-			fetchShelves();
-		} catch (error) {
-			showNotification(`Failed to create collection: ${error.message}`, 'error');
-		}
+				setNewCollectionName('');
+				setIsCreating(false);
+				showNotification('Collection created successfully!');
+				fetchShelves();
+			} catch (error) {
+				showNotification(`Failed to create collection: ${error.message}`, 'error');
+			}
+		});
 	}
 
 	function handleDeleteCollection(collectionId) {
@@ -212,16 +222,18 @@ export default function BookShelf() {
 			"Delete Collection",
 			"Are you sure you want to delete this collection?",
 			async () => {
-				try {
-					await request(`/shelves?id=eq.${collectionId}`, 'DELETE');
-					if (activeCollectionId === collectionId) {
-						setActiveCollectionId(null);
+				await isLoading(async () => {
+					try {
+						await request(`/shelves?id=eq.${collectionId}`, 'DELETE');
+						if (activeCollectionId === collectionId) {
+							setActiveCollectionId(null);
+						}
+						showNotification('Collection deleted successfully!');
+						fetchShelves();
+					} catch (error) {
+						showNotification(`Failed to delete collection: ${error.message}`, 'error');
 					}
-					showNotification('Collection deleted successfully!');
-					fetchShelves();
-				} catch (error) {
-					showNotification(`Failed to delete collection: ${error.message}`, 'error');
-				}
+				});
 			},
 			"Delete"
 		);
@@ -239,23 +251,24 @@ export default function BookShelf() {
 	async function handleAddSelectedBooks() {
 		if (selectedBookIds.length === 0 || !activeCollectionId) return;
 
-		try {
-			for (const bookId of selectedBookIds) {
-				await request('/shelf_books', 'POST', {
-					shelf_id: activeCollectionId,
-					book_id: bookId
-				});
+		await isLoading(async () => {
+			try {
+				for (const bookId of selectedBookIds) {
+					await request('/shelf_books', 'POST', {
+						shelf_id: activeCollectionId,
+						book_id: bookId
+					});
+				}
+				showNotification('Books added to collection successfully!');
+				setActiveCollectionId(null);
+				setSelectedBookIds([]);
+				setSearchFilter('');
+				setSelectedGenre('');
+				fetchShelves();
+			} catch (error) {
+				showNotification(`Failed to add books: ${error.message}`, 'error');
 			}
-
-			showNotification('Books added to collection successfully!');
-			setActiveCollectionId(null);
-			setSelectedBookIds([]);
-			setSearchFilter('');
-			setSelectedGenre('');
-			fetchShelves();
-		} catch (error) {
-			showNotification(`Failed to add books: ${error.message}`, 'error');
-		}
+		});
 	}
 
 	function handleRemoveBook(bookId) {
@@ -263,34 +276,36 @@ export default function BookShelf() {
 			"Remove Book",
 			"Are you sure you want to remove this book from the shelf?",
 			async () => {
-				try {
-					const currentCollection = collections.find(col => col.id === selectedCollectionId);
-					const bookToRemove = currentCollection?.books.find(b => b.id === bookId);
+				await isLoading(async () => {
+					try {
+						const currentCollection = collections.find(col => col.id === selectedCollectionId);
+						const bookToRemove = currentCollection?.books.find(b => b.id === bookId);
 
-					if (bookToRemove?.shelfBookId) {
-						await request(`/shelf_books?id=eq.${bookToRemove.shelfBookId}`, 'DELETE');
+						if (bookToRemove?.shelfBookId) {
+							await request(`/shelf_books?id=eq.${bookToRemove.shelfBookId}`, 'DELETE');
+						}
+
+						setCollections(currCollections =>
+							currCollections.map(col => {
+								if (col.id !== selectedCollectionId) return col;
+								return {
+									...col,
+									books: col.books.filter(b => b.id !== bookId)
+								};
+							})
+						);
+
+						setSelectedBook(null);
+						setSelectedCollectionId(null);
+						showNotification('Book removed from shelf successfully!');
+					} catch (error) {
+						showNotification(`Failed to remove book: ${error.message}`, 'error');
 					}
-
-					setCollections(currCollections =>
-						currCollections.map(col => {
-							if (col.id !== selectedCollectionId) return col;
-							return {
-								...col,
-								books: col.books.filter(b => b.id !== bookId)
-							};
-						})
-					);
-
-					setSelectedBook(null);
-					setSelectedCollectionId(null);
-					showNotification('Book removed from shelf successfully!');
-				} catch (error) {
-					showNotification(`Failed to remove book: ${error.message}`, 'error');
-				}
+				});
 			},
 			"Remove"
 		);
-	}
+	};
 
 	function handleSaveNotes(collectionId, bookId, updatedNotes) {
 		setCollections(currCollections =>
@@ -329,6 +344,10 @@ export default function BookShelf() {
 
 	const activeCollection = collections.find(col => col.id === activeCollectionId);
 	const existingBookIdsInActiveShelf = new Set(activeCollection?.books.map(b => b.id) || []);
+
+	if (loading) {
+		return <LoadingSpinner />;
+	};
 
 	return (
 		<div className="shelf-wide-container">
