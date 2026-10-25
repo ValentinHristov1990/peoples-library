@@ -7,10 +7,10 @@ export default function Logout() {
     const { logout } = useAuth();
 
     useEffect(() => {
-        logout();
+        logout().catch(err => console.error("Logout background error:", err));
     }, [logout]);
 
     return (
-        <Navigate to={"/"} />
+        <Navigate to="/" replace />
     );
 }
