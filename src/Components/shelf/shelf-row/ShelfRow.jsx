@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useNotification } from '../../notifications/useNotification';
 import { BOOK_STATUSES, STATUS_ICONS } from '../../../constants/bookStatusConst';
 import request from '../../utils/request';
+import './shelfRowStyle.css';
 
 export default function ShelfRow({
     collection,
@@ -17,12 +19,19 @@ export default function ShelfRow({
     dragOverBookId
 }) {
     const [openDropdownBookId, setOpenDropdownBookId] = useState(null);
+    const [dropdownPosition, setDropdownPosition] = useState(null);
+    const dropdownRef = useRef(null);
     const { showNotification } = useNotification();
 
     useEffect(() => {
         function handleClickOutside(event) {
-            if (openDropdownBookId && !event.target.closest('.mini-book-status-wrapper')) {
+            if (
+                openDropdownBookId &&
+                !event.target.closest('.mini-book-status-wrapper') &&
+                !dropdownRef.current?.contains(event.target)
+            ) {
                 setOpenDropdownBookId(null);
+                setDropdownPosition(null);
             }
         }
         document.addEventListener('mousedown', handleClickOutside);
@@ -30,6 +39,26 @@ export default function ShelfRow({
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [openDropdownBookId]);
+
+    function toggleStatusDropdown(bookId, event) {
+        event.stopPropagation();
+        if (openDropdownBookId === bookId) {
+            setOpenDropdownBookId(null);
+            setDropdownPosition(null);
+            return;
+        }
+
+        const triggerRect = event.currentTarget.getBoundingClientRect();
+        const centerX = triggerRect.left + triggerRect.width / 2;
+        const left = Math.min(Math.max(centerX, 75), window.innerWidth - 75);
+
+        setDropdownPosition({
+            left,
+            top: triggerRect.bottom + 6,
+            transform: 'translateX(-50%)'
+        });
+        setOpenDropdownBookId(bookId);
+    }
 
     async function handleQuickStatusChange(shelfBookId, newStatus, bookId, e) {
         e.stopPropagation();
@@ -43,6 +72,8 @@ export default function ShelfRow({
             }
 
             setOpenDropdownBookId(null);
+            setDropdownPosition(null);
+            showNotification('Book status updated successfully!', 'success');
         } catch (error) {
             showNotification(`Failed to update status: ${error.message}`, 'error');
         }
@@ -104,18 +135,18 @@ export default function ShelfRow({
                                     <div className="mini-book-status-wrapper">
                                         <span
                                             className="mini-book-status-icon"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setOpenDropdownBookId(openDropdownBookId === book.shelfBookId ? null : book.shelfBookId);
-                                            }}
+                                            onClick={(e) => toggleStatusDropdown(book.shelfBookId, e)}
                                             title="Change status"
                                         >
                                             {STATUS_ICONS[book.status] || '📖'}
                                         </span>
 
-                                        {openDropdownBookId === book.shelfBookId && (
+                                        {openDropdownBookId === book.shelfBookId && dropdownPosition && createPortal(
                                             <div
+                                                ref={dropdownRef}
                                                 className="quick-status-dropdown"
+                                                style={{ ...dropdownPosition, position: 'fixed', bottom: 'auto', marginBottom: 0 }}
+                                                onMouseDown={(e) => e.stopPropagation()}
                                                 onClick={(e) => e.stopPropagation()}
                                             >
                                                 {BOOK_STATUSES.map(opt => (
@@ -128,7 +159,8 @@ export default function ShelfRow({
                                                         <span>{opt.label}</span>
                                                     </div>
                                                 ))}
-                                            </div>
+                                            </div>,
+                                            document.body
                                         )}
                                     </div>
                                 )}

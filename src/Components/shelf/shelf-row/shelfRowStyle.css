@@ -1,82 +1,119 @@
 .shelf-row-section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 32px;
+  background: rgba(25, 17, 12, 0.5);
+  border-radius: 8px;
+  border: 1px solid rgba(212, 163, 115, 0.15);
+  border-bottom: 5px solid #2c1a0f;
+  padding: 12px 18px 16px 18px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
   width: 100%;
+  box-sizing: border-box;
+}
+
+.shelf-row-section:hover {
+  background: rgba(35, 23, 15, 0.7);
+  border-color: rgba(212, 163, 115, 0.35);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.6),
+    inset 0 0 25px rgba(212, 163, 115, 0.12);
 }
 
 .shelf-row-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .shelf-row-title {
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: var(--text-color, #ffffff);
+  color: #d4a373;
+  font-family: "Georgia", serif;
+  font-size: 1.1rem;
+  margin: 0;
 }
 
 .shelf-delete-row-btn {
   background: transparent;
   border: none;
-  color: #888;
+  color: #b33939;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
-  font-size: 1.1rem;
-  transition: color 0.2s;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
 .shelf-delete-row-btn:hover {
-  color: #ff5555;
+  background: rgba(179, 57, 57, 0.15);
+  color: #ff4d4d;
 }
 
+/* Хоризонтален скрол за рафта с фиксирани мини карти */
 .shelf-books-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 16px;
-  margin-top: 10px;
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 12px 4px 12px 4px;
+  align-items: stretch;
 }
 
-.mini-book-card {
-  background: rgba(45, 34, 27, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: 10px;
-  padding: 14px;
+.mini-book-item-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease;
-  width: 100%;
 }
 
-.mini-book-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.2);
+.mini-book-card {
+  position: relative;
+  width: 105px;
+  min-width: 105px;
+  height: 175px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
 }
 
 .mini-book-card.drag-over {
   transform: translateY(-8px) scale(1.04);
-  background-color: rgba(212, 163, 115, 0.2);
+  background-color: rgba(212, 163, 115, 0.25);
   border-color: #d4a373;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+.mini-book-card:hover {
+  border-color: #d4a373;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 12px rgba(212, 163, 115, 0.25);
+  transform: translateY(-2px);
 }
 
 .mini-book-img-wrapper {
-  width: 120px;
-  height: 170px;
+  width: 100%;
+  height: 115px;
+  min-height: 115px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
   overflow: hidden;
-  border-radius: 6px;
-  margin-bottom: 12px;
-  background-color: #111;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mini-book-img-wrapper img {
@@ -86,69 +123,51 @@
 }
 
 .mini-book-title {
-  font-size: 0.9rem;
+  font-size: 0.75rem;
+  color: #f5f2eb;
+  font-weight: 500;
+  line-height: 1.15;
+  margin: auto 0 0 0;
   text-align: center;
-  color: #fff;
-  margin: 4px 0 0 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  overflow: hidden;
   width: 100%;
+  word-break: break-word;
+}
+
+/* Действия: Бележки и Статус една до друга */
+.mini-book-actions-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
 }
 
 .mini-book-notes-btn {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #ccc;
-  padding: 2px 8px;
-  border-radius: 4px;
+  background: rgba(139, 90, 43, 0.25);
+  color: #e2d9c5;
+  border: 1px solid rgba(139, 90, 43, 0.5);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 0.8rem;
-  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+  user-select: none;
 }
 
 .mini-book-notes-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-
-.mini-book-status-icon {
-  cursor: pointer;
-  font-size: 1.1rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mini-book-status-icon:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.empty-shelf-notice {
-  color: #aaa;
-  font-style: italic;
-  padding: 16px 0;
-  text-align: center;
-}
-
-.mini-book-item-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.mini-book-actions-row {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: center;
+  background: rgba(139, 90, 43, 0.5);
+  border-color: #8b5a2b;
+  color: #ffffff;
 }
 
 .mini-book-status-wrapper {
@@ -156,6 +175,23 @@
   display: inline-block;
 }
 
+.mini-book-status-icon {
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.mini-book-status-icon:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Падащо меню за статуса */
 .quick-status-dropdown {
   position: absolute;
   bottom: 100%;
@@ -165,29 +201,41 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
   border-radius: 6px;
   padding: 4px 0;
-  zindex: 100;
-  min-width: 130px;
+  z-index: 1000;
+  min-width: 140px;
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
   border: 1px solid #444;
   margin-bottom: 6px;
 }
 
 .quick-status-option {
-  padding: 6px 12px;
+  padding: 8px 12px;
   font-size: 0.85rem;
   color: #fff;
   cursor: pointer;
+  user-select: none;
   display: flex;
   align-items: center;
   gap: 8px;
   white-space: nowrap;
+  transition: background-color 0.2s;
 }
 
 .quick-status-option:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+.empty-shelf-notice {
+  text-align: center;
+  color: rgba(245, 242, 235, 0.45);
+  font-style: italic;
+  font-size: 0.82rem;
+  padding: 10px 0;
+}
+
 .shelf-row-footer {
-  margin-top: 16px;
+  margin-top: 12px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
 }
