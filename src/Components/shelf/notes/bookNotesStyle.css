@@ -102,34 +102,8 @@
   margin-bottom: 15px;
 }
 
-.note-delete-btn {
-  background: rgba(180, 40, 40, 0.6);
-}
-
-.note-delete-btn:hover {
-  background: rgba(220, 50, 50, 0.8);
-}
-
 .modal-close-bottom-btn {
   margin-top: 10px;
-}
-
-.modal-notes-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.note-delete-btn {
-  background-color: #a93226;
-  border-color: #c0392b;
-  color: #ffffff;
-  transition: background-color 0.2s ease;
-}
-
-.note-delete-btn:hover {
-  background-color: #cb4335;
-  border-color: #e74c3c;
 }
 
 .modal-notes-actions {
@@ -141,16 +115,19 @@
   width: 100%;
 }
 
-.note-delete-btn {
-  background-color: #a93226;
-  border-color: #c0392b;
+.form-btn.note-delete-btn {
+  background: #a93226;
+  border: 1px solid #c0392b;
   color: #ffffff;
+  box-shadow: 0 4px 12px rgba(169, 50, 38, 0.4);
   transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease;
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.note-delete-btn:hover {
-  background-color: #cb4335;
+.form-btn.note-delete-btn:hover {
+  background: #cb4335;
   border-color: #e74c3c;
+  box-shadow: 0 6px 16px rgba(203, 67, 53, 0.6);
 }

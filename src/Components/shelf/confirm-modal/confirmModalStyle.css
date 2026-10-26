@@ -38,16 +38,3 @@
   align-items: center;
   gap: 16px;
 }
-
-.form-btn.note-delete-btn {
-  background: #a93226;
-  border: 1px solid #c0392b;
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(169, 50, 38, 0.4);
-}
-
-.form-btn.note-delete-btn:hover {
-  background: #cb4335;
-  border-color: #e74c3c;
-  box-shadow: 0 6px 16px rgba(203, 67, 53, 0.6);
-}

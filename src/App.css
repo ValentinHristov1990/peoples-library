@@ -963,11 +963,6 @@ select.form-input option {
   font-size: 1.3rem;
 }
 
-.shelf-books-grid {
-  display: flex;
-  margin-top: 10px;
-}
-
 .shelf-book-item {
   background: rgba(45, 34, 27, 0.8);
   padding: 10px 14px;
