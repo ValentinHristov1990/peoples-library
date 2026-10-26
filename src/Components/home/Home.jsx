@@ -1,22 +1,26 @@
 import { Link } from 'react-router';
 import { useState, useEffect } from 'react';
 import request from '../utils/request';
+import LoadingSpinner from '../common/LoadingSpinner';
 import useAuth from "../../hooks/useAuth"
 
 export default function Home() {
     const { isAuthenticated } = useAuth();
     const [dailyBooks, setDailyBooks] = useState([]);
+    const [isLoadingDailyBooks, setIsLoadingDailyBooks] = useState(true);
 
     useEffect(() => {
         async function fetchDailyBooks() {
             try {
-                const data = await request('/books');
+                const data = await request('/books?select=id,title,author,genre,imageUrl');
                 if (data && data.length > 0) {
                     const shuffled = [...data].sort(() => 0.5 - Math.random());
                     setDailyBooks(shuffled.slice(0, 3));
                 }
             } catch (error) {
                 console.error('Failed to fetch top books:', error);
+            } finally {
+                setIsLoadingDailyBooks(false);
             }
         }
         fetchDailyBooks();
@@ -47,24 +51,28 @@ export default function Home() {
 
                 <div className="hero-daily-section">
                     <h3 className="hero-daily-title">Today's Top 3 Books</h3>
-                    <div className="hero-daily-grid">
-                        {dailyBooks.map((book) => (
-                            <div key={book.id || book._id} className="book-card">
-                                <div>
-                                    <div className="book-img-wrapper">
-                                        <img src={book.imageUrl || book.imageurl} alt={book.title} />
+                    {isLoadingDailyBooks ? (
+                        <LoadingSpinner />
+                    ) : (
+                        <div className="hero-daily-grid">
+                            {dailyBooks.map((book) => (
+                                <div key={book.id || book._id} className="book-card">
+                                    <div>
+                                        <div className="book-img-wrapper">
+                                            <img src={book.imageUrl || book.imageurl} alt={book.title} />
+                                        </div>
+                                        <h3 className="book-title">{book.title}</h3>
+                                        <p className="book-author">By: {book.author}</p>
+                                        <p className="book-genre">{book.genre}</p>
                                     </div>
-                                    <h3 className="book-title">{book.title}</h3>
-                                    <p className="book-author">By: {book.author}</p>
-                                    <p className="book-genre">{book.genre}</p>
-                                </div>
 
-                                <Link to={`/details/${book.id || book._id}`} className="form-btn book-details-btn">
-                                    Details
-                                </Link>
-                            </div>
-                        ))}
-                    </div>
+                                    <Link to={`/details/${book.id || book._id}`} className="form-btn book-details-btn">
+                                        Details
+                                    </Link>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </section>
