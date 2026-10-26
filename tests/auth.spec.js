@@ -27,6 +27,17 @@ test.describe("Comprehensive Authentication & Forms Suite", () => {
     await expect(page).toHaveURL("/login");
   });
 
+  test("Login email validation rejects values without an @", async ({ page }) => {
+    await page.goto("/login");
+
+    const emailInput = page.locator('input[name="email"]');
+    await emailInput.fill("1234");
+    await emailInput.blur();
+
+    await expect(page.getByText("Please enter a valid email address!")).toBeVisible();
+    await expect(emailInput).toHaveCSS("border-color", "rgb(229, 57, 53)");
+  });
+
   test("Register page must render fields correctly and support switching back to login", async ({
     page,
   }) => {

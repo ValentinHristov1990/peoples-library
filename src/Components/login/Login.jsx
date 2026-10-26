@@ -25,6 +25,8 @@ export default function Login() {
         validateCredentials,
         clearServerError,
     } = useLoginErrorHandler();
+    const isEmailValid = emailIsValid(email);
+    const isPasswordValid = passwordIsValid(password);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -69,9 +71,9 @@ export default function Login() {
                                 clearServerError();
                             }}
                             onBlur={() => handleBlur('email')}
-                            style={getInputStyle(emailIsValid, 'email', hasSubmitted)}
+                            style={getInputStyle(isEmailValid, 'email', hasSubmitted)}
                         />
-                        {(touched.email || hasSubmitted) && !emailIsValid && (
+                        {(touched.email || hasSubmitted) && !isEmailValid && (
                             <div className="error-tooltip">⚠️ Please enter a valid email address!</div>
                         )}
                     </div>
@@ -92,9 +94,9 @@ export default function Login() {
                                 clearServerError();
                             }}
                             onBlur={() => handleBlur('password')}
-                            style={getInputStyle(passwordIsValid, 'password', hasSubmitted)}
+                            style={getInputStyle(isPasswordValid, 'password', hasSubmitted)}
                         />
-                        {(touched.password || hasSubmitted) && !passwordIsValid && (
+                        {(touched.password || hasSubmitted) && !isPasswordValid && (
                             <div className="error-tooltip">⚠️ Password is required!</div>
                         )}
                     </div>

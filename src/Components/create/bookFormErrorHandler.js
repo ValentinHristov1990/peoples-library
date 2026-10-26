@@ -22,8 +22,11 @@ export function useBookFormErrorHandler({ formData, imageUrl, useCustomUrl }) {
     setServerError("");
   }, []);
 
-  const { touched, setTouched, handleBlur, getInputStyle } =
-    useFormValidation(formRef, BOOK_FIELDS, resetErrors);
+  const { touched, setTouched, handleBlur, getInputStyle } = useFormValidation(
+    formRef,
+    BOOK_FIELDS,
+    resetErrors,
+  );
 
   const fieldErrors = {
     title: formData.title.trim() ? "" : "Book title is required!",
@@ -44,7 +47,7 @@ export function useBookFormErrorHandler({ formData, imageUrl, useCustomUrl }) {
     setTouched(Object.fromEntries(BOOK_FIELDS.map((field) => [field, true])));
 
     if (Object.values(fieldErrors).some(Boolean)) {
-      setServerError("Please correct the highlighted fields.");
+      setServerError("All fields are required.");
       return false;
     }
 

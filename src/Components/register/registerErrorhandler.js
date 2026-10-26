@@ -39,7 +39,7 @@ export function useRegisterValidation() {
     });
 
     if (!username.trim() || !email.trim() || !password || !confirmPassword) {
-      setServerError("All fields are required!");
+      setServerError("All fields are required.");
       return false;
     }
 

@@ -14,8 +14,11 @@ export function useLoginErrorHandler() {
     setServerError("");
   }, []);
 
-  const { touched, setTouched, handleBlur, getInputStyle } =
-    useFormValidation(formRef, LOGIN_FIELDS, resetErrors);
+  const { touched, setTouched, handleBlur, getInputStyle } = useFormValidation(
+    formRef,
+    LOGIN_FIELDS,
+    resetErrors,
+  );
 
   const emailIsValid = (email) => EMAIL_PATTERN.test(email.trim());
   const passwordIsValid = (password) => password.trim() !== "";
@@ -26,7 +29,7 @@ export function useLoginErrorHandler() {
     setTouched({ email: true, password: true });
 
     if (!emailIsValid(email) || !passwordIsValid(password)) {
-      setServerError("Please correct the highlighted fields.");
+      setServerError("All fields are required.");
       return false;
     }
 
