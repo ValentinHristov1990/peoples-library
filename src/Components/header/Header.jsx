@@ -19,7 +19,7 @@ export default function Header() {
         <header className="header-container">
             <div className="site-title">
                 <h1>People's Library</h1>
-                <p>Personal Reading Space</p>
+                <p>Your Personal Reading Space</p>
             </div>
             <nav>
                 <span className="nav-clock">{formattedTime}</span>
