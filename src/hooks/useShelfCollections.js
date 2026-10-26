@@ -10,7 +10,7 @@ import {
 
 export function useShelfCollections() {
   const { user } = useAuth();
-  const { loading, isLoading } = useLoading();
+  const { isLoading } = useLoading();
   const { showNotification } = useNotification();
 
   const username = user?.user_metadata?.username || user?.username;
@@ -31,41 +31,44 @@ export function useShelfCollections() {
     confirmText: "Delete",
   });
 
-  const fetchShelves = useCallback(async (showLoading = false) => {
-    const loadShelves = async () => {
-      try {
-        const data = await request(
-          `/shelves?user_id=eq.${user.id}&select=*,shelf_books(*,books(*,notes(*)))`,
-        );
-        const formatted = (data || []).map((shelf) => ({
-          id: shelf.id,
-          title: shelf.title,
-          books: (shelf.shelf_books || [])
-            .map((sb) => ({
-              shelfBookId: sb.id,
-              status: sb.status || "to-read",
-              id: sb.books?.id,
-              title: sb.books?.title,
-              author: sb.books?.author,
-              genre: sb.books?.genre,
-              description: sb.books?.description,
-              imageUrl: sb.books?.imageUrl,
-              notes: sb.books?.notes || [],
-            }))
-            .filter((b) => b.id),
-        }));
-        setCollections(formatted);
-      } catch (error) {
-        showNotification(`Failed to load shelves: ${error.message}`, "error");
-      }
-    }
+  const fetchShelves = useCallback(
+    async (showLoading = false) => {
+      const loadShelves = async () => {
+        try {
+          const data = await request(
+            `/shelves?user_id=eq.${user.id}&select=*,shelf_books(*,books(*,notes(*)))`,
+          );
+          const formatted = (data || []).map((shelf) => ({
+            id: shelf.id,
+            title: shelf.title,
+            books: (shelf.shelf_books || [])
+              .map((sb) => ({
+                shelfBookId: sb.id,
+                status: sb.status || "to-read",
+                id: sb.books?.id,
+                title: sb.books?.title,
+                author: sb.books?.author,
+                genre: sb.books?.genre,
+                description: sb.books?.description,
+                imageUrl: sb.books?.imageUrl,
+                notes: sb.books?.notes || [],
+              }))
+              .filter((b) => b.id),
+          }));
+          setCollections(formatted);
+        } catch (error) {
+          showNotification(`Failed to load shelves: ${error.message}`, "error");
+        }
+      };
 
-    if (showLoading) {
-      await isLoading(loadShelves);
-    } else {
-      await loadShelves();
-    }
-  }, [isLoading, showNotification, user]);
+      if (showLoading) {
+        await isLoading(loadShelves);
+      } else {
+        await loadShelves();
+      }
+    },
+    [isLoading, showNotification, user],
+  );
 
   useEffect(() => {
     if (user) {
@@ -145,7 +148,6 @@ export function useShelfCollections() {
 
   return {
     user,
-    loading,
     libraryName,
     collections,
     setCollections,
