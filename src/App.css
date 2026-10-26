@@ -21,6 +21,7 @@ body {
   background:
     linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
     url("/wooden-background.jpg") center / cover no-repeat fixed;
+  background-color: #3b2619;
   color: var(--secondary-color);
   font-family:
     system-ui,
