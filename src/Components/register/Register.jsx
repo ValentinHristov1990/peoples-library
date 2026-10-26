@@ -1,16 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { registerUser } from './registerApi';
 import useAuth from '../../hooks/useAuth';
 import useLoading from '../../hooks/useLoading';
 import LoadingSpinner from '../common/LoadingSpinner';
-import {
-    useRegisterValidation,
-    validateUsername,
-    validateEmail,
-    validatePassword,
-    validateConfirm
-} from './registerErrorhandler';
+import { useRegisterValidation } from './registerErrorhandler';
 
 export default function Register() {
     const { register } = useAuth();
@@ -20,14 +14,21 @@ export default function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [serverError, setServerError] = useState('');
-    const [hasSubmitted, setHasSubmitted] = useState(false);
 
-    const formRef = useRef(null);
-    const { touched, setTouched, handleBlur, getInputStyle } = useRegisterValidation(formRef, {
-        setHasSubmitted,
-        setServerError
-    });
+    const {
+        formRef,
+        touched,
+        hasSubmitted,
+        serverError,
+        setServerError,
+        handleBlur,
+        getInputStyle,
+        validateUsername,
+        validateEmail,
+        validatePassword,
+        validateConfirm,
+        validateForm,
+    } = useRegisterValidation();
 
     const isUsernameValid = validateUsername(username);
     const isEmailValid = validateEmail(email);
@@ -36,40 +37,8 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setServerError('');
-        setHasSubmitted(true);
 
-        setTouched({
-            username: true,
-            email: true,
-            password: true,
-            confirmPassword: true
-        });
-
-        if (!username.trim() || !email.trim() || !password || !confirmPassword) {
-            setServerError('All fields are required!');
-            return;
-        }
-
-        if (username.includes("@")) {
-            setServerError('Username cannot contain "@"!');
-            return;
-        }
-
-        if (!isEmailValid) {
-            setServerError('Please enter a valid email address!');
-            return;
-        }
-
-        if (!isPasswordValid) {
-            setServerError('Password must be at least 6 characters!');
-            return;
-        }
-
-        if (!isConfirmValid) {
-            setServerError('Passwords do not match!');
-            return;
-        }
+        if (!validateForm({ username, email, password, confirmPassword })) return;
 
         try {
             await isLoading(async () => {
@@ -142,7 +111,7 @@ export default function Register() {
 
                 <div className="form-group">
                     <label htmlFor="password" className="form-label">PASSWORD</label>
-                    <div className="input-parser input-wrapper">
+                    <div className="input-wrapper">
                         <input
                             type="password"
                             id="password"
