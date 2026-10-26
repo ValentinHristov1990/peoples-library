@@ -209,6 +209,11 @@ export function useShelfBooks(
         return { ...col, books: updatedBooks };
       }),
     );
+    setSelectedBook((currentBook) =>
+      currentBook && String(currentBook.id) === String(bookId)
+        ? { ...currentBook, notes: updatedNotes }
+        : currentBook,
+    );
     showNotification("Notes saved successfully!");
   }
 

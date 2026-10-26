@@ -16,6 +16,8 @@ export default function Details() {
     const { showNotification } = useNotification();
     const {
         collections,
+        setCollections,
+        setDbBooks,
         loading: shelvesLoading,
         isAddingBookToShelf,
         handleAddBookToCollection
@@ -54,6 +56,17 @@ export default function Details() {
         await isLoading(async () => {
             try {
                 await request(`/books?id=eq.${bookId}`, 'DELETE');
+                setCollections((currentCollections) =>
+                    currentCollections.map((collection) => ({
+                        ...collection,
+                        books: collection.books.filter(
+                            (shelfBook) => String(shelfBook.id) !== String(bookId),
+                        ),
+                    })),
+                );
+                setDbBooks((currentBooks) =>
+                    currentBooks.filter((currentBook) => String(currentBook.id) !== String(bookId)),
+                );
                 showNotification('Book deleted successfully!');
                 navigate('/my-books');
             } catch (error) {
@@ -81,7 +94,7 @@ export default function Details() {
 
                         {isOwner && (
                             <div className="book-actions" style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '15px' }}>
-                                <Link to={`/edit/${book.id}`} className="form-btn">Edit</Link>
+                                <Link to={`/edit/${book.id}`} className="form-btn details-action-link">Edit</Link>
                                 <button onClick={() => setShowDeleteModal(true)} className="form-btn danger-btn">
                                     Delete
                                 </button>
@@ -134,11 +147,9 @@ export default function Details() {
                                             </div>
                                         </>
                                     ) : (
-                                        <p className="form-footer">
-                                            {shelvesLoading
-                                                ? 'Loading your shelves...'
-                                                : <>Create a shelf from <Link to="/shelf">My Shelf</Link> before adding this book.</>}
-                                        </p>
+                                        <Link to="/shelf" className="form-btn shelf-btn-secondary details-back-button details-action-link">
+                                            Add to Shelf
+                                        </Link>
                                     )}
                                 </div>
                             )}

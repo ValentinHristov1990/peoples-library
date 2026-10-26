@@ -696,6 +696,10 @@ select.form-input option {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
+.details-action-link {
+  text-decoration: none;
+}
+
 .details-container button:not(.form-btn):not(.shelf-add-menu-item) {
   margin-top: 10px;
   padding: 10px 24px;
@@ -829,15 +833,20 @@ select.form-input option {
 .details-bottom-actions {
   display: flex;
   justify-content: space-around;
-  align-items: flex-start;
+  align-items: center;
   gap: 16px;
   width: 100%;
   max-width: 420px;
   margin-top: 15px;
 }
 
+.details-bottom-actions > .shelf-add-actions,
+.details-bottom-actions > .details-back-button {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
 .details-back-button {
-  flex: 0 1 150px;
   min-height: 42px;
   margin: 0;
   padding: 9px 14px;
