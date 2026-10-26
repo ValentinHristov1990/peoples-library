@@ -1,13 +1,8 @@
 import { useState } from 'react';
 import request from '../../utils/request';
-import { useNotification } from '../../notifications/Notification';
+import { useNotification } from '../../notifications/useNotification';
+import { BOOK_STATUSES } from '../../../constants/bookStatusConst';
 import './bookStatusStyle.css';
-
-const STATUSES = [
-    { id: 'to-read', label: '📖 To Read' },
-    { id: 'reading', label: '⏳ Reading' },
-    { id: 'completed', label: '✅ Completed' },
-];
 
 export default function BookStatus({ shelfBookId, currentStatus, onStatusUpdated }) {
     const { showNotification } = useNotification();
@@ -46,9 +41,9 @@ export default function BookStatus({ shelfBookId, currentStatus, onStatusUpdated
                 onChange={handleStatusChange}
                 disabled={loading}
             >
-                {STATUSES.map(s => (
+                {BOOK_STATUSES.map(s => (
                     <option key={s.id} value={s.id}>
-                        {s.label}
+                        {s.icon} {s.label}
                     </option>
                 ))}
             </select>

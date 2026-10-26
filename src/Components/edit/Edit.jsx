@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import request from '../utils/request';
 import BookCoverPicker from '../create/BookCoverPicker';
-import { useNotification } from '../notifications/Notification';
+import { useNotification } from '../notifications/useNotification';
 import { GENRE_PRESETS } from '../../constants/genrePresets';
+import { useBookFormErrorHandler } from '../create/bookFormErrorHandler';
 
 export default function Edit() {
     const { bookId } = useParams();
@@ -22,6 +23,18 @@ export default function Edit() {
     const [selectedPreset, setSelectedPreset] = useState('');
     const [loading, setLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const {
+        formRef,
+        serverError,
+        setServerError,
+        hasSubmitted,
+        fieldErrors,
+        isFieldVisible,
+        handleBlur,
+        getInputStyle,
+        validateForm,
+        clearServerError,
+    } = useBookFormErrorHandler({ formData, imageUrl, useCustomUrl });
 
     useEffect(() => {
         async function fetchBook() {
@@ -54,31 +67,30 @@ export default function Edit() {
         }
 
         fetchBook();
-    }, [bookId]);
+    }, [bookId, showNotification]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((current) => ({ ...current, [name]: value }));
+        clearServerError();
     };
 
     const handlePresetSelect = (imgUrl) => {
         setSelectedPreset(imgUrl);
         setImageUrl(imgUrl);
+        clearServerError();
     };
 
     const handleToggleCustom = () => {
         setUseCustomUrl(!useCustomUrl);
         setImageUrl('');
         setSelectedPreset('');
+        clearServerError();
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!formData.title.trim() || !formData.author.trim() || !formData.description.trim()) {
-            showNotification('Title, Author, and Description are required!', 'error');
-            return;
-        }
+        if (!validateForm()) return;
 
         setIsSubmitting(true);
 
@@ -94,7 +106,7 @@ export default function Edit() {
             showNotification('Book updated successfully!');
             navigate(`/details/${bookId}`);
         } catch (error) {
-            showNotification(`Failed to update book: ${error.message}`, 'error');
+            setServerError(`Failed to update book: ${error.message}`);
         } finally {
             setIsSubmitting(false);
         }
@@ -110,35 +122,53 @@ export default function Edit() {
 
     return (
         <section className="form-container">
-            <form className="form-card form-card-wide" onSubmit={handleSubmit}>
+            <form ref={formRef} className="form-card form-card-wide" onSubmit={handleSubmit} noValidate>
                 <h2 className="form-title">Edit Book</h2>
+
+                {serverError && (
+                    <div className="error-tooltip-general" role="alert">
+                        ⚠️ <span>{serverError}</span>
+                    </div>
+                )}
 
                 <div className="form-group">
                     <label htmlFor="title" className="form-label">Book Title</label>
-                    <input
-                        type="text"
-                        id="title"
-                        name="title"
-                        className="form-input"
-                        placeholder="e.g., The Great Gatsby"
-                        value={formData.title}
-                        onChange={handleChange}
-                        required
-                    />
+                    <div className="input-wrapper">
+                        <input
+                            type="text"
+                            id="title"
+                            name="title"
+                            className="form-input"
+                            placeholder="e.g., The Great Gatsby"
+                            value={formData.title}
+                            onChange={handleChange}
+                            onBlur={() => handleBlur('title')}
+                            style={getInputStyle(!fieldErrors.title, 'title', hasSubmitted)}
+                        />
+                        {isFieldVisible('title') && fieldErrors.title && (
+                            <div className="error-tooltip">⚠️ {fieldErrors.title}</div>
+                        )}
+                    </div>
                 </div>
 
                 <div className="form-group">
                     <label htmlFor="author" className="form-label">Author</label>
-                    <input
-                        type="text"
-                        id="author"
-                        name="author"
-                        className="form-input"
-                        placeholder="e.g., F. Scott Fitzgerald"
-                        value={formData.author}
-                        onChange={handleChange}
-                        required
-                    />
+                    <div className="input-wrapper">
+                        <input
+                            type="text"
+                            id="author"
+                            name="author"
+                            className="form-input"
+                            placeholder="e.g., F. Scott Fitzgerald"
+                            value={formData.author}
+                            onChange={handleChange}
+                            onBlur={() => handleBlur('author')}
+                            style={getInputStyle(!fieldErrors.author, 'author', hasSubmitted)}
+                        />
+                        {isFieldVisible('author') && fieldErrors.author && (
+                            <div className="error-tooltip">⚠️ {fieldErrors.author}</div>
+                        )}
+                    </div>
                 </div>
 
                 <div className="form-group">
@@ -164,21 +194,32 @@ export default function Edit() {
                     imageUrl={imageUrl}
                     onToggleCustom={handleToggleCustom}
                     onPresetSelect={handlePresetSelect}
-                    onImageChange={(e) => setImageUrl(e.target.value)}
+                    onImageUrlChange={(e) => {
+                        setImageUrl(e.target.value);
+                        clearServerError();
+                    }}
+                    onImageUrlBlur={() => handleBlur('imageUrl')}
+                    imageUrlStyle={getInputStyle(!fieldErrors.imageUrl, 'imageUrl', hasSubmitted)}
+                    imageUrlError={isFieldVisible('imageUrl') ? fieldErrors.imageUrl : ''}
                 />
 
                 <div className="form-group">
                     <label htmlFor="description" className="form-label">Description</label>
-                    <textarea
-                        id="description"
-                        name="description"
-                        className="form-input"
-                        placeholder="Write a short summary or description of the book..."
-                        rows="4"
-                        value={formData.description}
-                        onChange={handleChange}
-                        required
-                    ></textarea>
+                    <div className="input-wrapper">
+                        <textarea
+                            id="description"
+                            name="description"
+                            className="form-input"
+                            placeholder="Write a short summary or description of the book..."
+                            rows="4"
+                            value={formData.description}
+                            onChange={handleChange}
+                            onBlur={() => handleBlur('description')}
+                        ></textarea>
+                        {isFieldVisible('description') && fieldErrors.description && (
+                            <div className="error-tooltip">⚠️ {fieldErrors.description}</div>
+                        )}
+                    </div>
                 </div>
 
                 <div className="modal-details-actions" style={{ marginTop: '20px' }}>

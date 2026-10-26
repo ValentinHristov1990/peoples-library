@@ -1,4 +1,4 @@
-import { createContext, useState, useMemo } from "react";
+import { createContext, useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { authRequest } from "../Components/utils/request";
 
@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
       }
 
       return parsedAuth;
-    } catch (error) {
+    } catch {
 
       localStorage.removeItem("auth");
       return null;
@@ -33,19 +33,31 @@ export function AuthProvider({ children }) {
 
   const navigate = useNavigate();
 
-  const register = async (data) => {
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      setAuth(null);
+      navigate("/login", { replace: true });
+    };
+
+    window.addEventListener("auth:session-expired", handleSessionExpired);
+    return () => {
+      window.removeEventListener("auth:session-expired", handleSessionExpired);
+    };
+  }, [navigate]);
+
+  const register = useCallback(async (data) => {
     setAuth(data);
     localStorage.setItem("auth", JSON.stringify(data));
     navigate("/shelf");
-  };
+  }, [navigate]);
 
-  const login = async (data) => {
+  const login = useCallback(async (data) => {
     setAuth(data);
     localStorage.setItem("auth", JSON.stringify(data));
     navigate("/shelf");
-  };
+  }, [navigate]);
 
-  const logoutAction = async () => {
+  const logoutAction = useCallback(async () => {
     try {
       await authRequest('/logout', 'POST');
     } catch (error) {
@@ -54,7 +66,7 @@ export function AuthProvider({ children }) {
       setAuth(null);
       localStorage.removeItem("auth");
     }
-  };
+  }, []);
 
   const contextValue = useMemo(
     () => ({
@@ -65,7 +77,7 @@ export function AuthProvider({ children }) {
       login,
       logout: logoutAction,
     }),
-    [auth],
+    [auth, login, logoutAction, register],
   );
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

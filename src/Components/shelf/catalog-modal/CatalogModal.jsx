@@ -6,11 +6,15 @@ export default function CatalogModal({
     selectedGenre,
     setSelectedGenre,
     allGenres,
-    filteredCatalogBooks,
+    filteredCatalogBooks = [],
+    isLoading = false,
+    isAddingBooks = false,
+    error = "",
     existingBookIdsInActiveShelf,
     selectedBookIds,
     toggleBookSelection,
     onViewBook,
+    onRetry,
     onAddSelectedBooks
 }) {
     if (!isOpen) return null;
@@ -37,17 +41,26 @@ export default function CatalogModal({
                         onChange={(e) => setSelectedGenre(e.target.value)}
                     >
                         <option value="">All Genres</option>
-                        {allGenres.map(genre => (
+                        {allGenres?.map(genre => (
                             <option key={genre} value={genre}>{genre}</option>
                         ))}
                     </select>
                 </div>
 
                 <div className="catalog-picker-list">
-                    {filteredCatalogBooks.length > 0 ? (
+                    {isLoading ? (
+                        <p className="empty-shelf-notice">Loading catalog...</p>
+                    ) : error ? (
+                        <div className="empty-shelf-notice">
+                            <p>Failed to load catalog: {error}</p>
+                            <button type="button" className="form-btn" onClick={onRetry}>
+                                Retry
+                            </button>
+                        </div>
+                    ) : filteredCatalogBooks?.length > 0 ? (
                         filteredCatalogBooks.map((catBook) => {
-                            const isAlreadyAdded = existingBookIdsInActiveShelf.has(catBook.id);
-                            const isChecked = selectedBookIds.includes(catBook.id);
+                            const isAlreadyAdded = existingBookIdsInActiveShelf?.has(catBook.id);
+                            const isChecked = selectedBookIds?.includes(catBook.id);
 
                             return (
                                 <div
@@ -105,9 +118,9 @@ export default function CatalogModal({
                 <button
                     className="form-btn"
                     onClick={onAddSelectedBooks}
-                    disabled={selectedBookIds.length === 0}
+                    disabled={isLoading || isAddingBooks || Boolean(error) || selectedBookIds?.length === 0}
                 >
-                    Add Selected Books ({selectedBookIds.length})
+                    {isAddingBooks ? "Adding books..." : `Add Selected Books (${selectedBookIds?.length || 0})`}
                 </button>
             </div>
         </div>

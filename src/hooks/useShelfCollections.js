@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import useAuth from "./useAuth";
 import request from "../Components/utils/request";
-import { useNotification } from "../Components/notifications/Notification";
+import { useNotification } from "../Components/notifications/useNotification";
 import useLoading from "./useLoading";
 import {
   CONFIRM_MESSAGES,
@@ -31,14 +31,8 @@ export function useShelfCollections() {
     confirmText: "Delete",
   });
 
-  useEffect(() => {
-    if (user) {
-      fetchShelves();
-    }
-  }, [user]);
-
-  const fetchShelves = async () => {
-    await isLoading(async () => {
+  const fetchShelves = useCallback(async (showLoading = false) => {
+    const loadShelves = async () => {
       try {
         const data = await request(
           `/shelves?user_id=eq.${user.id}&select=*,shelf_books(*,books(*,notes(*)))`,
@@ -64,8 +58,20 @@ export function useShelfCollections() {
       } catch (error) {
         showNotification(`Failed to load shelves: ${error.message}`, "error");
       }
-    });
-  };
+    }
+
+    if (showLoading) {
+      await isLoading(loadShelves);
+    } else {
+      await loadShelves();
+    }
+  }, [isLoading, showNotification, user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchShelves(true);
+    }
+  }, [user, fetchShelves]);
 
   const triggerConfirm = (
     title,

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import ConfirmModal from '../confirm-modal/ConfirmModal';
-import { useNotification } from '../../notifications/Notification';
+import { useNotification } from '../../notifications/useNotification';
+import { BOOK_STATUSES, STATUS_ICONS } from '../../../constants/bookStatusConst';
 import request from '../../utils/request';
 
 export default function ShelfRow({
@@ -16,21 +16,8 @@ export default function ShelfRow({
     onDragLeave,
     dragOverBookId
 }) {
-    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [openDropdownBookId, setOpenDropdownBookId] = useState(null);
     const { showNotification } = useNotification();
-
-    const STATUS_OPTIONS = [
-        { id: 'to-read', label: 'To Read', icon: '📖' },
-        { id: 'reading', label: 'Reading', icon: '⏳' },
-        { id: 'completed', label: 'Completed', icon: '✅' },
-    ];
-
-    const STATUS_ICONS = {
-        'to-read': '📖',
-        'reading': '⏳',
-        'completed': '✅',
-    };
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -68,7 +55,7 @@ export default function ShelfRow({
                 <button
                     type="button"
                     className="shelf-delete-row-btn"
-                    onClick={() => setIsConfirmOpen(true)}
+                    onClick={() => onDeleteCollection(collection.id, collection.title)}
                     title="Delete collection"
                 >
                     ✕
@@ -154,7 +141,7 @@ export default function ShelfRow({
                                                     marginBottom: '6px'
                                                 }}
                                             >
-                                                {STATUS_OPTIONS.map(opt => (
+                                                {BOOK_STATUSES.map(opt => (
                                                     <div
                                                         key={opt.id}
                                                         className="quick-status-option"
@@ -193,16 +180,6 @@ export default function ShelfRow({
                 </button>
             </div>
 
-            <ConfirmModal
-                isOpen={isConfirmOpen}
-                title="Delete Collection"
-                message={`Are you sure you want to delete the collection "${collection.title}"?`}
-                onConfirm={() => {
-                    onDeleteCollection(collection.id);
-                    setIsConfirmOpen(false);
-                }}
-                onCancel={() => setIsConfirmOpen(false)}
-            />
         </div>
     );
 }

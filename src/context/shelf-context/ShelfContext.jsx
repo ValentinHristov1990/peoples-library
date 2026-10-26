@@ -1,16 +1,15 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { ShelfContext } from './shelfContext';
 import useAuth from '../../hooks/useAuth';
-import { useNotification } from '../../Components/notifications/Notification';
+import { useNotification } from '../../Components/notifications/useNotification';
 import useLoading from '../../hooks/useLoading';
 import { useEscClose } from '../../hooks/useEscClose';
 import { useShelfCollections } from '../../hooks/useShelfCollections';
 import { useShelfBooks } from '../../hooks/useShelfBooks';
 
-const ShelfContext = createContext();
-
 export function ShelfProvider({ children }) {
     const { user } = useAuth();
-    const { loading, isLoading } = useLoading();
+    const { loading } = useLoading();
     const { showNotification } = useNotification();
 
     const [isCreating, setIsCreating] = useState(false);
@@ -23,32 +22,6 @@ export function ShelfProvider({ children }) {
     const [previewPos, setPreviewPos] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-
-    const [activeCollectionId, setActiveCollectionId] = useState(null);
-    const [searchFilter, setSearchFilter] = useState('');
-    const [selectedGenre, setSelectedGenre] = useState('');
-    const [selectedBookIds, setSelectedBookIds] = useState([]);
-
-    const [confirmModal, setConfirmModal] = useState({
-        isOpen: false,
-        title: '',
-        message: '',
-        onConfirm: null,
-        confirmText: 'Delete'
-    });
-
-    const triggerConfirm = (title, message, onConfirm, confirmText = "Delete") => {
-        setConfirmModal({
-            isOpen: true,
-            title,
-            message,
-            confirmText,
-            onConfirm: () => {
-                onConfirm();
-                setConfirmModal(curr => ({ ...curr, isOpen: false }));
-            }
-        });
-    };
 
     useEffect(() => {
         const handleMouseMove = (e) => {
@@ -83,13 +56,19 @@ export function ShelfProvider({ children }) {
         });
     }
 
-    const collectionsState = useShelfCollections(user, isLoading, showNotification, activeCollectionId, setActiveCollectionId, triggerConfirm);
+    const collectionsState = useShelfCollections();
+    const {
+        activeCollectionId,
+        setActiveCollectionId,
+        confirmModal,
+        setConfirmModal,
+        triggerConfirm
+    } = collectionsState;
 
     const booksState = useShelfBooks(
         collectionsState.collections,
         collectionsState.setCollections,
         collectionsState.fetchShelves,
-        isLoading,
         showNotification,
         triggerConfirm,
         activeCollectionId,
@@ -97,12 +76,6 @@ export function ShelfProvider({ children }) {
         setSelectedBook,
         setSelectedCollectionId
     );
-
-    useEffect(() => {
-        if (activeCollectionId !== null && booksState.dbBooks.length === 0) {
-            booksState.fetchBooks();
-        }
-    }, [activeCollectionId, booksState.dbBooks.length]);
 
     useEscClose({
         confirmModal,
@@ -125,10 +98,6 @@ export function ShelfProvider({ children }) {
         loading,
         activeCollectionId,
         setActiveCollectionId,
-        confirmModal,
-        setConfirmModal,
-        triggerConfirm,
-        // UI State & Handlers
         isCreating,
         setIsCreating,
         newCollectionName,
@@ -144,14 +113,7 @@ export function ShelfProvider({ children }) {
         previewPos,
         isDragging,
         dragStart,
-        searchFilter,
-        setSearchFilter,
-        selectedGenre,
-        setSelectedGenre,
-        selectedBookIds,
-        setSelectedBookIds,
         handleMouseDown,
-        // Collections & Books States
         ...collectionsState,
         ...booksState,
         handleRemoveBook: (bookId) => booksState.handleRemoveBook(bookId, selectedCollectionId)
@@ -162,8 +124,4 @@ export function ShelfProvider({ children }) {
             {children}
         </ShelfContext.Provider>
     );
-}
-
-export function useShelf() {
-    return useContext(ShelfContext);
 }

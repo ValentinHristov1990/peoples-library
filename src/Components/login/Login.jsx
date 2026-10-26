@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { loginUser } from './loginApi';
+import { useLoginErrorHandler } from './loginErrorHandler';
 import useAuth from '../../hooks/useAuth';
 import useLoading from '../../hooks/useLoading';
 import LoadingSpinner from '../common/LoadingSpinner';
-
 
 export default function Login() {
 
@@ -12,11 +12,23 @@ export default function Login() {
     const { loading, isLoading } = useLoading()
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errors, setErrors] = useState({});
+    const {
+        formRef,
+        touched,
+        hasSubmitted,
+        serverError,
+        setServerError,
+        handleBlur,
+        getInputStyle,
+        emailIsValid,
+        passwordIsValid,
+        validateCredentials,
+        clearServerError,
+    } = useLoginErrorHandler();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrors({});
+        if (!validateCredentials(email, password)) return;
 
         try {
             await isLoading(async () => {
@@ -24,7 +36,7 @@ export default function Login() {
                 login(data);
             })
         } catch (error) {
-            setErrors({ general: error.message || 'Invalid email or password!' });
+            setServerError(error.message || 'Invalid email or password!');
         }
     };
 
@@ -34,11 +46,11 @@ export default function Login() {
 
     return (
         <section className="form-container">
-            <form className="form-card" onSubmit={handleSubmit}>
+            <form ref={formRef} className="form-card" onSubmit={handleSubmit} noValidate>
                 <h2 className="form-title">Login</h2>
-                {errors.general && (
-                    <div className="error-tooltip-general">
-                        ⚠️ <span>{errors.general}</span>
+                {serverError && (
+                    <div className="error-tooltip-general" role="alert">
+                        ⚠️ <span>{serverError}</span>
                     </div>
                 )}
 
@@ -52,9 +64,16 @@ export default function Login() {
                             className="form-input"
                             placeholder="john@example.com"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                clearServerError();
+                            }}
+                            onBlur={() => handleBlur('email')}
+                            style={getInputStyle(emailIsValid, 'email', hasSubmitted)}
                         />
+                        {(touched.email || hasSubmitted) && !emailIsValid && (
+                            <div className="error-tooltip">⚠️ Please enter a valid email address!</div>
+                        )}
                     </div>
                 </div>
 
@@ -68,9 +87,16 @@ export default function Login() {
                             className="form-input"
                             placeholder="******"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                clearServerError();
+                            }}
+                            onBlur={() => handleBlur('password')}
+                            style={getInputStyle(passwordIsValid, 'password', hasSubmitted)}
                         />
+                        {(touched.password || hasSubmitted) && !passwordIsValid && (
+                            <div className="error-tooltip">⚠️ Password is required!</div>
+                        )}
                     </div>
                 </div>
 

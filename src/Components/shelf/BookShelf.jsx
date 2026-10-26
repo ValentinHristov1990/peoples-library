@@ -5,7 +5,7 @@ import CatalogModal from './catalog-modal/CatalogModal';
 import BookNotesModal from './notes/BookNotesModal';
 import ConfirmModal from './confirm-modal/ConfirmModal';
 import LoadingSpinner from '../common/LoadingSpinner';
-import { useShelf } from '../../context/shelf-context/ShelfContext';
+import { useShelf } from '../../context/shelf-context/useShelf';
 import './bookShelfStyle.css';
 
 export default function BookShelf() {
@@ -47,6 +47,11 @@ export default function BookShelf() {
 		handleDeleteCollection,
 		handleStatusUpdate,
 		toggleBookSelection,
+		fetchBooks,
+		catalogLoading,
+		catalogError,
+		isAddingBooks,
+		isRemovingBook,
 		handleAddSelectedBooks,
 		handleRemoveBook,
 		handleSaveNotes,
@@ -124,9 +129,9 @@ export default function BookShelf() {
 								setSelectedBookIds([]);
 								setSearchFilter('');
 								setSelectedGenre('');
+								fetchBooks();
 							}}
 							onDeleteCollection={handleDeleteCollection}
-							onConfirmAction={triggerConfirm}
 							onBookClick={(book) => {
 								setSelectedBook(book);
 								setSelectedCollectionId(col.id);
@@ -151,6 +156,7 @@ export default function BookShelf() {
 					setSelectedCollectionId(null);
 				}}
 				onRemove={handleRemoveBook}
+				isRemoving={isRemovingBook}
 				onOpenNotes={() => setActiveNoteBook({ book: selectedBook, collectionId: selectedCollectionId })}
 				onStatusUpdated={handleStatusUpdate}
 			/>
@@ -181,10 +187,14 @@ export default function BookShelf() {
 				setSelectedGenre={setSelectedGenre}
 				allGenres={allGenres}
 				filteredCatalogBooks={filteredCatalogBooks}
+				isLoading={catalogLoading}
+				isAddingBooks={isAddingBooks}
+				error={catalogError}
 				existingBookIdsInActiveShelf={existingBookIdsInActiveShelf}
 				selectedBookIds={selectedBookIds}
 				toggleBookSelection={toggleBookSelection}
 				onViewBook={(book) => setPreviewBook(book)}
+				onRetry={fetchBooks}
 				onAddSelectedBooks={handleAddSelectedBooks}
 			/>
 

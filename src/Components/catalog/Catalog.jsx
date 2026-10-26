@@ -36,7 +36,7 @@ export default function Catalog() {
             }
         }
         fetchBooks();
-    }, []);
+    }, [isLoading]);
 
     const filteredBooks = dbBooks.filter(book => {
         const matchesGenre = selectedGenre === 'all' || book.genre === selectedGenre;

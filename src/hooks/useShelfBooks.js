@@ -11,7 +11,6 @@ export function useShelfBooks(
   collections,
   setCollections,
   fetchShelves,
-  isLoading,
   showNotification,
   triggerConfirm,
   activeCollectionId,
@@ -20,6 +19,14 @@ export function useShelfBooks(
   setSelectedCollectionId,
 ) {
   const [dbBooks, setDbBooks] = useState([]);
+  const [catalogLoading, setCatalogLoading] = useState(false);
+  const [catalogError, setCatalogError] = useState("");
+  const [isAddingBooks, setIsAddingBooks] = useState(false);
+  const [isAddingBookToShelf, setIsAddingBookToShelf] = useState(false);
+  const [isRemovingBook, setIsRemovingBook] = useState(false);
+  const [searchFilter, setSearchFilter] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const [selectedBookIds, setSelectedBookIds] = useState([]);
 
   const {
     dragOverBookId,
@@ -30,14 +37,81 @@ export function useShelfBooks(
   } = useBookDragDrop(collections, setCollections);
 
   const fetchBooks = async () => {
-    await isLoading(async () => {
-      try {
-        const data = await request("/books");
-        setDbBooks(data || []);
-      } catch (error) {
-        console.error("Failed to fetch books:", error);
+    setCatalogLoading(true);
+    setCatalogError("");
+
+    try {
+      const data = await request("/books");
+      setDbBooks(data || []);
+    } catch (error) {
+      setCatalogError(error.message);
+      showNotification(`Failed to load catalog: ${error.message}`, "error");
+    } finally {
+      setCatalogLoading(false);
+    }
+  };
+
+  const toggleBookSelection = (bookId) => {
+    setSelectedBookIds((curr) =>
+      curr.includes(bookId)
+        ? curr.filter((id) => id !== bookId)
+        : [...curr, bookId],
+    );
+  };
+
+  const handleAddSelectedBooks = async () => {
+    if (selectedBookIds.length === 0 || !activeCollectionId || isAddingBooks) return;
+
+    setIsAddingBooks(true);
+    try {
+      for (const bookId of selectedBookIds) {
+        await request("/shelf_books", "POST", {
+          shelf_id: activeCollectionId,
+          book_id: bookId,
+        });
       }
-    });
+      showNotification("Books added to collection successfully!");
+      setActiveCollectionId(null);
+      setSearchFilter("");
+      setSelectedGenre("");
+      setSelectedBookIds([]);
+      await fetchShelves();
+    } catch (error) {
+      showNotification(`Failed to add books: ${error.message}`, "error");
+    } finally {
+      setIsAddingBooks(false);
+    }
+  };
+
+  const handleAddBookToCollection = async (bookId, collectionId) => {
+    if (!bookId || !collectionId || isAddingBookToShelf) return false;
+
+    const collection = collections.find((item) => item.id === collectionId);
+    if (!collection) {
+      showNotification("Please select a valid shelf.", "error");
+      return false;
+    }
+
+    if (collection.books.some((book) => book.id === bookId)) {
+      showNotification("This book is already on the selected shelf.", "error");
+      return false;
+    }
+
+    setIsAddingBookToShelf(true);
+    try {
+      await request("/shelf_books", "POST", {
+        shelf_id: collectionId,
+        book_id: bookId,
+      });
+      await fetchShelves();
+      showNotification(`Book added to "${collection.title}" successfully!`);
+      return true;
+    } catch (error) {
+      showNotification(`Failed to add book to shelf: ${error.message}`, "error");
+      return false;
+    } finally {
+      setIsAddingBookToShelf(false);
+    }
   };
 
   function handleStatusUpdate(bookId, newStatus) {
@@ -51,84 +125,59 @@ export function useShelfBooks(
     );
   }
 
-  const toggleBookSelection = (bookId, selectedBookIds, setSelectedBookIds) => {
-    setSelectedBookIds((curr) => {
-      if (curr.includes(bookId)) {
-        return curr.filter((id) => id !== bookId);
-      }
-      return [...curr, bookId];
-    });
-  };
+  function handleRemoveBook(bookId, collectionId) {
+    const targetCollection = collections.find(
+      (collection) => collection.id === collectionId,
+    );
+    const book = targetCollection?.books.find((item) => item.id === bookId);
+    const found = book
+      ? { collectionId: targetCollection.id, book }
+      : findBookInCollections(collections, bookId);
 
-  async function handleAddSelectedBooks(
-    selectedBookIds,
-    setSearchFilter,
-    setSelectedGenre,
-  ) {
-    if (selectedBookIds.length === 0 || !activeCollectionId) return;
-
-    await isLoading(async () => {
-      try {
-        for (const bookId of selectedBookIds) {
-          await request("/shelf_books", "POST", {
-            shelf_id: activeCollectionId,
-            book_id: bookId,
-          });
-        }
-        showNotification("Books added to collection successfully!");
-        setActiveCollectionId(null);
-        setSearchFilter("");
-        setSelectedGenre("");
-        fetchShelves();
-      } catch (error) {
-        showNotification(`Failed to add books: ${error.message}`, "error");
-      }
-    });
-  }
-
-  function handleRemoveBook(bookId) {
-    const found = findBookInCollections(collections, bookId);
-
-    if (!found) {
+    if (!found?.book) {
       showNotification("Book not found!", "error");
       return;
     }
 
     const { collectionId: targetCollectionId, book: bookToRemove } = found;
 
+    if (!bookToRemove.shelfBookId) {
+      showNotification("Could not remove this book because its shelf entry is missing.", "error");
+      return;
+    }
+
     triggerConfirm(
-      CONFIRM_TITLES.REMOVE_BOOK,
-      CONFIRM_MESSAGES.REMOVE_BOOK,
+      CONFIRM_TITLES.DELETE_BOOK,
+      CONFIRM_MESSAGES.DELETE_BOOK,
       async () => {
-        await isLoading(async () => {
-          try {
-            if (bookToRemove?.shelfBookId) {
-              await request(
-                `/shelf_books?id=eq.${bookToRemove.shelfBookId}`,
-                "DELETE",
-              );
-            }
+        setIsRemovingBook(true);
+        try {
+          await request(
+            `/shelf_books?id=eq.${bookToRemove.shelfBookId}`,
+            "DELETE",
+          );
 
-            setCollections((currCollections) =>
-              currCollections.map((col) => {
-                if (col.id !== targetCollectionId) return col;
-                return {
-                  ...col,
-                  books: col.books.filter((b) => b.id !== bookId),
-                };
-              }),
-            );
+          setCollections((currCollections) =>
+            currCollections.map((col) => {
+              if (col.id !== targetCollectionId) return col;
+              return {
+                ...col,
+                books: col.books.filter((b) => b.id !== bookId),
+              };
+            }),
+          );
 
-            setSelectedBook(null);
-            setSelectedCollectionId(null);
-            showNotification("Book removed from shelf successfully!");
-          } catch (error) {
-            showNotification(
-              `Failed to remove book: ${error.message}`,
-              "error",
-            );
-          }
-        });
+          setSelectedBook(null);
+          setSelectedCollectionId(null);
+          showNotification("Book removed from shelf successfully!");
+        } catch (error) {
+          showNotification(
+            `Failed to remove book: ${error.message}`,
+            "error",
+          );
+        } finally {
+          setIsRemovingBook(false);
+        }
       },
       "Remove",
     );
@@ -152,6 +201,22 @@ export function useShelfBooks(
     showNotification("Notes saved successfully!");
   }
 
+  const filteredCatalogBooks = dbBooks.filter((book) => {
+    const matchesSearch =
+      !searchFilter ||
+      book.title?.toLowerCase().includes(searchFilter.toLowerCase()) ||
+      book.author?.toLowerCase().includes(searchFilter.toLowerCase());
+    const matchesGenre = !selectedGenre || book.genre === selectedGenre;
+    return matchesSearch && matchesGenre;
+  });
+
+  const activeCollection = collections.find(
+    (col) => col.id === activeCollectionId,
+  );
+  const existingBookIdsInActiveShelf = new Set(
+    activeCollection?.books.map((b) => b.id) || [],
+  );
+
   const allGenres = [
     ...new Set(dbBooks.map((book) => book.genre).filter(Boolean)),
   ];
@@ -160,12 +225,26 @@ export function useShelfBooks(
     dbBooks,
     setDbBooks,
     fetchBooks,
-    handleStatusUpdate,
+    catalogLoading,
+    catalogError,
+    isAddingBooks,
+    isAddingBookToShelf,
+    isRemovingBook,
+    searchFilter,
+    setSearchFilter,
+    selectedGenre,
+    setSelectedGenre,
+    selectedBookIds,
+    setSelectedBookIds,
     toggleBookSelection,
     handleAddSelectedBooks,
+    handleAddBookToCollection,
+    filteredCatalogBooks,
+    existingBookIdsInActiveShelf,
+    allGenres,
+    handleStatusUpdate,
     handleRemoveBook,
     handleSaveNotes,
-    allGenres,
     dragOverBookId,
     handleDragStart,
     handleDragOver,

@@ -7,6 +7,9 @@ export default function BookCoverPicker({
     onToggleCustom,
     onPresetSelect,
     onImageUrlChange,
+    imageUrlStyle,
+    imageUrlError,
+    onImageUrlBlur,
 }) {
     const availablePresets = genrePresets[category] || [];
 
@@ -42,14 +45,20 @@ export default function BookCoverPicker({
                     )}
                 </div>
             ) : (
-                <input
-                    type="url"
-                    className="form-input"
-                    placeholder="https://example.com/my-cover.jpg"
-                    value={imageUrl} // <-- Използваме imageUrl
-                    onChange={onImageUrlChange} // <-- Използваме новата функция
-                    required
-                />
+                <div className="input-wrapper">
+                    <input
+                        type="url"
+                        className="form-input"
+                        placeholder="https://example.com/my-cover.jpg"
+                        value={imageUrl}
+                        onChange={onImageUrlChange}
+                        onBlur={onImageUrlBlur}
+                        style={imageUrlStyle}
+                    />
+                    {imageUrlError && (
+                        <div className="error-tooltip">⚠️ {imageUrlError}</div>
+                    )}
+                </div>
             )}
         </div>
     );

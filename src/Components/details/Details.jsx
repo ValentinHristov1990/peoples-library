@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
 import request from '../utils/request';
 import ConfirmModal from '../shelf/confirm-modal/ConfirmModal';
-import { useNotification } from '../notifications/Notification';
+import { useNotification } from '../notifications/useNotification';
 import useAuth from '../../hooks/useAuth';
 import useLoading from '../../hooks/useLoading';
 import LoadingSpinner from '../common/LoadingSpinner';
+import { useShelf } from '../../context/shelf-context/useShelf';
 
 export default function Details() {
     const { loading, isLoading } = useLoading()
@@ -13,9 +14,17 @@ export default function Details() {
     const navigate = useNavigate();
     const { user } = useAuth()
     const { showNotification } = useNotification();
+    const {
+        collections,
+        loading: shelvesLoading,
+        isAddingBookToShelf,
+        handleAddBookToCollection
+    } = useShelf();
 
     const [book, setBook] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [isShelfMenuOpen, setIsShelfMenuOpen] = useState(false);
+    const shelfActionsRef = useRef(null);
 
     useEffect(() => {
         isLoading(async () => {
@@ -28,7 +37,18 @@ export default function Details() {
                 showNotification(`Failed to load book details: ${error.message}`, 'error');
             }
         });
-    }, [bookId]);
+    }, [bookId, isLoading, showNotification]);
+
+    useEffect(() => {
+        const handleOutsideClick = (event) => {
+            if (!shelfActionsRef.current?.contains(event.target)) {
+                setIsShelfMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('pointerdown', handleOutsideClick);
+        return () => document.removeEventListener('pointerdown', handleOutsideClick);
+    }, []);
 
     const confirmDelete = async () => {
         await isLoading(async () => {
@@ -47,7 +67,6 @@ export default function Details() {
     }
 
     const isOwner = book && user && book.user_id === user.id;
-
     return (
         <>
             <div className="details-container">
@@ -68,11 +87,73 @@ export default function Details() {
                                 </button>
                             </div>
                         )}
+
+                        <div className="details-bottom-actions">
+                            {user && (
+                                <div className="book-actions shelf-add-actions" ref={shelfActionsRef}>
+                                    {collections.length > 0 ? (
+                                        <>
+                                            <button
+                                                type="button"
+                                                className="form-btn shelf-row-add-btn"
+                                                aria-expanded={isShelfMenuOpen}
+                                                aria-controls="add-book-shelf-menu"
+                                                onClick={() => setIsShelfMenuOpen((isOpen) => !isOpen)}
+                                                disabled={shelvesLoading || isAddingBookToShelf}
+                                            >
+                                                {isAddingBookToShelf ? 'Adding...' : 'Add to Shelf'}
+                                            </button>
+                                            <div
+                                                id="add-book-shelf-menu"
+                                                className={`shelf-add-menu ${isShelfMenuOpen ? 'shelf-add-menu-open' : ''} ${collections.length > 5 ? 'shelf-add-menu-scrollable' : ''}`}
+                                                aria-hidden={!isShelfMenuOpen}
+                                            >
+                                                <div className="shelf-add-menu-inner">
+                                                    {collections.map((collection) => {
+                                                        const isAlreadyAdded = collection.books.some(
+                                                            (shelfBook) => shelfBook.id === book.id,
+                                                        );
+
+                                                        return (
+                                                            <button
+                                                                key={collection.id}
+                                                                type="button"
+                                                                className="shelf-add-menu-item"
+                                                                disabled={isAlreadyAdded || isAddingBookToShelf}
+                                                                onClick={async () => {
+                                                                    const added = await handleAddBookToCollection(book.id, collection.id);
+                                                                    if (added) setIsShelfMenuOpen(false);
+                                                                }}
+                                                            >
+                                                                <span>{collection.title}</span>
+                                                                {isAlreadyAdded && <span className="shelf-add-menu-status">Already added</span>}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <p className="form-footer">
+                                            {shelvesLoading
+                                                ? 'Loading your shelves...'
+                                                : <>Create a shelf from <Link to="/shelf">My Shelf</Link> before adding this book.</>}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+                            <button
+                                type="button"
+                                onClick={() => navigate(-1)}
+                                className="form-btn shelf-btn-secondary details-back-button"
+                            >
+                                Back
+                            </button>
+                        </div>
                     </>
                 ) : (
                     <p>Book not found.</p>
                 )}
-                <button onClick={() => navigate(-1)} className="form-btn shelf-btn-secondary" style={{ marginTop: '15px' }}>Back</button>
             </div>
 
             <ConfirmModal

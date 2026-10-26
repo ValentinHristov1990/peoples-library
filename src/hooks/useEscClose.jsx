@@ -30,5 +30,19 @@ export function useEscClose({
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [confirmModal, activeNoteBook, previewBook, selectedBook, activeCollectionId, isCreating]);
+    }, [
+        confirmModal,
+        activeNoteBook,
+        previewBook,
+        selectedBook,
+        activeCollectionId,
+        isCreating,
+        setConfirmModal,
+        setActiveNoteBook,
+        setPreviewBook,
+        setSelectedBook,
+        setSelectedCollectionId,
+        setActiveCollectionId,
+        setIsCreating
+    ]);
 }

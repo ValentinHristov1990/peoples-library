@@ -1,5 +1,5 @@
 import request from '../../utils/request';
-import { useNotification } from '../../notifications/Notification';
+import { useNotification } from '../../notifications/useNotification';
 
 export default function NoteDeleteButton({ noteId, onDeleteSuccess, onConfirmAction }) {
     const { showNotification } = useNotification();

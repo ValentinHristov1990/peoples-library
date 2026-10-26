@@ -335,10 +335,15 @@ nav a.active {
   border: 1px solid rgba(212, 163, 115, 0.3);
   border-radius: 8px;
   color: #f5f2eb;
+  caret-color: #ffffff;
   font-size: 0.98rem;
   transition: all 0.25s ease;
   box-sizing: border-box;
   font-family: inherit;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .form-input::placeholder {
@@ -690,7 +695,7 @@ select.form-input option {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
-.details-container button {
+.details-container button:not(.form-btn):not(.shelf-add-menu-item) {
   margin-top: 10px;
   padding: 10px 24px;
   background: var(--accent-color);
@@ -705,9 +710,137 @@ select.form-input option {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.details-container button:hover {
+.details-container button:not(.form-btn):not(.shelf-add-menu-item):hover {
   opacity: 0.9;
   transform: translateY(-2px);
+}
+
+.shelf-add-actions {
+  position: relative;
+  flex: 0 1 190px;
+  margin: 0;
+}
+
+.shelf-add-actions > .form-btn {
+  width: 100%;
+  min-height: 42px;
+  margin: 0;
+  padding: 9px 14px;
+  font-size: 0.9rem;
+}
+
+.shelf-add-menu {
+  display: grid;
+  grid-template-rows: 0fr;
+  width: 100%;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 5;
+  opacity: 0;
+  transform: translateY(-8px);
+  visibility: hidden;
+  transition:
+    grid-template-rows 240ms ease,
+    opacity 180ms ease,
+    transform 240ms ease,
+    visibility 0s linear 240ms;
+}
+
+.shelf-add-menu-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.shelf-add-menu-inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgba(212, 163, 115, 0.3);
+  border-radius: 8px;
+  background: rgba(25, 17, 12, 0.96);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.shelf-add-menu-scrollable .shelf-add-menu-inner {
+  max-height: 220px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #a66a38 rgba(15, 9, 5, 0.7);
+}
+
+.shelf-add-menu-scrollable .shelf-add-menu-inner::-webkit-scrollbar {
+  width: 8px;
+}
+
+.shelf-add-menu-scrollable .shelf-add-menu-inner::-webkit-scrollbar-track {
+  background: rgba(15, 9, 5, 0.7);
+  border-radius: 8px;
+}
+
+.shelf-add-menu-scrollable .shelf-add-menu-inner::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #d4a373 0%, #7c481f 100%);
+  border: 2px solid rgba(15, 9, 5, 0.7);
+  border-radius: 8px;
+}
+
+.shelf-add-menu-scrollable .shelf-add-menu-inner::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #e0b98f 0%, #a66a38 100%);
+}
+
+.shelf-add-menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 14px;
+  color: #f5f2eb;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.shelf-add-menu-item + .shelf-add-menu-item {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.shelf-add-menu-item:hover:not(:disabled) {
+  background: rgba(212, 163, 115, 0.16);
+}
+
+.shelf-add-menu-item:disabled {
+  color: rgba(245, 242, 235, 0.48);
+  cursor: not-allowed;
+}
+
+.shelf-add-menu-status {
+  color: #d4a373;
+  font-size: 0.78rem;
+}
+
+.details-bottom-actions {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 15px;
+}
+
+.details-back-button {
+  flex: 0 1 150px;
+  min-height: 42px;
+  margin: 0;
+  padding: 9px 14px;
+  font-size: 0.9rem;
 }
 
 /* Tooltips & Errors */
@@ -860,4 +993,14 @@ select.form-input option {
 
 .remove-book-btn:hover {
   background: rgba(248, 157, 157, 0.15);
+}
+
+.form-input:-webkit-autofill,
+.form-input:-webkit-autofill:hover,
+.form-input:-webkit-autofill:focus,
+.form-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #1c1816 inset !important;
+  -webkit-text-fill-color: #f5f2eb !important;
+  caret-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s !important;
 }

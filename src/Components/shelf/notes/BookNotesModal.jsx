@@ -1,12 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import NoteList from './NoteList';
 import NoteForm from './NoteForm';
 import NoteDeleteButton from './NoteDeleteButton';
 import request from '../../utils/request';
 import './bookNotesStyle.css';
 
-export default function BookNotesModal({
-    isOpen,
+export default function BookNotesModal(props) {
+    if (!props.isOpen || !props.book) return null;
+    return <BookNotesContent {...props} />;
+}
+
+function BookNotesContent({
     book,
     collectionId,
     onClose,
@@ -14,20 +18,11 @@ export default function BookNotesModal({
     onConfirmAction,
     user,
 }) {
-    if (!isOpen || !book) return null;
-
     const [notes, setNotes] = useState(book.notes || []);
     const [activeNote, setActiveNote] = useState(null);
     const [isCreating, setIsCreating] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [isMouseDownOutside, setIsMouseDownOutside] = useState(false);
-
-    useEffect(() => {
-        setNotes(book.notes || []);
-        setActiveNote(null);
-        setIsCreating(false);
-        setIsEditing(false);
-    }, [book]);
 
     function handleStartCreate() {
         setIsCreating(true);

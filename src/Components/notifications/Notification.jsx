@@ -1,12 +1,11 @@
-import { createContext, useContext, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { NotificationContext } from './NotificationContext';
 import './notification.css';
-
-const NotificationContext = createContext();
 
 export function NotificationProvider({ children }) {
     const [notification, setNotification] = useState(null);
 
-    const showNotification = (message, type = 'success', duration) => {
+    const showNotification = useCallback((message, type = 'success', duration) => {
         const defaultDuration = type === 'error' ? 4000 : 3000;
         const timeToLive = duration || defaultDuration;
 
@@ -15,10 +14,11 @@ export function NotificationProvider({ children }) {
         setTimeout(() => {
             setNotification(null);
         }, timeToLive);
-    };
+    }, []);
+    const value = useMemo(() => ({ showNotification }), [showNotification]);
 
     return (
-        <NotificationContext.Provider value={{ showNotification }}>
+        <NotificationContext.Provider value={value}>
             {children}
             {notification && (
                 <div className="notification-container">
@@ -30,8 +30,4 @@ export function NotificationProvider({ children }) {
             )}
         </NotificationContext.Provider>
     );
-}
-
-export function useNotification() {
-    return useContext(NotificationContext);
 }

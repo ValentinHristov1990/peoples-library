@@ -1,35 +1,73 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Link } from 'react-router';
 import { registerUser } from './registerApi';
 import useAuth from '../../hooks/useAuth';
 import useLoading from '../../hooks/useLoading';
 import LoadingSpinner from '../common/LoadingSpinner';
-
+import {
+    useRegisterValidation,
+    validateUsername,
+    validateEmail,
+    validatePassword,
+    validateConfirm
+} from './registerErrorhandler';
 
 export default function Register() {
-
-    const { register } = useAuth()
+    const { register } = useAuth();
     const { loading, isLoading } = useLoading();
+
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [errors, setErrors] = useState({});
+    const [serverError, setServerError] = useState('');
+    const [hasSubmitted, setHasSubmitted] = useState(false);
 
+    const formRef = useRef(null);
+    const { touched, setTouched, handleBlur, getInputStyle } = useRegisterValidation(formRef, {
+        setHasSubmitted,
+        setServerError
+    });
+
+    const isUsernameValid = validateUsername(username);
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+    const isConfirmValid = validateConfirm(confirmPassword, password);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrors({});
+        setServerError('');
+        setHasSubmitted(true);
 
-        const newErrors = {};
-        if (!username) newErrors.username = 'Username is required!';
-        if (!email) newErrors.email = 'Email is required!';
-        if (!password) newErrors.password = 'Password is required!';
-        if (password && password.length < 6) newErrors.password = 'Password must be at least 6 characters!';
-        if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match!';
+        setTouched({
+            username: true,
+            email: true,
+            password: true,
+            confirmPassword: true
+        });
 
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
+        if (!username.trim() || !email.trim() || !password || !confirmPassword) {
+            setServerError('All fields are required!');
+            return;
+        }
+
+        if (username.includes("@")) {
+            setServerError('Username cannot contain "@"!');
+            return;
+        }
+
+        if (!isEmailValid) {
+            setServerError('Please enter a valid email address!');
+            return;
+        }
+
+        if (!isPasswordValid) {
+            setServerError('Password must be at least 6 characters!');
+            return;
+        }
+
+        if (!isConfirmValid) {
+            setServerError('Passwords do not match!');
             return;
         }
 
@@ -37,9 +75,9 @@ export default function Register() {
             await isLoading(async () => {
                 const data = await registerUser({ username, email, password });
                 register(data);
-            })
+            });
         } catch (error) {
-            setErrors({ general: error.message || 'Registration failed. Please try again.' });
+            setServerError(error.message || 'Registration failed. Please try again.');
         }
     };
 
@@ -49,12 +87,12 @@ export default function Register() {
 
     return (
         <section className="form-container">
-            <form className="form-card" onSubmit={handleSubmit}>
+            <form ref={formRef} className="form-card" onSubmit={handleSubmit} noValidate>
                 <h2 className="form-title">Register</h2>
 
-                {errors.general && (
+                {serverError && (
                     <div className="error-tooltip-general">
-                        ⚠️ <span>{errors.general}</span>
+                        ⚠️ <span>{serverError}</span>
                     </div>
                 )}
 
@@ -69,11 +107,12 @@ export default function Register() {
                             placeholder="john_doe"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            required
+                            onBlur={() => handleBlur('username')}
+                            style={getInputStyle(isUsernameValid, 'username', hasSubmitted)}
                         />
-                        {errors.username && (
+                        {(touched.username || hasSubmitted) && !isUsernameValid && (
                             <div className="error-tooltip">
-                                ⚠️ <span>{errors.username}</span>
+                                ⚠️ {username.includes('@') ? 'Username cannot contain "@"!' : 'Username cannot be empty!'}
                             </div>
                         )}
                     </div>
@@ -90,11 +129,12 @@ export default function Register() {
                             placeholder="john@example.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            required
+                            onBlur={() => handleBlur('email')}
+                            style={getInputStyle(isEmailValid, 'email', hasSubmitted)}
                         />
-                        {errors.email && (
+                        {(touched.email || hasSubmitted) && !isEmailValid && (
                             <div className="error-tooltip">
-                                ⚠️ <span>{errors.email}</span>
+                                ⚠️ Please enter a valid email address!
                             </div>
                         )}
                     </div>
@@ -111,11 +151,12 @@ export default function Register() {
                             placeholder="******"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            required
+                            onBlur={() => handleBlur('password')}
+                            style={getInputStyle(isPasswordValid, 'password', hasSubmitted)}
                         />
-                        {errors.password && (
+                        {(touched.password || hasSubmitted) && !isPasswordValid && (
                             <div className="error-tooltip">
-                                ⚠️ <span>{errors.password}</span>
+                                ⚠️ Password must be at least 6 characters!
                             </div>
                         )}
                     </div>
@@ -132,11 +173,12 @@ export default function Register() {
                             placeholder="******"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            required
+                            onBlur={() => handleBlur('confirmPassword')}
+                            style={getInputStyle(isConfirmValid, 'confirmPassword', hasSubmitted)}
                         />
-                        {errors.confirmPassword && (
+                        {(touched.confirmPassword || hasSubmitted) && !isConfirmValid && (
                             <div className="error-tooltip">
-                                ⚠️ <span>{errors.confirmPassword}</span>
+                                ⚠️ Passwords do not match!
                             </div>
                         )}
                     </div>

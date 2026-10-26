@@ -7,10 +7,12 @@ export default function BookDetailsModal({
     onRemove,
     onOpenNotes,
     onStatusUpdated,
+    isRemoving = false,
 }) {
+    const [isMouseDownOutside, setIsMouseDownOutside] = useState(false);
+
     if (!book) return null;
 
-    const [isMouseDownOutside, setIsMouseDownOutside] = useState(false);
     const notesCount = book.notes?.length || 0;
 
     return (
@@ -68,8 +70,9 @@ export default function BookDetailsModal({
                         type="button"
                         className="form-btn danger-btn"
                         onClick={() => onRemove(book.id)}
+                        disabled={isRemoving}
                     >
-                        Remove from Shelf
+                        {isRemoving ? 'Removing...' : 'Remove from Shelf'}
                     </button>
                 </div>
             </div>
