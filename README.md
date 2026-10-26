@@ -23,7 +23,7 @@
 
 ## 5. Database & CRUD Operations
 
-- **Create:** Add a new shelf or add a book from the catalog.
+- **Create:** Add a new book, shelf or add a book from the catalog.
 - **Read:** Fetch book lists and shelves from Supabase.
 - **Update:** Quickly change a book's status (e.g. Read / Currently Reading / Want to Read) or edit notes.
 - **Delete:** Remove shelves, books, or notes with a single click.
