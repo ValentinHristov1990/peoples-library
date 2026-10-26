@@ -5,11 +5,13 @@ import BookCoverPicker from '../create/BookCoverPicker';
 import { useNotification } from '../notifications/useNotification';
 import { GENRE_PRESETS } from '../../constants/genrePresets';
 import { useBookFormErrorHandler } from '../create/bookFormErrorHandler';
+import { useShelf } from '../../context/shelf-context/useShelf';
 
 export default function Edit() {
     const { bookId } = useParams();
     const navigate = useNavigate();
     const { showNotification } = useNotification();
+    const { updateBookInShelves } = useShelf();
 
     const [formData, setFormData] = useState({
         title: '',
@@ -95,13 +97,15 @@ export default function Edit() {
         setIsSubmitting(true);
 
         try {
-            await request(`/books?id=eq.${bookId}`, 'PATCH', {
+            const updatedBook = {
                 title: formData.title.trim(),
                 author: formData.author.trim(),
                 genre: formData.genre,
                 imageUrl: imageUrl.trim() || 'https://via.placeholder.com/150',
                 description: formData.description.trim(),
-            });
+            };
+            await request(`/books?id=eq.${bookId}`, 'PATCH', updatedBook);
+            updateBookInShelves(bookId, updatedBook);
 
             showNotification('Book updated successfully!');
             navigate(`/details/${bookId}`);

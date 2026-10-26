@@ -125,6 +125,17 @@ export function useShelfBooks(
     );
   }
 
+  function updateBookInShelves(bookId, updatedBook) {
+    setCollections((prevCollections) =>
+      prevCollections.map((collection) => ({
+        ...collection,
+        books: collection.books.map((book) =>
+          book.id === bookId ? { ...book, ...updatedBook } : book,
+        ),
+      })),
+    );
+  }
+
   function handleRemoveBook(bookId, collectionId) {
     const targetCollection = collections.find(
       (collection) => collection.id === collectionId,
@@ -243,6 +254,7 @@ export function useShelfBooks(
     existingBookIdsInActiveShelf,
     allGenres,
     handleStatusUpdate,
+    updateBookInShelves,
     handleRemoveBook,
     handleSaveNotes,
     dragOverBookId,
