@@ -13,8 +13,22 @@ const AuthContext = createContext({
 
 export function AuthProvider({ children }) {
   const [auth, setAuth] = useState(() => {
-    const savedAuth = localStorage.getItem("auth");
-    return savedAuth ? JSON.parse(savedAuth) : null;
+    try {
+      const savedAuth = localStorage.getItem("auth");
+      if (!savedAuth) return null;
+
+      const parsedAuth = JSON.parse(savedAuth);
+      if (!parsedAuth) {
+        localStorage.removeItem("auth");
+        return null;
+      }
+
+      return parsedAuth;
+    } catch (error) {
+
+      localStorage.removeItem("auth");
+      return null;
+    }
   });
 
   const navigate = useNavigate();
