@@ -12,7 +12,8 @@ export default function Home() {
             try {
                 const data = await request('/books');
                 if (data && data.length > 0) {
-                    setDailyBooks(data.slice(0, 3));
+                    const shuffled = [...data].sort(() => 0.5 - Math.random());
+                    setDailyBooks(shuffled.slice(0, 3));
                 }
             } catch (error) {
                 console.error('Failed to fetch top books:', error);
