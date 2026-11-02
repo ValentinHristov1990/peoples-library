@@ -44,10 +44,3 @@
 ## 8. Error Handling
 
 - Shows friendly alerts on login errors, and empty shelves display a simple notice.
-
-## 9. Setup
-
-- Run `npm install` to install dependencies.
-- Create a `.env.local` file in the root directory and add your Supabase key:
-  `VITE_API_KEY=sb_publishable_9FKQM5lVnMgkrSAfEBflbQ_k4haxRJZ`
-- Run `npm run dev` to start locally.
